@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import { TextField, Button, Typography, Paper, Stack } from "@mui/material";
 import Link from "next/link";
 
-export default function RegisterForm() {
+export default function RegisterFormEmpresa() {
   const [form, setForm] = useState({
-    name: "",
-    lastname: "",
+    companyName: "",
+    RUT: "",
+    contactName: "",
     email: "",
     password: "",
     departament: "",
@@ -14,13 +15,14 @@ export default function RegisterForm() {
     adress: "",
     phone: "",
     observations: "",
-    discinator: "Persona"
+    discinator: "Empresa"
 
   });
 
   const [errors, setErrors] = useState({
-    name: "",
-    lastname: "",
+    companyName: "",
+    RUT: "",
+    contactName: "",
     email: "",
     password: "",
     departament: "",
@@ -38,13 +40,14 @@ export default function RegisterForm() {
     e.preventDefault();
 
     const newErrors = {
-      name: form.name ? "" : "El nombre es requerido.",
+      companyName: form.companyName ? "" : "El nombre de la empresa es requerido.",
+      RUT: form.RUT ? "" : "El RUT es requerido.",
+      contactName: form.contactName ? "" : "El nombre de contacto es requerido.",
       email: form.email.includes("@") ? "" : "Email inválido.",
       password:
         form.password.length >= 6
           ? ""
           : "La contraseña debe tener al menos 6 caracteres.",
-      lastname: form.lastname ? "" : "El apellido es requerido.",
       departament: form.departament ? "" : "El departamento es requerido.",
       city: form.city ? "" : "La ciudad es requerida.",
       adress: form.adress ? "" : "La dirección es requerida.",
@@ -62,24 +65,25 @@ export default function RegisterForm() {
 
       const raw = JSON.stringify({
         "email": form.email,
-        "nombre": form.name,
-        "apellido": form.lastname,
+        "nombreempresa": form.companyName,
+        "RUT": form.RUT,
+        "nombrecontacto": form.contactName,
         "contrasena": form.password,
         "departamento": form.departament,
         "ciudad": form.city,
         "direccion": form.adress,
-        "telefono":  form.phone,
+        "telefono": form.phone,
         "observaciones": form.observations,
-        "discriminador": "Persona"
+        "discriminador": "Empresa"
       });
 
 
       fetch("http://localhost:3001/cliente/", {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow"
-        })
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      })
         .then((response) => response.text())
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
@@ -108,28 +112,36 @@ export default function RegisterForm() {
             error={!!errors.email}
             helperText={errors.email}
           />
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label="Nombre"
-              name="name"
-              variant="standard"
-              value={form.name}
-              onChange={handleChange}
-              fullWidth
-              error={!!errors.name}
-              helperText={errors.name}
-            />
-            <TextField
-              label="Apellido"
-              name="lastname"
-              variant="standard"
-              value={form.lastname}
-              onChange={handleChange}
-              fullWidth
-              error={!!errors.lastname}
-              helperText={errors.lastname}
-            />
-          </Stack>
+          <TextField
+            label="Nombre de la empresa"
+            name="companyName"
+            variant="standard"
+            value={form.companyName}
+            onChange={handleChange}
+            fullWidth
+            error={!!errors.companyName}
+            helperText={errors.companyName}
+          />
+          <TextField
+            label="RUT"
+            name="RUT"
+            variant="standard"
+            value={form.RUT}
+            onChange={handleChange}
+            fullWidth
+            error={!!errors.RUT}
+            helperText={errors.RUT}
+          />
+          <TextField
+            label="Nombre de contacto"
+            name="contactName"
+            variant="standard"
+            value={form.contactName}
+            onChange={handleChange}
+            fullWidth
+            error={!!errors.contactName}
+            helperText={errors.contactName}
+          />
           <TextField
             label="Departamento"
             name="departament"
@@ -191,8 +203,8 @@ export default function RegisterForm() {
             error={!!errors.password}
             helperText={errors.password}
           />
-          <Link href="/registroEmpresa" className=" hover:underline">
-            Quiero registrarme como empresa
+          <Link href="/registro" className=" hover:underline">
+            Quiero registrarme como usuario
           </Link>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Registrarse
