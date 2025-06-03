@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { montserrat } from "./ui/fonts";
-import NavLinks from "./ui/nav-links";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import ClientLayout from "./ui/root-layout";
 
 export const metadata: Metadata = {
   title: "Natubar",
@@ -24,8 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${montserrat.className} antialiased`}>
-        <NavLinks />
-        {children}
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
