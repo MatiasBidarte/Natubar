@@ -1,13 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { TextField, Button, Typography, Paper, Stack } from "@mui/material";
-import Link from "next/link";
+import {
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Stack,
+  Snackbar,
+} from "@mui/material";
+import { useRouter } from "next/navigation";
 
-export default function RegisterFormEmpresa() {
+export default function RegistroCliente() {
+  const router = useRouter();
+  const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    companyName: "",
-    RUT: "",
-    contactName: "",
+    name: "",
+    lastname: "",
     email: "",
     password: "",
     departament: "",
@@ -15,14 +23,12 @@ export default function RegisterFormEmpresa() {
     adress: "",
     phone: "",
     observations: "",
-    discinator: "Empresa"
-
+    discinator: "Persona",
   });
 
   const [errors, setErrors] = useState({
-    companyName: "",
-    RUT: "",
-    contactName: "",
+    name: "",
+    lastname: "",
     email: "",
     password: "",
     departament: "",
@@ -40,18 +46,20 @@ export default function RegisterFormEmpresa() {
     e.preventDefault();
 
     const newErrors = {
-      companyName: form.companyName ? "" : "El nombre de la empresa es requerido.",
-      RUT: form.RUT ? "" : "El RUT es requerido.",
-      contactName: form.contactName ? "" : "El nombre de contacto es requerido.",
+      name: form.name ? "" : "El nombre es requerido.",
       email: form.email.includes("@") ? "" : "Email inválido.",
       password:
-        form.password.length >= 6
+        form.password.length >= 8
           ? ""
-          : "La contraseña debe tener al menos 6 caracteres.",
+          : "La contraseña debe tener al menos 8 caracteres.",
+      lastname: form.lastname ? "" : "El apellido es requerido.",
       departament: form.departament ? "" : "El departamento es requerido.",
       city: form.city ? "" : "La ciudad es requerida.",
       adress: form.adress ? "" : "La dirección es requerida.",
-      phone: form.phone.length < 9 ? "El teléfono debe tener al menos 9 dígitos." : "",
+      phone:
+        form.phone.length < 8
+          ? "El teléfono debe tener al menos 8 dígitos."
+          : "",
     };
 
     setErrors(newErrors);
@@ -59,39 +67,57 @@ export default function RegisterFormEmpresa() {
     const hasErrors = Object.values(newErrors).some((e) => e);
     if (!hasErrors) {
       console.log("Formulario enviado:", form);
-      // Aquí podés hacer la lógica de envío real
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
       const raw = JSON.stringify({
-        "email": form.email,
-        "nombreempresa": form.companyName,
-        "RUT": form.RUT,
-        "nombrecontacto": form.contactName,
-        "contrasena": form.password,
-        "departamento": form.departament,
-        "ciudad": form.city,
-        "direccion": form.adress,
-        "telefono": form.phone,
-        "observaciones": form.observations,
-        "discriminador": "Empresa"
+        email: form.email,
+        nombre: form.name,
+        apellido: form.lastname,
+        contrasena: form.password,
+        departamento: form.departament,
+        ciudad: form.city,
+        direccion: form.adress,
+        telefono: form.phone,
+        observaciones: form.observations,
+        discriminador: "Persona",
       });
-
 
       fetch("http://localhost:3001/cliente/", {
         method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: "follow"
+        redirect: "follow",
       })
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.statusCode === 201) {
+            setApiError(null);
+            router.push("/");
+          } else {
+            setApiError("Error al crear la cuenta. Intente nuevamente.");
+          }
+        })
+        .catch((error) => {
+          if (error.statusCode === 500)
+            setApiError("Error del servidor. Intente más tarde.");
+          else if (error.statusCode === 400)
+            setApiError("Datos inválidos. Por favor, revise los campos.");
+        });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
+      {apiError && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={!!apiError}
+          message={apiError}
+          autoHideDuration={6000}
+          onClose={() => setApiError(null)}
+        />
+      )}
       <Paper
         elevation={0}
         className="p-8 w-full max-w-md"
@@ -113,35 +139,37 @@ export default function RegisterFormEmpresa() {
             helperText={errors.email}
           />
           <TextField
-            label="Nombre de la empresa"
-            name="companyName"
+            label="Contraseña"
+            name="password"
+            type="password"
             variant="standard"
-            value={form.companyName}
+            value={form.password}
             onChange={handleChange}
-            fullWidth
-            error={!!errors.companyName}
-            helperText={errors.companyName}
+            error={!!errors.password}
+            helperText={errors.password}
           />
-          <TextField
-            label="RUT"
-            name="RUT"
-            variant="standard"
-            value={form.RUT}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.RUT}
-            helperText={errors.RUT}
-          />
-          <TextField
-            label="Nombre de contacto"
-            name="contactName"
-            variant="standard"
-            value={form.contactName}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.contactName}
-            helperText={errors.contactName}
-          />
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="Nombre"
+              name="name"
+              variant="standard"
+              value={form.name}
+              onChange={handleChange}
+              fullWidth
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+            <TextField
+              label="Apellido"
+              name="lastname"
+              variant="standard"
+              value={form.lastname}
+              onChange={handleChange}
+              fullWidth
+              error={!!errors.lastname}
+              helperText={errors.lastname}
+            />
+          </Stack>
           <TextField
             label="Departamento"
             name="departament"
@@ -192,20 +220,6 @@ export default function RegisterFormEmpresa() {
             multiline
             rows={3}
           />
-
-          <TextField
-            label="Contraseña"
-            name="password"
-            type="password"
-            variant="standard"
-            value={form.password}
-            onChange={handleChange}
-            error={!!errors.password}
-            helperText={errors.password}
-          />
-          <Link href="/registro" className=" hover:underline">
-            Quiero registrarme como usuario
-          </Link>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Registrarse
           </Button>

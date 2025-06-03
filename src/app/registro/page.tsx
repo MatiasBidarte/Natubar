@@ -1,204 +1,32 @@
 "use client";
-import React, { useState } from "react";
-import { TextField, Button, Typography, Paper, Stack } from "@mui/material";
-import Link from "next/link";
 
-export default function RegisterForm() {
-  const [form, setForm] = useState({
-    name: "",
-    lastname: "",
-    email: "",
-    password: "",
-    departament: "",
-    city: "",
-    adress: "",
-    phone: "",
-    observations: "",
-    discinator: "Persona"
+import { useRouter } from "next/navigation";
+import { Button, Typography } from "@mui/material";
 
-  });
+export default function Registro() {
+  const router = useRouter();
 
-  const [errors, setErrors] = useState({
-    name: "",
-    lastname: "",
-    email: "",
-    password: "",
-    departament: "",
-    city: "",
-    adress: "",
-    phone: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const newErrors = {
-      name: form.name ? "" : "El nombre es requerido.",
-      email: form.email.includes("@") ? "" : "Email inválido.",
-      password:
-        form.password.length >= 6
-          ? ""
-          : "La contraseña debe tener al menos 6 caracteres.",
-      lastname: form.lastname ? "" : "El apellido es requerido.",
-      departament: form.departament ? "" : "El departamento es requerido.",
-      city: form.city ? "" : "La ciudad es requerida.",
-      adress: form.adress ? "" : "La dirección es requerida.",
-      phone: form.phone.length < 9 ? "El teléfono debe tener al menos 9 dígitos." : "",
-    };
-
-    setErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((e) => e);
-    if (!hasErrors) {
-      console.log("Formulario enviado:", form);
-      // Aquí podés hacer la lógica de envío real
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify({
-        "email": form.email,
-        "nombre": form.name,
-        "apellido": form.lastname,
-        "contrasena": form.password,
-        "departamento": form.departament,
-        "ciudad": form.city,
-        "direccion": form.adress,
-        "telefono":  form.phone,
-        "observaciones": form.observations,
-        "discriminador": "Persona"
-      });
-
-
-      fetch("http://localhost:3001/cliente/", {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow"
-        })
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
-    }
+  const handleClick = (tipo: "persona" | "empresa") => {
+    router.push(`/registro/${tipo}`);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Paper
-        elevation={0}
-        className="p-8 w-full max-w-md"
-        sx={{ backgroundColor: "inherit" }}
+    <div className="min-h-screen flex flex-col items-center justify-center gap-12">
+      <Typography
+        variant="h5"
+        sx={{ color: "text.secondary" }}
+        className="text-xl font-semibold mb-4"
       >
-        <Typography variant="h5" className="mb-6 text-center">
-          Crear cuenta
-        </Typography>
-        <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-4">
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            variant="standard"
-            value={form.email}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.email}
-            helperText={errors.email}
-          />
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label="Nombre"
-              name="name"
-              variant="standard"
-              value={form.name}
-              onChange={handleChange}
-              fullWidth
-              error={!!errors.name}
-              helperText={errors.name}
-            />
-            <TextField
-              label="Apellido"
-              name="lastname"
-              variant="standard"
-              value={form.lastname}
-              onChange={handleChange}
-              fullWidth
-              error={!!errors.lastname}
-              helperText={errors.lastname}
-            />
-          </Stack>
-          <TextField
-            label="Departamento"
-            name="departament"
-            variant="standard"
-            value={form.departament}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.departament}
-            helperText={errors.departament}
-          />
-          <TextField
-            label="Ciudad"
-            name="city"
-            variant="standard"
-            value={form.city}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.city}
-            helperText={errors.city}
-          />
-          <TextField
-            label="Dirección"
-            name="adress"
-            variant="standard"
-            value={form.adress}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.adress}
-            helperText={errors.adress}
-          />
-          <TextField
-            label="Teléfono"
-            name="phone"
-            variant="standard"
-            value={form.phone}
-            onChange={handleChange}
-            fullWidth
-            error={!!errors.phone}
-            helperText={errors.phone}
-          />
-          <TextField
-            label="Observaciones"
-            name="observations"
-            variant="outlined"
-            value={form.observations}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            rows={3}
-          />
-
-          <TextField
-            label="Contraseña"
-            name="password"
-            type="password"
-            variant="standard"
-            value={form.password}
-            onChange={handleChange}
-            error={!!errors.password}
-            helperText={errors.password}
-          />
-          <Link href="/registroEmpresa" className=" hover:underline">
-            Quiero registrarme como empresa
-          </Link>
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Registrarse
-          </Button>
-        </form>
-      </Paper>
+        ¿Qué tipo de usuario eres?
+      </Typography>
+      <div className="flex gap-20">
+        <Button variant="outlined" onClick={() => handleClick("persona")}>
+          Persona
+        </Button>
+        <Button variant="outlined" onClick={() => handleClick("empresa")}>
+          Empresa
+        </Button>
+      </div>
     </div>
   );
 }
