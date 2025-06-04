@@ -1,9 +1,25 @@
-/* import React from "react";
-import { Button, IconButton } from "@mui/material";
-import {} from "@mui/icons-material/ArrowBackIosNew";
+import React from "react";
+import { IconButton } from "@mui/material";
+import { ArrowBackIos } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 const ArrowBack = () => {
-  return <div></div>;
+  const router = useRouter();
+
+  const handleBack = () => {
+    router.back();
+  };
+  return (
+    <IconButton
+      className="!mb-8"
+      sx={{ display: { xs: "block", sm: "none" } }}
+      aria-label="back"
+      size="small"
+      onClick={handleBack}
+    >
+      <ArrowBackIos fontSize="inherit" />
+    </IconButton>
+  );
 };
 
-export default ArrowBack; */
+export default ArrowBack;

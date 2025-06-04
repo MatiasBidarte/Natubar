@@ -1,32 +1,38 @@
 "use client";
 import React, { useState } from "react";
-import { TextField, Button, Typography, Paper } from "@mui/material";
+import { TextField, Button, Typography, Paper, Snackbar } from "@mui/material";
+import ArrowBack from "@/app/ui/arrowBack";
+import { useRouter } from "next/navigation";
+import { useClients } from "@/app/hooks/useClients";
 
 export default function RegistroEmpresa() {
+  const router = useRouter();
+  const { registerClient } = useClients();
+  const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    companyName: "",
-    RUT: "",
-    contactName: "",
+    nombreEmpresa: "",
+    rut: "",
+    nombreContacto: "",
     email: "",
-    password: "",
-    departament: "",
-    city: "",
-    adress: "",
-    phone: "",
-    observations: "",
-    discinator: "Empresa",
+    contrasena: "",
+    departamento: "",
+    ciudad: "",
+    direccion: "",
+    telefono: "",
+    observaciones: "",
+    discriminador: "Empresa",
   });
 
   const [errors, setErrors] = useState({
-    companyName: "",
-    RUT: "",
-    contactName: "",
+    nombreEmpresa: "",
+    rut: "",
+    nombreContacto: "",
     email: "",
-    password: "",
-    departament: "",
-    city: "",
-    adress: "",
-    phone: "",
+    contrasena: "",
+    departamento: "",
+    ciudad: "",
+    direccion: "",
+    telefono: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,27 +40,27 @@ export default function RegistroEmpresa() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors = {
-      companyName: form.companyName
+      nombreEmpresa: form.nombreEmpresa
         ? ""
         : "El nombre de la empresa es requerido.",
-      RUT: form.RUT ? "" : "El RUT es requerido.",
-      contactName: form.contactName
+      rut: form.rut ? "" : "El RUT es requerido.",
+      nombreContacto: form.nombreContacto
         ? ""
         : "El nombre de contacto es requerido.",
       email: form.email.includes("@") ? "" : "Email inválido.",
-      password:
-        form.password.length >= 8
+      contrasena:
+        form.contrasena.length >= 8
           ? ""
           : "La contraseña debe tener al menos 8 caracteres.",
-      departament: form.departament ? "" : "El departamento es requerido.",
-      city: form.city ? "" : "La ciudad es requerida.",
-      adress: form.adress ? "" : "La dirección es requerida.",
-      phone:
-        form.phone.length < 8
+      departamento: form.departamento ? "" : "El departamento es requerido.",
+      ciudad: form.ciudad ? "" : "La ciudad es requerida.",
+      direccion: form.direccion ? "" : "La dirección es requerida.",
+      telefono:
+        form.telefono.length < 8
           ? "El teléfono debe tener al menos 8 dígitos."
           : "",
     };
@@ -63,44 +69,38 @@ export default function RegistroEmpresa() {
 
     const hasErrors = Object.values(newErrors).some((e) => e);
     if (!hasErrors) {
-      console.log("Formulario enviado:", form);
-      // Aquí podés hacer la lógica de envío real
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify({
-        email: form.email,
-        nombreempresa: form.companyName,
-        RUT: form.RUT,
-        nombrecontacto: form.contactName,
-        contrasena: form.password,
-        departamento: form.departament,
-        ciudad: form.city,
-        direccion: form.adress,
-        telefono: form.phone,
-        observaciones: form.observations,
-        discriminador: "Empresa",
-      });
-
-      fetch("http://localhost:3001/cliente/", {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      })
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
+      try {
+        await registerClient(form);
+        setApiError(null);
+        localStorage.setItem("user", JSON.stringify(form));
+        router.push("/");
+      } catch (error) {
+        const errorData = error as { statusCode?: number; message?: string };
+        if (errorData.statusCode === 500)
+          setApiError("Error del servidor. Intente más tarde.");
+        else if (errorData.statusCode === 400)
+          setApiError("Datos inválidos. Por favor, revise los campos.");
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
+      {apiError && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={!!apiError}
+          message={apiError}
+          autoHideDuration={6000}
+          onClose={() => setApiError(null)}
+        />
+      )}
       <Paper
         elevation={0}
         className="p-8 w-full max-w-md"
         sx={{ backgroundColor: "inherit" }}
       >
+        <ArrowBack />
         <Typography variant="h5" className="mb-6 text-center">
           Crear cuenta
         </Typography>
@@ -118,79 +118,79 @@ export default function RegistroEmpresa() {
           />
           <TextField
             label="Nombre de la empresa"
-            name="companyName"
+            name="nombreEmpresa"
             variant="standard"
-            value={form.companyName}
+            value={form.nombreEmpresa}
             onChange={handleChange}
             fullWidth
-            error={!!errors.companyName}
-            helperText={errors.companyName}
+            error={!!errors.nombreEmpresa}
+            helperText={errors.nombreEmpresa}
           />
           <TextField
             label="RUT"
-            name="RUT"
+            name="rut"
             variant="standard"
-            value={form.RUT}
+            value={form.rut}
             onChange={handleChange}
             fullWidth
-            error={!!errors.RUT}
-            helperText={errors.RUT}
+            error={!!errors.rut}
+            helperText={errors.rut}
           />
           <TextField
             label="Nombre de contacto"
-            name="contactName"
+            name="nombreContacto"
             variant="standard"
-            value={form.contactName}
+            value={form.nombreContacto}
             onChange={handleChange}
             fullWidth
-            error={!!errors.contactName}
-            helperText={errors.contactName}
+            error={!!errors.nombreContacto}
+            helperText={errors.nombreContacto}
           />
           <TextField
             label="Departamento"
-            name="departament"
+            name="departamento"
             variant="standard"
-            value={form.departament}
+            value={form.departamento}
             onChange={handleChange}
             fullWidth
-            error={!!errors.departament}
-            helperText={errors.departament}
+            error={!!errors.departamento}
+            helperText={errors.departamento}
           />
           <TextField
             label="Ciudad"
-            name="city"
+            name="ciudad"
             variant="standard"
-            value={form.city}
+            value={form.ciudad}
             onChange={handleChange}
             fullWidth
-            error={!!errors.city}
-            helperText={errors.city}
+            error={!!errors.ciudad}
+            helperText={errors.ciudad}
           />
           <TextField
             label="Dirección"
-            name="adress"
+            name="direccion"
             variant="standard"
-            value={form.adress}
+            value={form.direccion}
             onChange={handleChange}
             fullWidth
-            error={!!errors.adress}
-            helperText={errors.adress}
+            error={!!errors.direccion}
+            helperText={errors.direccion}
           />
           <TextField
             label="Teléfono"
-            name="phone"
+            name="telefono"
             variant="standard"
-            value={form.phone}
+            value={form.telefono}
             onChange={handleChange}
             fullWidth
-            error={!!errors.phone}
-            helperText={errors.phone}
+            error={!!errors.telefono}
+            helperText={errors.telefono}
           />
           <TextField
             label="Observaciones"
-            name="observations"
+            name="observaciones"
             variant="outlined"
-            value={form.observations}
+            value={form.observaciones}
             onChange={handleChange}
             fullWidth
             multiline
@@ -199,13 +199,13 @@ export default function RegistroEmpresa() {
 
           <TextField
             label="Contraseña"
-            name="password"
+            name="contrasena"
             type="password"
             variant="standard"
-            value={form.password}
+            value={form.contrasena}
             onChange={handleChange}
-            error={!!errors.password}
-            helperText={errors.password}
+            error={!!errors.contrasena}
+            helperText={errors.contrasena}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Registrarse

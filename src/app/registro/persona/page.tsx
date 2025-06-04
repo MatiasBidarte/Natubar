@@ -9,32 +9,35 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import ArrowBack from "@/app/ui/arrowBack";
+import { useClients } from "@/app/hooks/useClients";
 
 export default function RegistroCliente() {
   const router = useRouter();
+  const { registerClient } = useClients();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    name: "",
-    lastname: "",
+    nombre: "",
+    apellido: "",
     email: "",
-    password: "",
-    departament: "",
-    city: "",
-    adress: "",
-    phone: "",
-    observations: "",
-    discinator: "Persona",
+    contrasena: "",
+    departamento: "",
+    ciudad: "",
+    direccion: "",
+    telefono: "",
+    observaciones: "",
+    discriminador: "Persona",
   });
 
   const [errors, setErrors] = useState({
-    name: "",
-    lastname: "",
+    nombre: "",
+    apellido: "",
     email: "",
-    password: "",
-    departament: "",
-    city: "",
-    adress: "",
-    phone: "",
+    contrasena: "",
+    departamento: "",
+    ciudad: "",
+    direccion: "",
+    telefono: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,22 +45,22 @@ export default function RegistroCliente() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors = {
-      name: form.name ? "" : "El nombre es requerido.",
+      nombre: form.nombre ? "" : "El nombre es requerido.",
       email: form.email.includes("@") ? "" : "Email inválido.",
-      password:
-        form.password.length >= 8
+      contrasena:
+        form.contrasena.length >= 8
           ? ""
           : "La contraseña debe tener al menos 8 caracteres.",
-      lastname: form.lastname ? "" : "El apellido es requerido.",
-      departament: form.departament ? "" : "El departamento es requerido.",
-      city: form.city ? "" : "La ciudad es requerida.",
-      adress: form.adress ? "" : "La dirección es requerida.",
-      phone:
-        form.phone.length < 8
+      apellido: form.apellido ? "" : "El apellido es requerido.",
+      departamento: form.departamento ? "" : "El departamento es requerido.",
+      ciudad: form.ciudad ? "" : "La ciudad es requerida.",
+      direccion: form.direccion ? "" : "La dirección es requerida.",
+      telefono:
+        form.telefono.length < 8
           ? "El teléfono debe tener al menos 8 dígitos."
           : "",
     };
@@ -66,44 +69,18 @@ export default function RegistroCliente() {
 
     const hasErrors = Object.values(newErrors).some((e) => e);
     if (!hasErrors) {
-      console.log("Formulario enviado:", form);
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify({
-        email: form.email,
-        nombre: form.name,
-        apellido: form.lastname,
-        contrasena: form.password,
-        departamento: form.departament,
-        ciudad: form.city,
-        direccion: form.adress,
-        telefono: form.phone,
-        observaciones: form.observations,
-        discriminador: "Persona",
-      });
-
-      fetch("http://localhost:3001/cliente/", {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          if (result.statusCode === 201) {
-            setApiError(null);
-            router.push("/");
-          } else {
-            setApiError("Error al crear la cuenta. Intente nuevamente.");
-          }
-        })
-        .catch((error) => {
-          if (error.statusCode === 500)
-            setApiError("Error del servidor. Intente más tarde.");
-          else if (error.statusCode === 400)
-            setApiError("Datos inválidos. Por favor, revise los campos.");
-        });
+      try {
+        await registerClient(form);
+        setApiError(null);
+        localStorage.setItem("user", JSON.stringify(form));
+        router.push("/");
+      } catch (error) {
+        const errorData = error as { statusCode?: number; message?: string };
+        if (errorData.statusCode === 500)
+          setApiError("Error del servidor. Intente más tarde.");
+        else if (errorData.statusCode === 400)
+          setApiError("Datos inválidos. Por favor, revise los campos.");
+      }
     }
   };
 
@@ -123,6 +100,7 @@ export default function RegistroCliente() {
         className="p-8 w-full max-w-md"
         sx={{ backgroundColor: "inherit" }}
       >
+        <ArrowBack />
         <Typography variant="h5" className="mb-6 text-center">
           Crear cuenta
         </Typography>
@@ -140,81 +118,81 @@ export default function RegistroCliente() {
           />
           <TextField
             label="Contraseña"
-            name="password"
-            type="password"
+            name="contrasena"
+            type="contrasena"
             variant="standard"
-            value={form.password}
+            value={form.contrasena}
             onChange={handleChange}
-            error={!!errors.password}
-            helperText={errors.password}
+            error={!!errors.contrasena}
+            helperText={errors.contrasena}
           />
           <Stack direction="row" spacing={2}>
             <TextField
               label="Nombre"
-              name="name"
+              name="nombre"
               variant="standard"
-              value={form.name}
+              value={form.nombre}
               onChange={handleChange}
               fullWidth
-              error={!!errors.name}
-              helperText={errors.name}
+              error={!!errors.nombre}
+              helperText={errors.nombre}
             />
             <TextField
               label="Apellido"
-              name="lastname"
+              name="apellido"
               variant="standard"
-              value={form.lastname}
+              value={form.apellido}
               onChange={handleChange}
               fullWidth
-              error={!!errors.lastname}
-              helperText={errors.lastname}
+              error={!!errors.apellido}
+              helperText={errors.apellido}
             />
           </Stack>
           <TextField
             label="Departamento"
-            name="departament"
+            name="departamento"
             variant="standard"
-            value={form.departament}
+            value={form.departamento}
             onChange={handleChange}
             fullWidth
-            error={!!errors.departament}
-            helperText={errors.departament}
+            error={!!errors.departamento}
+            helperText={errors.departamento}
           />
           <TextField
             label="Ciudad"
-            name="city"
+            name="ciudad"
             variant="standard"
-            value={form.city}
+            value={form.ciudad}
             onChange={handleChange}
             fullWidth
-            error={!!errors.city}
-            helperText={errors.city}
+            error={!!errors.ciudad}
+            helperText={errors.ciudad}
           />
           <TextField
             label="Dirección"
-            name="adress"
+            name="direccion"
             variant="standard"
-            value={form.adress}
+            value={form.direccion}
             onChange={handleChange}
             fullWidth
-            error={!!errors.adress}
-            helperText={errors.adress}
+            error={!!errors.direccion}
+            helperText={errors.direccion}
           />
           <TextField
             label="Teléfono"
-            name="phone"
+            name="telefono"
             variant="standard"
-            value={form.phone}
+            value={form.telefono}
             onChange={handleChange}
             fullWidth
-            error={!!errors.phone}
-            helperText={errors.phone}
+            error={!!errors.telefono}
+            helperText={errors.telefono}
           />
           <TextField
             label="Observaciones"
-            name="observations"
+            name="observaciones"
             variant="outlined"
-            value={form.observations}
+            value={form.observaciones}
             onChange={handleChange}
             fullWidth
             multiline
