@@ -1,24 +1,18 @@
 "use client";
 import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  Stack,
-  Snackbar,
-} from "@mui/material";
-import { useRouter } from "next/navigation";
+import { TextField, Button, Typography, Paper, Snackbar } from "@mui/material";
 import ArrowBack from "@/app/ui/arrowBack";
+import { useRouter } from "next/navigation";
 import { useClients } from "@/app/hooks/useClients";
 
-export default function RegistroCliente() {
+export default function RegistroEmpresa() {
   const router = useRouter();
   const { registerClient } = useClients();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    nombre: "",
-    apellido: "",
+    nombreEmpresa: "",
+    rut: "",
+    nombreContacto: "",
     email: "",
     contrasena: "",
     departamento: "",
@@ -26,12 +20,13 @@ export default function RegistroCliente() {
     direccion: "",
     telefono: "",
     observaciones: "",
-    discriminador: "Persona",
+    discriminador: "Empresa",
   });
 
   const [errors, setErrors] = useState({
-    nombre: "",
-    apellido: "",
+    nombreEmpresa: "",
+    rut: "",
+    nombreContacto: "",
     email: "",
     contrasena: "",
     departamento: "",
@@ -49,13 +44,18 @@ export default function RegistroCliente() {
     e.preventDefault();
 
     const newErrors = {
-      nombre: form.nombre ? "" : "El nombre es requerido.",
+      nombreEmpresa: form.nombreEmpresa
+        ? ""
+        : "El nombre de la empresa es requerido.",
+      rut: form.rut ? "" : "El RUT es requerido.",
+      nombreContacto: form.nombreContacto
+        ? ""
+        : "El nombre de contacto es requerido.",
       email: form.email.includes("@") ? "" : "Email inválido.",
       contrasena:
         form.contrasena.length >= 8
           ? ""
           : "La contraseña debe tener al menos 8 caracteres.",
-      apellido: form.apellido ? "" : "El apellido es requerido.",
       departamento: form.departamento ? "" : "El departamento es requerido.",
       ciudad: form.ciudad ? "" : "La ciudad es requerida.",
       direccion: form.direccion ? "" : "La dirección es requerida.",
@@ -78,8 +78,6 @@ export default function RegistroCliente() {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
           setApiError("Error del servidor. Intente más tarde.");
-
-        else if (errorData.statusCode === 409)setApiError(errorData.message || "Datos inválidos. Por favor, revise los campos.")
         else if (errorData.statusCode === 400)
           setApiError("Datos inválidos. Por favor, revise los campos.");
       }
@@ -119,37 +117,35 @@ export default function RegistroCliente() {
             helperText={errors.email}
           />
           <TextField
-            label="Contraseña"
-            name="contrasena"
-            type="password"
+            label="Nombre de la empresa"
+            name="nombreEmpresa"
             variant="standard"
-            value={form.contrasena}
+            value={form.nombreEmpresa}
             onChange={handleChange}
-            error={!!errors.contrasena}
-            helperText={errors.contrasena}
+            fullWidth
+            error={!!errors.nombreEmpresa}
+            helperText={errors.nombreEmpresa}
           />
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label="Nombre"
-              name="nombre"
-              variant="standard"
-              value={form.nombre}
-              onChange={handleChange}
-              fullWidth
-              error={!!errors.nombre}
-              helperText={errors.nombre}
-            />
-            <TextField
-              label="Apellido"
-              name="apellido"
-              variant="standard"
-              value={form.apellido}
-              onChange={handleChange}
-              fullWidth
-              error={!!errors.apellido}
-              helperText={errors.apellido}
-            />
-          </Stack>
+          <TextField
+            label="RUT"
+            name="rut"
+            variant="standard"
+            value={form.rut}
+            onChange={handleChange}
+            fullWidth
+            error={!!errors.rut}
+            helperText={errors.rut}
+          />
+          <TextField
+            label="Nombre de contacto"
+            name="nombreContacto"
+            variant="standard"
+            value={form.nombreContacto}
+            onChange={handleChange}
+            fullWidth
+            error={!!errors.nombreContacto}
+            helperText={errors.nombreContacto}
+          />
           <TextField
             label="Departamento"
             name="departamento"
@@ -199,6 +195,17 @@ export default function RegistroCliente() {
             fullWidth
             multiline
             rows={3}
+          />
+
+          <TextField
+            label="Contraseña"
+            name="contrasena"
+            type="password"
+            variant="standard"
+            value={form.contrasena}
+            onChange={handleChange}
+            error={!!errors.contrasena}
+            helperText={errors.contrasena}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Registrarse
