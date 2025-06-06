@@ -30,7 +30,10 @@ export const useClients = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al registrar el cliente");
+        throw {
+          message: errorData.message || "Error al registrar el cliente",
+          statusCode: errorData.statusCode,
+        };
       }
 
       const createdClient = await response.json();
