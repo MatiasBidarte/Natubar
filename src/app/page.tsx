@@ -1,12 +1,17 @@
 "use client";
 import { Skeleton, Stack } from "@mui/material";
 import ProductCard from "./components/card";
-import { useProducts } from "./hooks/useProducts";
+import useProducts from "./hooks/useProductsStore";
 import { Product } from "./types/product";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { products, loading, error } = useProducts() as { products: Product[]; loading: boolean; error: string | null };
-  console.log(products)
+  const { products, fetchProducts, loading, error } = useProducts() as { products: Product[]; loading: boolean; error: string | null; fetchProducts: () => void };
+    useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+
 
   if (error) return <p>Error: {error}</p>;
 
