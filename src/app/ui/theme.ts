@@ -24,9 +24,6 @@ const theme = createTheme({
   components: {
     MuiOutlinedInput: {
       styleOverrides: {
-        notchedOutline: {
-          borderColor: "#5C3B23",
-        },
         root: {
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: "#8B5E3C",

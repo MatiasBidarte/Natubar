@@ -1,5 +1,5 @@
 "use client";
-import { Skeleton, Stack } from "@mui/material";
+import { Button, Skeleton, Stack } from "@mui/material";
 import ProductCard from "./components/card";
 import useProducts from "./hooks/useProductsStore";
 import { Product } from "./types/product";
@@ -11,13 +11,18 @@ export default function Home() {
     fetchProducts();
   }, [fetchProducts]);
 
-
-
-  if (error) return <p>Error: {error}</p>;
-
   return (
-    <div className=" md:border-amber-600">
-      <h1 className="text-3xl font-bold  border">Pagina de inicio de la aplicación.</h1>
+    <div className=" md:border-amber-600 ">
+      <div className="portada flex items-center justify-center">
+        <div className=" text-center" >
+          <h1 className="text-3xl font-bold ">La felicidad en barra.</h1>
+          <h2>NatuBar Barras Artesanales</h2>
+          <Button>
+            Comprar ahora
+          </Button>
+        </div>
+     
+      </div>
         <Stack
         spacing={{ xs: 1, sm: 2 ,}}
         direction="row"
@@ -30,9 +35,13 @@ export default function Home() {
                     <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
                   </>
                 ) : (
-                  products.map((product: Product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))
+                  error ? (
+                    <p>Error: {error}</p>
+                  ) : (
+                    products.map((product: Product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))
+                  )
                 )}
         
         </Stack>     
