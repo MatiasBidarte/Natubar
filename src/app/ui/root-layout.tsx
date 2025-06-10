@@ -11,6 +11,9 @@ export default function ClientLayout({
 }) {
   return (
     <ThemeProvider theme={theme}>
+      <div className="flex aling-center justify-center header-envios">
+        <p>ENVIOS GRATIS EN PEDIDOS DE $500+</p>
+      </div>
       <NavLinks />
       {children}
     </ThemeProvider>

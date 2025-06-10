@@ -17,7 +17,7 @@ const links = [
 
 export default function NavLinks() {
   return (
-    <div className="flex items-center justify-center space-x-4 p-4 bg-gray-100 dark:bg-gray-800 gap-4">
+    <nav className="flex items-center justify-center space-x-4 p-4 bg-gray-100 dark:bg-gray-800 gap-4">
       {links.map((link) => (
         <Link
           key={link.href}
@@ -27,6 +27,6 @@ export default function NavLinks() {
           {link.name}
         </Link>
       ))}
-    </div>
+    </nav>
   );
 }

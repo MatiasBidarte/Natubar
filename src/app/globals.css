@@ -3,11 +3,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #B99342;
+  --secondary: #201B21;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #d1b984cc;
+    --beige2: #B99342;
     --foreground: #ededed;
   }
 }
@@ -17,6 +20,7 @@ body {
   max-width: 100vw;
 	height: 100%;
   overflow-x: hidden;
+
 }
 
 body {
@@ -34,4 +38,34 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.header-envios{
+  background:  var(--primary);
+  color: var(--secondary);
+  font-size: 12px;
+  letter-spacing: 18%;
+}
+
+nav{
+  background: var(--secondary);
+  color: var(--beige2);
+}
+
+.portada{
+  background-image: url(../../public/fondo-home.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: "center";
+  height: 80vh;
+    color: var(--secondary);
+}
+
+.btn-portada{
+  background: var(--secondary) !important;
+  color: var(--beige2) !important;
+  width: 100%;
+  border-radius: 20px !important;
+  margin-top: 15px !important;
+  padding: 10px;
 }
