@@ -11,9 +11,7 @@ export const metadata: Metadata = {
   title: "Natubar",
   description: "Aplicacion dedicada a la empresa Natubar",
   manifest: "/manifest.json",
-  icons: {
-    apple: "/icon512_rounded.png",
-  },
+  icons: "/icon512_rounded.png",
 };
 
 export default function RootLayout({
