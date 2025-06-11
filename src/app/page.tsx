@@ -11,11 +11,6 @@ export default function Home() {
     useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
-
-
- 
-
   return (
     <div className=" md:border-amber-600">
       <div className="portada flex items-center justify-center">

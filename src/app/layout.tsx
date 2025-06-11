@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { roboto } from "./ui/fonts";
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
 import ClientLayout from "./ui/root-layout";
 
 export const metadata: Metadata = {
   title: "Natubar",
   description: "Aplicacion dedicada a la empresa Natubar",
   manifest: "/manifest.json",
-  icons: {
-    apple: "/icon512_rounded.png",
-  },
+  icons: "/icon512_rounded.png",
 };
 
 export default function RootLayout({
