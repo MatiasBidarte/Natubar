@@ -78,6 +78,8 @@ export default function RegistroCliente() {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
           setApiError("Error del servidor. Intente más tarde.");
+
+        else if (errorData.statusCode === 409)setApiError(errorData.message || "Datos inválidos. Por favor, revise los campos.")
         else if (errorData.statusCode === 400)
           setApiError("Datos inválidos. Por favor, revise los campos.");
       }
@@ -119,7 +121,7 @@ export default function RegistroCliente() {
           <TextField
             label="Contraseña"
             name="contrasena"
-            type="contrasena"
+            type="password"
             variant="standard"
             value={form.contrasena}
             onChange={handleChange}
