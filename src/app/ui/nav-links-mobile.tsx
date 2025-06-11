@@ -33,7 +33,6 @@ export default function NavLinksMobile({
       {links.map((link, index) => {
         const IconComponent = link.icon;
         const isActive = pathname === link.href;
-
         const hrefToUse = estaLogueado || index === 0 ? link.href : "/login";
 
         return (

@@ -31,12 +31,8 @@ export default function NavLinksDesktop({
 
   return (
     <div className="hidden md:flex items-center justify-between p-4 bg-[#201B21] text-[#B99342]">
-      {/* Espacio vacío a la izquierda para equilibrar */}
       <div className="w-12"></div>
-
-      {/* Grupo central: Inicio, Logo, Mis Compras */}
       <div className="flex-grow flex items-center justify-center gap-16">
-        {/* Inicio */}
         <Link href={links[0].href} className="inline-block">
           <Typography
             variant="body1"
@@ -51,8 +47,6 @@ export default function NavLinksDesktop({
             {links[0].name}
           </Typography>
         </Link>
-
-        {/* Logo */}
         <div className="flex justify-center">
           <Image
             width={106}
@@ -61,8 +55,6 @@ export default function NavLinksDesktop({
             alt="Natubar"
           />
         </div>
-
-        {/* Mis Compras */}
         <Link
           href={estaLogueado ? links[1].href : "/login"}
           className="inline-block"
@@ -81,8 +73,6 @@ export default function NavLinksDesktop({
           </Typography>
         </Link>
       </div>
-
-      {/* Perfil (extremo derecho pero más a la izquierda) */}
       <div className="flex items-center mr-8">
         <Link href={estaLogueado ? links[2].href : "/login"}>
           <AccountCircle
