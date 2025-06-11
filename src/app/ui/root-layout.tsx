@@ -11,12 +11,10 @@ export default function ClientLayout({
 }) {
   return (
     <ThemeProvider theme={theme}>
-      <header>
-        <div className="c-envios-header">
-          <p>ENVíOS GRATISEN PEDIDOS DE $500+</p>
-        </div>
-        <NavLinks />
+      <header className="flex aling-center justify-center header-envios">
+        <p>ENVIOS GRATIS EN PEDIDOS DE $500+</p>
       </header>
+      <NavLinks />fa
       {children}
     </ThemeProvider>
   );

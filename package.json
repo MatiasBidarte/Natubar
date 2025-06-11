@@ -9,26 +9,32 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.6",
+=======
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
+    "@fontsource/roboto": "5.2.5",
+>>>>>>> Rafa
     "@mui/icons-material": "7.1.0",
-    "@mui/material": "^7.1.0",
-    "@tailwindcss/postcss": "^4.1.7",
-    "next": "^15.3.2",
-    "postcss": "^8.5.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwindcss": "^4.1.7",
-    "zustand": "^5.0.5"
+    "@mui/material": "7.1.0",
+    "@tailwindcss/postcss": "4.1.7",
+    "next": "15.3.2",
+    "postcss": "8.5.3",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "tailwindcss": "4.1.7",
+    "zustand": "5.0.5"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@eslint/eslintrc": "3",
+    "@types/node": "20",
+    "@types/react": "19",
+    "@types/react-dom": "19",
+    "eslint": "9",
     "eslint-config-next": "15.3.2",
-    "typescript": "^5"
+    "typescript": "5"
   }
 }

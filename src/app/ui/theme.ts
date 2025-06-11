@@ -58,18 +58,6 @@ const theme = createTheme({
           flexDirection: "column",
           alignItems: "center",
           padding: "16px",
-          "& .MuiButton-root": {
-            backgroundColor: "#B99342", 
-            color: "white",
-            padding: "8px 16px",
-            marginTop: "8px",
-            borderRadius: 20,
-            textDecoration: "none", 
-           
-            "&:hover": {
-              backgroundColor: "#8B5E3C",
-            },
-          },
         },
       },
     },
