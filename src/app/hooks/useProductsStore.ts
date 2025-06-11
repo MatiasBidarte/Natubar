@@ -19,11 +19,17 @@ const useProductStore = create<StoreProductoState>((set, get) => ({
   fetchProducts: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/productos`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        redirect: "follow",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/productos`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+          },
+          redirect: "follow",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -33,13 +39,18 @@ const useProductStore = create<StoreProductoState>((set, get) => ({
       const data = await response.json();
       set({ products: data, loading: false });
     } catch (err) {
-      set({ error: err instanceof Error ? err.message : "Error desconocido", loading: false });
+      set({
+        error: err instanceof Error ? err.message : "Error desconocido",
+        loading: false,
+      });
     }
   },
 
-  addProduct: (product: Product) => set((state) => ({ products: [...state.products, product] })),
+  addProduct: (product: Product) =>
+    set((state) => ({ products: [...state.products, product] })),
 
-  getProductById: (id: number) => get().products.find((product) => product.id === id),
+  getProductById: (id: number) =>
+    get().products.find((product) => product.id === id),
 }));
 
 export default useProductStore;
