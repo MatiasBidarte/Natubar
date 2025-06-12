@@ -55,12 +55,12 @@ nav{
   background-repeat: no-repeat;
   width: 100%;
   height: 100vh;
-  color: var(--secondary);
+  color: var(--foreground);
 }
 
 .btn-portada{
   background: var(--secondary) !important;
-  color: var(--beige2) !important;
+  color: var(--foreground) !important;
   width: 100%;
   border-radius: 20px !important;
   margin-top: 15px !important;

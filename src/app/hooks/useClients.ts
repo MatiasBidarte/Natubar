@@ -23,6 +23,7 @@ export const useClients = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
         },
         body: JSON.stringify(newClient),
         redirect: "follow",
