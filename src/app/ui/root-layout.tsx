@@ -1,4 +1,5 @@
 "use client";
+
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
 import NavLinksMobile from "./nav-links-mobile";
@@ -13,12 +14,21 @@ export default function ClientLayout({
   const [estaLogueado, setEstaLogueado] = useState(false);
 
   useEffect(() => {
-    setEstaLogueado(localStorage.getItem("usuario") !== null);
+    if (typeof window !== "undefined") {
+      setEstaLogueado(localStorage.getItem("usuario") !== null);
+      const handleAuthChange = () => {
+        setEstaLogueado(localStorage.getItem("usuario") !== null);
+      };
+      window.addEventListener("auth-change", handleAuthChange);
+      return () => {
+        window.removeEventListener("auth-change", handleAuthChange);
+      };
+    }
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="flex flex-col justify-between min-h-screen">
+      <div className="flex justify-center min-h-screen pb-32 md:pb-0">
         <NavLinksDesktop estaLogueado={estaLogueado} />
         {children}
         <NavLinksMobile estaLogueado={estaLogueado} />
