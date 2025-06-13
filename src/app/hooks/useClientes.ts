@@ -75,5 +75,6 @@ export const useClients = () => {
   };
   return {
     registerClient,
+    updateClient,
   };
 };
