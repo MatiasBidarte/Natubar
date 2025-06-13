@@ -1,13 +1,20 @@
-import React, { useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import theme from "../ui/theme";
 
-export default function NumericImput() {
-  const [value, setValue] = useState(0);
 
-  const handleIncrease = () => setValue(prev => prev + 1);
-  const handleDecrease = () => setValue(prev => (prev > 0 ? prev - 1 : 0));
+interface NumericInputProps {
+  value: number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+export default function NumericImput({ value, onChange }: NumericInputProps) {
+  const handleIncrease = () => onChange({ 
+    target: { value: String(Number(value) + 1) } 
+  } as React.ChangeEvent<HTMLInputElement>);
+  const handleDecrease = () => onChange({ 
+    target: { value: String(Math.max(Number(value) - 1, 0)) } 
+  } as React.ChangeEvent<HTMLInputElement>);
 
   return (
     <Box
@@ -18,18 +25,18 @@ export default function NumericImput() {
         width: 160,
         height: 50,
         borderRadius: 30,
-        border: "2px solid gold",
+        border: `2px solid ${theme.palette.secondary.main}`,
         bgcolor: "transparent",
         px: 2,
       }}
     >
-      <IconButton onClick={handleDecrease} sx={{ color: "gold" }}>
+      <IconButton onClick={handleDecrease} >
         <RemoveIcon />
       </IconButton>
-      <Typography variant="h6" sx={{ color: "gold", fontWeight: "bold" }}>
+      <Typography variant="h6" >
         {value}
       </Typography>
-      <IconButton onClick={handleIncrease} sx={{ color: "gold" }}>
+      <IconButton onClick={handleIncrease}>
         <AddIcon />
       </IconButton>
     </Box>

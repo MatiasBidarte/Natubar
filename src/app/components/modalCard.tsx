@@ -1,16 +1,51 @@
-import { Box, Button, Divider, FormControlLabel, Modal, Stack, TextField, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import Image from "next/image";
 import NumericInput from "./numericImput";
 import { Product } from "../types/product";
 import theme from "../ui/theme";
+import { useState } from "react";
+import Grid from "@mui/material/Grid";
+import IconCarrito from "./IconCarrito";
+import { useCartStore } from "../hooks/useCarritoStore";
+
+
+
 
 interface CustomModalProps {
   open: boolean;
   handleClose: () => void;
-  producto: Product
+  producto: Product;
 }
 
-function CustomModal({ open, handleClose,producto }: CustomModalProps) {
+function ModalCard({ open, handleClose, producto }: CustomModalProps) {
+
+  const sabores = ["Chocolate", "Arándanos", "Maní", "Nueces", "Pasas de uva"];
+
+  const [cantidades, setCantidades] = useState<{ [key: string]: number }>({});
+   const handleChange = (sabor: string, value: number) => {
+    setCantidades((prev) => ({
+      ...prev,
+      [sabor]: value,
+    }));
+  };
+
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  const handleAddToCart = () => {
+    addToCart({
+      producto,
+      cantidades,
+    });
+    handleClose();
+  };
+
+
   return (
 <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
   <Box
@@ -40,8 +75,8 @@ function CustomModal({ open, handleClose,producto }: CustomModalProps) {
       }}
     >
       <Image
-        src={producto?.urlImagen || "/placeholder.png"}
-        alt={producto?.nombre || "Producto"}
+        src={producto.urlImagen ? producto.urlImagen : "/placeholder.png"}
+        alt={producto.nombre || "Producto"}
         width={400}
         height={200}
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -57,21 +92,53 @@ function CustomModal({ open, handleClose,producto }: CustomModalProps) {
 
     <Stack sx={{ px: 2 ,margin: "10px"}}>
       <Typography>¡Elige los sabores que más te gustan y agrega las barras a tu pedido!</Typography>
-        <FormControlLabel key="Chocolate" control={<NumericInput />} label="Chocolate" sx={{ my: 1 }} />
-        <FormControlLabel key="Arándanos" control={<NumericInput />} label="Arándanos" sx={{ my: 1 }} />
-        <FormControlLabel key="Maní" control={<NumericInput />} label="Maní" sx={{ my: 1 }} />
-        <FormControlLabel key="Nueces" control={<NumericInput />} label="Nueces" sx={{ my: 1 }} />
-        <FormControlLabel key="Pasas de uva" control={<NumericInput />} label="Pasas de uva" sx={{ my: 1 }} />
+      {sabores.map((sabor) => (
+        <Box key={sabor} display="flex" alignItems="center" sx={{ my: 1 }}>
+          <Typography sx={{ minWidth: 120 }}>{sabor}</Typography>
+          <NumericInput
+          value={cantidades[sabor] || 0}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          handleChange(sabor, Number(e.target.value))
+      }
+    />
+        </Box>
+      ))}
     </Stack>
 
     <TextField fullWidth label="Observaciones" multiline rows={3} sx={{ mt: 2 }} />
-
-    <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleClose}>
+    <Grid container spacing={2} sx={{margin: 2}}>
+    <Grid size={4}>
+      <NumericInput
+        value={cantidades["Total"] || 0}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        handleChange("Total", Number(e.target.value))
+        }
+      />
+    </Grid>
+    <Grid size={8} >
+         <Button
+      variant="contained"
+      color="primary"
+      fullWidth
+      sx={{
+        borderRadius: "28px",
+        backgroundColor: theme.palette.secondary.main,
+        fontWeight: "bold",
+        fontSize: "16px",
+        py: 2,
+        boxShadow: "none",
+        "&:hover": { backgroundColor:theme.palette.primary.main },
+      }}
+          onClick={handleAddToCart}
+      >  
+      <IconCarrito/>
       Agregar al carrito
-    </Button>
+      </Button>
+    </Grid>
+</Grid>
   </Box>
 </Modal>
   );
 }
 
-export default CustomModal;
+export default ModalCard;
