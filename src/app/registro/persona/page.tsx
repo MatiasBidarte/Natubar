@@ -10,12 +10,12 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ArrowBack from "@/app/ui/arrowBack";
-import { useClients } from "@/app/hooks/useClientes";
+import { useClientes } from "@/app/hooks/useClientes";
 import { decodeToken } from "@/app/utils/decodeJwt";
 
 export default function RegistroCliente() {
   const router = useRouter();
-  const { registerClient } = useClients();
+  const { registerClient } = useClientes();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombre: "",

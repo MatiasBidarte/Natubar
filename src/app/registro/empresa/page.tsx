@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import { TextField, Button, Typography, Paper, Snackbar } from "@mui/material";
 import ArrowBack from "@/app/ui/arrowBack";
 import { useRouter } from "next/navigation";
-import { useClients } from "@/app/hooks/useClientes";
+import { useClientes } from "@/app/hooks/useClientes";
 import { decodeToken } from "@/app/utils/decodeJwt";
 
 export default function RegistroEmpresa() {
   const router = useRouter();
-  const { registerClient } = useClients();
+  const { registerClient } = useClientes();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombreEmpresa: "",

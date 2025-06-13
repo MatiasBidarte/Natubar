@@ -1,4 +1,7 @@
+import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
+
 export interface Client {
+  id?: string;
   nombre?: string;
   apellido?: string;
   nombreEmpresa?: string;
@@ -14,12 +17,12 @@ export interface Client {
   tipo: string;
 }
 
-export const useClients = () => {
+export const useClientes = () => {
   const registerClient = async (
     newClient: Client
   ): Promise<{ access_token: string }> => {
     try {
-      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/cliente`;
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -48,12 +51,13 @@ export const useClients = () => {
 
   const updateClient = async (clientId: string, updatedClient: Client) => {
     try {
-      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/cliente/${clientId}`;
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/${clientId}`;
 
       const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
         },
         body: JSON.stringify(updatedClient),
         redirect: "follow",
@@ -68,7 +72,7 @@ export const useClients = () => {
       }
 
       const updatedClientData = await response.json();
-      return updatedClientData;
+      return updatedClientData as ActualizarCLienteResponse;
     } catch (err) {
       throw err;
     }
