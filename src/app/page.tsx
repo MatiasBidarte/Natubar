@@ -1,5 +1,5 @@
 "use client";
-import { Button, Skeleton, Stack } from "@mui/material";
+import { Skeleton, Stack } from "@mui/material";
 import ProductCard from "./components/card";
 import useProducts from "./hooks/useProductsStore";
 import { Product } from "./types/product";
@@ -22,7 +22,6 @@ export default function Home() {
         <div className="text-center">
           <h1 className={homemadeApple.className}>La felicidad en barra</h1>
           <h2>NatuBar Barras Artesanales</h2>
-          <Button className="btn-portada">Comprar ahora</Button>
         </div>
       </div>
       <Stack
