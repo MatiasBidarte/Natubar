@@ -9,11 +9,11 @@ interface NumericInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 export default function NumericImput({ value, onChange }: NumericInputProps) {
-  const handleIncrease = () => onChange({ 
-    target: { value: String(Number(value) + 1) } 
+  const handleIncrease = () => onChange({
+    target: { value: String(Number(value) + 1) }
   } as React.ChangeEvent<HTMLInputElement>);
-  const handleDecrease = () => onChange({ 
-    target: { value: String(Math.max(Number(value) - 1, 0)) } 
+  const handleDecrease = () => onChange({
+    target: { value: String(Math.max(Number(value) - 1, 0)) }
   } as React.ChangeEvent<HTMLInputElement>);
 
   return (
@@ -22,18 +22,18 @@ export default function NumericImput({ value, onChange }: NumericInputProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        width: 160,
-        height: 50,
-        borderRadius: 30,
-        border: `2px solid ${theme.palette.secondary.main}`,
+        width: 130,
+        height: 42,
+        borderRadius: 16,
+        border: `1.5px solid ${theme.palette.secondary.main}`,
         bgcolor: "transparent",
-        px: 2,
+        px: 1,
       }}
     >
       <IconButton onClick={handleDecrease} >
         <RemoveIcon />
       </IconButton>
-      <Typography variant="h6" >
+      <Typography  >
         {value}
       </Typography>
       <IconButton onClick={handleIncrease}>

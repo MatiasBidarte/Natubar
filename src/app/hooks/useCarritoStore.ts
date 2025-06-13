@@ -1,20 +1,20 @@
 import { create } from "zustand";
-import { Product } from "../types/product";
+import { devtools } from "zustand/middleware";
+import { lineaCarrito } from "../types/lineaCarrito";
 
-interface CartItem {
-  producto: Product;
-  cantidades: { [key: string]: number };
-}
+
 
 interface CartState {
-  items: CartItem[];
-  addToCart: (item: CartItem) => void;
+  items: lineaCarrito[];
+  addToCart: (item: lineaCarrito) => void;
 }
 
-export const useCartStore = create<CartState>((set) => ({
-  items: [],
-  addToCart: (item) =>
-    set((state) => ({
-      items: [...state.items, item],
-    })),
-}));
+export const useCartStore = create(
+  devtools<CartState>((set) => ({
+    items: [],
+    addToCart: (item: lineaCarrito) =>
+      set((state) => ({
+        items: [...state.items, item],
+      })),
+  }))
+);
