@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ArrowBack } from "@mui/icons-material";
 import Image from "next/image";
 import IconCarrito from "../../components/IconCarrito";
-import useProductStore from "../../hooks/useProductsStore";
+import useProductStore from "../../hooks/useProducts";
 import { useParams } from "next/navigation";
 
 export default function  DetalleProducto () {

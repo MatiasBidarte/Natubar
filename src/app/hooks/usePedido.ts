@@ -9,7 +9,7 @@ interface CartState {
   addToCart: (item: lineaCarrito) => void;
 }
 
-export const useCartStore = create(
+export const usePedido = create(
   devtools<CartState>((set) => ({
     items: [],
     addToCart: (item: lineaCarrito) =>
