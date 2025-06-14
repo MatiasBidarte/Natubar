@@ -7,7 +7,7 @@ import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
-import useProductStore from "./hooks/useProducts";
+import useProductos from "./hooks/useProductos";
 
 interface ModalCard {
   open: boolean;
@@ -59,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function Home() {
-  const { products, fetchProducts, loading, error } = useProductStore() as {
+  const { products, fetchProducts, loading, error } = useProductos() as {
     products: Product[];
     loading: boolean;
     error: string | null;
