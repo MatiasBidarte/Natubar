@@ -4,7 +4,7 @@ import Divider from "@mui/material/Divider";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
+import { Grid } from "@mui/material";
 import Image from "next/image";
 import { Product } from "../types/product";
 import theme from "../ui/theme";
@@ -130,7 +130,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               alignItems: "center",
             }}
           >
-            <Grid item xs={12} sm={4} md={3}>
+            <Grid size={{xs:12, sm:4, md:3}} >
               <NumericImput
                 value={cantidadTotal}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -138,7 +138,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                 }
               />
             </Grid>
-            <Grid item xs={12} sm={8} md={9} xl={9} size={8}>
+            <Grid size={{xs:12, sm:8, md:9}}>
               <Button
                 variant="contained"
                 color="primary"
