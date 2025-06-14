@@ -1,13 +1,13 @@
 "use client";
 import { alpha, Button, Skeleton, Stack, InputBase, Box } from "@mui/material";
 import ProductCard from "./components/card";
-import useProducts from "./hooks/useProductos";
 import { Product } from "./types/product";
 import { useEffect, useState } from "react";
 import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
+import useProductStore from "./hooks/useProducts";
 
 interface ModalCard {
   open: boolean;
@@ -59,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function Home() {
-  const { products, fetchProducts, loading, error } = useProducts() as {
+  const { products, fetchProducts, loading, error } = useProductStore() as {
     products: Product[];
     loading: boolean;
     error: string | null;
