@@ -11,7 +11,7 @@ interface StoreProductoState {
   getProductById: (id: number) => Product | undefined;
 }
 
-const useProductStore = create<StoreProductoState>((set, get) => ({
+const useProductos = create<StoreProductoState>((set, get) => ({
   products: [],
   loading: false,
   error: null,
@@ -53,4 +53,4 @@ const useProductStore = create<StoreProductoState>((set, get) => ({
     get().products.find((product) => product.id === id),
 }));
 
-export default useProductStore;
+export default useProductos;

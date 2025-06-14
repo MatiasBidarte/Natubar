@@ -5,13 +5,13 @@ import { useState } from "react";
 import { ArrowBack } from "@mui/icons-material";
 import Image from "next/image";
 import IconCarrito from "../../components/IconCarrito";
-import useProductStore from "../../hooks/useProducts";
+import useProductos from "../../hooks/useProductos";
 import { useParams } from "next/navigation";
 
 export default function  DetalleProducto () {
     const params = useParams();
     const [apiError, setApiError] = useState<string | null>(null);
-    const { getProductById } = useProductStore();
+    const { getProductById } = useProductos();
     const product = getProductById(Number(params.id));
 
   if (!product) {
