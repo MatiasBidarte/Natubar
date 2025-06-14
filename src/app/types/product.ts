@@ -6,4 +6,10 @@
   precioEmpresas?: number;
   stock?: boolean;
   urlImagen?: string;
+  sabores? :Sabor[]
+}
+
+export interface Sabor{
+  id: number
+  nombre: string;
 }
