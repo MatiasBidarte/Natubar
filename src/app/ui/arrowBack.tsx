@@ -12,7 +12,6 @@ const ArrowBack = () => {
   return (
     <IconButton
       className="!mb-8"
-      sx={{ display: { xs: "block", sm: "none" } }}
       aria-label="back"
       size="small"
       onClick={handleBack}
