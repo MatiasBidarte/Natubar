@@ -1,4 +1,5 @@
 "use client";
+<<<<<<< HEAD
 
 import {
   Paper,
@@ -195,3 +196,12 @@ export default function LoginPage() {
     </div>
   );
 }
+=======
+import React from "react";
+
+const Login = () => {
+  return <div>Login</div>;
+};
+
+export default Login;
+>>>>>>> ed06898bf6661e3fab696f95074dc73bd51d5ee1
