@@ -130,6 +130,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               alignItems: "center",
             }}
           >
+
             <Grid size={{xs:12, sm:4, md:3}} >
               <NumericImput
                 value={cantidadTotal}
@@ -139,6 +140,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               />
             </Grid>
             <Grid size={{xs:12, sm:8, md:9}}>
+
               <Button
                 variant="contained"
                 color="primary"
