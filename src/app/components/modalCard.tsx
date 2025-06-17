@@ -93,7 +93,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             }}
           >
             <Image
-              src={producto.urlImagen}
+              src={producto.urlImagen ?? "/placeholder.png"}
               alt={producto.nombre || "Producto"}
               width={400}
               height={200}
