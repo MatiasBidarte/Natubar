@@ -10,11 +10,12 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ArrowBack from "@/app/ui/arrowBack";
-import { useClients } from "@/app/hooks/useClients";
+import { useClientes } from "@/app/hooks/useClientes";
+import { decodeToken } from "@/app/utils/decodeJwt";
 
 export default function RegistroCliente() {
   const router = useRouter();
-  const { registerClient } = useClients();
+  const { registerClient } = useClientes();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombre: "",
@@ -26,7 +27,7 @@ export default function RegistroCliente() {
     direccion: "",
     telefono: "",
     observaciones: "",
-    discriminador: "Persona",
+    tipo: "Persona",
   });
 
   const [errors, setErrors] = useState({
@@ -70,16 +71,27 @@ export default function RegistroCliente() {
     const hasErrors = Object.values(newErrors).some((e) => e);
     if (!hasErrors) {
       try {
-        await registerClient(form);
+        const token = await registerClient(form);
         setApiError(null);
-        localStorage.setItem("user", JSON.stringify(form));
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify({
+            ...decodeToken(token.access_token),
+            token: token.access_token,
+            tipo: "Persona",
+          })
+        );
+        window.dispatchEvent(new Event("auth-change"));
         router.push("/");
       } catch (error) {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
           setApiError("Error del servidor. Intente más tarde.");
-
-        else if (errorData.statusCode === 409)setApiError(errorData.message || "Datos inválidos. Por favor, revise los campos.")
+        else if (errorData.statusCode === 409)
+          setApiError(
+            errorData.message ||
+              "Datos inválidos. Por favor, revise los campos."
+          );
         else if (errorData.statusCode === 400)
           setApiError("Datos inválidos. Por favor, revise los campos.");
       }
@@ -87,7 +99,7 @@ export default function RegistroCliente() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center w-lg">
       {apiError && (
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -97,11 +109,7 @@ export default function RegistroCliente() {
           onClose={() => setApiError(null)}
         />
       )}
-      <Paper
-        elevation={0}
-        className="p-8 w-full max-w-md"
-        sx={{ backgroundColor: "inherit" }}
-      >
+      <Paper elevation={0} className="p-8 w-full max-w-lg">
         <ArrowBack />
         <Typography variant="h5" className="mb-6 text-center">
           Crear cuenta

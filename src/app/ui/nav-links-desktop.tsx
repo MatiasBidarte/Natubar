@@ -30,7 +30,7 @@ export default function NavLinksDesktop({
   const pathname = usePathname();
 
   return (
-    <div className="hidden md:flex items-center justify-between p-4 bg-[#201B21] text-[#B99342]">
+    <div className="fixed hidden md:flex items-center justify-between bg-[#201B21] text-[#B99342] w-screen">
       <div className="w-12"></div>
       <div className="flex-grow flex items-center justify-center gap-16">
         <Link href={links[0].href} className="inline-block">
@@ -49,8 +49,8 @@ export default function NavLinksDesktop({
         </Link>
         <div className="flex justify-center">
           <Image
-            width={106}
-            height={74}
+            width={76}
+            height={76}
             src="/icon512_rounded.png"
             alt="Natubar"
           />

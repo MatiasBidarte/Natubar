@@ -29,7 +29,7 @@ export default function NavLinksMobile({
   const pathname = usePathname();
 
   return (
-    <div className="md:hidden flex items-center justify-around p-4 bg-[#FFF9ED]">
+    <div className="fixed bottom-0 left-0 w-screen md:hidden flex items-center justify-around p-3 bg-[#FFF9ED]">
       {links.map((link, index) => {
         const IconComponent = link.icon;
         const isActive = pathname === link.href;

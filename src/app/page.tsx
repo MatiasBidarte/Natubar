@@ -1,13 +1,13 @@
 "use client";
 import { alpha, Button, Skeleton, Stack, InputBase, Box } from "@mui/material";
 import ProductCard from "./components/card";
-import useProducts from "./hooks/useProducts";
 import { Product } from "./types/product";
 import { useEffect, useState } from "react";
 import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
+import useProductos from "./hooks/useProductos";
 
 interface ModalCard {
   open: boolean;
@@ -57,15 +57,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-interface UseProductsReturn {
-  products: Product[];
-  loading: boolean;
-  error: string | null;
-  fetchProducts: () => void;
-}
 
 export default function Home() {
-  const { products, fetchProducts, loading, error } = useProducts() as UseProductsReturn;
+  const { products, fetchProducts, loading, error } = useProductos() as {
+    products: Product[];
+    loading: boolean;
+    error: string | null;
+    fetchProducts: () => void;
+  };
+
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -115,32 +115,32 @@ export default function Home() {
         direction="row"
         useFlexGap
         sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
-  {loading ? (
-    <>
-      <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-      <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-      <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-    </>
-  ) : error ? (
-    <p>Error: {error}</p>
-  ) : (
-    filteredProducts.length === 0 ? (
-      <p>No se encontraron productos</p>
-    ) : (
-      filteredProducts.map((producto) => (
-        <div key={producto.id} onClick={() => handleOpen(producto)}>
-          <ProductCard product={producto} />
-        </div>
-      ))
-    )
-  )}
-  {selectedProduct && (
-    <ModalCard
-      open={open}
-      handleClose={handleClose}
-      producto={selectedProduct}
-    />
-  )}
+        {loading ? (
+          <>
+            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
+            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
+            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
+          </>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : (
+          filteredProducts.length === 0 ? (
+            <p>No se encontraron productos</p>
+          ) : (
+            filteredProducts.map((producto) => (
+              <div key={producto.id} onClick={() => handleOpen(producto)}>
+                <ProductCard product={producto} />
+              </div>
+            ))
+          )
+        )}
+        {selectedProduct && (
+          <ModalCard
+            open={open}
+            handleClose={handleClose}
+            producto={selectedProduct}
+          />
+        )}
       </Stack>
     </div>
   );

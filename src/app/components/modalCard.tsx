@@ -130,7 +130,8 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               alignItems: "center",
             }}
           >
-            <Grid size={{xs:12,sm:4, md:3}}>
+
+            <Grid size={{xs:12, sm:4, md:3}} >
               <NumericImput
                 value={cantidadTotal}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
