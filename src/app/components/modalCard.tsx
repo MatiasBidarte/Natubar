@@ -93,13 +93,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               borderRadius: 2,
             }}
           >
-            <Image
-              src={producto.urlImagen ?? "/placeholder.png"}
-              alt={producto.nombre || "Producto"}
-              width={400}
-              height={200}
-              style={{ objectFit: "cover" }}
-            />
+           <Image src={producto.urlImagen ?? "/placeholder.png"} alt={producto.nombre ?? "Imagen del producto"} width={640} height={400} unoptimized />
           </Box>
 
           <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ px: 2, margin: "10px" }}>
