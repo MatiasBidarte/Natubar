@@ -8,7 +8,6 @@ import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
-import { usePedido } from "./hooks/usePedido";
 
 interface ModalCard {
   open: boolean;
