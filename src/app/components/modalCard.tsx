@@ -4,7 +4,7 @@ import Divider from "@mui/material/Divider";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import { Product } from "../types/product";
 import theme from "../ui/theme";
@@ -93,11 +93,11 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             }}
           >
             <Image
-              src={producto.urlImagen ? producto.urlImagen : "/placeholder.png"}
+              src={producto.urlImagen}
               alt={producto.nombre || "Producto"}
               width={400}
               height={200}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ objectFit: "cover" }}
             />
           </Box>
 
@@ -139,8 +139,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                 }
               />
             </Grid>
-            <Grid size={{xs:12, sm:8, md:9}}>
-
+            <Grid size={{xs:12, sm:8, md:9, xl:9}}>
               <Button
                 variant="contained"
                 color="primary"
