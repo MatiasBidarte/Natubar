@@ -25,7 +25,7 @@ export default function LoginPage() {
   //const [email, setEmail] = useState("");
   //const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const {loginClient} = useClientes();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
@@ -34,10 +34,10 @@ export default function LoginPage() {
     contrasena: "",
   });
 
-  const [errors, setErrors] = useState({
+  /*const [errors, setErrors] = useState({
     email: "",
     contrasena: "",
-  });
+  });*/
   
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
