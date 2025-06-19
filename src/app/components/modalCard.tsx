@@ -4,7 +4,7 @@ import Divider from "@mui/material/Divider";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import { Product } from "../types/product";
 import theme from "../ui/theme";
@@ -24,6 +24,7 @@ interface CustomModalProps {
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
+  console.log(producto)
   const [error, setError] = useState("");
   const addToCart = usePedido((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres
@@ -92,13 +93,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               borderRadius: 2,
             }}
           >
-            <Image
-              src={producto.urlImagen ? producto.urlImagen : "/placeholder.png"}
-              alt={producto.nombre || "Producto"}
-              width={400}
-              height={200}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
+           <Image src={producto.urlImagen ?? "/placeholder.png"} alt={producto.nombre ?? "Imagen del producto"} width={640} height={400} unoptimized />
           </Box>
 
           <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ px: 2, margin: "10px" }}>
@@ -130,6 +125,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               alignItems: "center",
             }}
           >
+
             <Grid size={{xs:12, sm:4, md:3}} >
               <NumericImput
                 value={cantidadTotal}
@@ -138,7 +134,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                 }
               />
             </Grid>
-            <Grid size={{xs:12, sm:8, md:9}}>
+            <Grid size={{xs:12, sm:8, md:9, xl:9}}>
               <Button
                 variant="contained"
                 color="primary"
