@@ -76,9 +76,42 @@ export const useClientes = () => {
     } catch (err) {
       throw err;
     }
+
+    
   };
+
+  const loginClient = async (cliente: Client) => {
+      try {
+        const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/login`;
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "apik_prod_6vJrYh9M4xCt!dZ1QaB3Wf7E@kPxLg0e",
+          },
+          body: JSON.stringify(cliente),
+          redirect: "follow",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw {
+            message: errorData.message || "Error al realizar login",
+            statusCode: errorData.statusCode,
+          };
+        }
+
+        //Manejar el tema del token
+        const loginCliente = await response.json();
+        return loginCliente;
+      } catch (err) {
+        throw err;
+      }
+    };
   return {
     registerClient,
     updateClient,
+    loginClient,
   };
 };

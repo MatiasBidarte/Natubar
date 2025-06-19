@@ -1,5 +1,4 @@
 "use client";
-<<<<<<< HEAD
 
 import {
   Paper,
@@ -15,26 +14,41 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLogin } from "@/app/hooks/useLogin"
+import { useClientes } from "@/app/hooks/useClientes"
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
+import { decodeToken } from "@/app/utils/decodeJwt";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  //const [email, setEmail] = useState("");
+  //const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {loginClient} = useClientes();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
-  const {login} = useLogin();
+  const [form, setForm] = useState({
+    email: "",
+    contrasena: "",
+  });
+
+  const [errors, setErrors] = useState({
+    email: "",
+    contrasena: "",
+  });
+  
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    //setErrors({ ...errors, [e.target.name]: "" });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     
     e.preventDefault();
-    /*
-    const newErrors = {
+    /*const newErrors = {
       email: form.email.includes("@") ? "" : "Email inválido.",
       contrasena:
         form.contrasena.length >= 8
@@ -45,21 +59,27 @@ export default function LoginPage() {
     setErrors(newErrors);
 
     const hasErrors = Object.values(newErrors).some((e) => e);
-    */
-    //if (!hasErrors) {
+    if (!hasErrors) {*/
       try {
-        await login(email,password);
+        console.log(form);
+        const token = await loginClient(form);
         setApiError(null);
-        localStorage.setItem("user", JSON.stringify(form));
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify({
+            ...decodeToken(token.access_token),
+            token: token.access_token,
+          })
+        );
+        window.dispatchEvent(new Event("auth-change"));
         router.push("/");
       } catch (error) {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
           setApiError("Error del servidor. Intente más tarde.");
-        else if (errorData.statusCode === 400)
-          setApiError("Datos inválidos. Por favor, revise los campos.");
+        else if (errorData.statusCode === 400 || errorData.statusCode === 401)
+          setApiError(errorData.message);
       }
-    //}
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
@@ -97,9 +117,12 @@ export default function LoginPage() {
                       label="Correo Electrónico"
                       variant="outlined"
                       type="email"
+                      name="email"
                       placeholder="ejemplo@ejemplo.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleChange}
+                      
+                      value={form.email}
+                      
                       required
                       InputProps={{
                         startAdornment: (
@@ -107,7 +130,7 @@ export default function LoginPage() {
                             <EmailIcon />
                           </InputAdornment>
                         ),
-                        endAdornment: email && (
+                        endAdornment: form.email && (
                           <InputAdornment position="end">
                             <IconButton onClick={() => setEmail("")}>
                               ✕
@@ -126,10 +149,11 @@ export default function LoginPage() {
                       fullWidth
                       label="Contraseña"
                       variant="outlined"
+                      name="contrasena"
                       type={showPassword ? "text" : "password"}
-                      placeholder="········"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="* * * * *"
+                      value={form.contrasena}
+                      onChange={handleChange}
                       required
                       InputProps={{
                         startAdornment: (
@@ -153,7 +177,7 @@ export default function LoginPage() {
                   </Grid>
 
                   <Grid item xs={12} textAlign="right">
-                    <Link href="/forgot-password" variant="body2" sx={{ color: '#7B1FA2' }}>
+                    <Link href="/" variant="body2" sx={{ color: '#7B1FA2' }}>
                       ¿Olvidaste tu contraseña?
                     </Link>
                   </Grid>
@@ -182,7 +206,7 @@ export default function LoginPage() {
                   <Grid item xs={12} textAlign="center">
                     <Typography variant="body2">
                       ¿No tienes una cuenta?{" "}
-                      <Link href="/register" sx={{ color: '#7B1FA2', fontWeight: 'bold' }}>
+                      <Link href="/registro" sx={{ color: '#7B1FA2', fontWeight: 'bold' }}>
                         Regístrate aquí
                       </Link>
                     </Typography>
@@ -196,12 +220,3 @@ export default function LoginPage() {
     </div>
   );
 }
-=======
-import React from "react";
-
-const Login = () => {
-  return <div>Login</div>;
-};
-
-export default Login;
->>>>>>> ed06898bf6661e3fab696f95074dc73bd51d5ee1
