@@ -78,7 +78,7 @@ export default function LoginPage() {
         if (errorData.statusCode === 500)
           setApiError("Error del servidor. Intente más tarde.");
         else if (errorData.statusCode === 400 || errorData.statusCode === 401)
-          setApiError(errorData.message);
+          setApiError(`${errorData.message}`);
       }
   };
   return (
@@ -96,7 +96,7 @@ export default function LoginPage() {
       <Paper sx={{ p: 4, width: '100%', maxWidth: 500, borderRadius: 4 }} elevation={0}>
         <Container>
           <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={12} textAlign="center">
+            <Grid textAlign="center">
               <Typography variant="h6" fontWeight={500} gutterBottom>
                 Iniciar Sesión
               </Typography>
@@ -108,10 +108,10 @@ export default function LoginPage() {
               </Typography>
             </Grid>
 
-            <Grid s={12}>
+            <Grid>
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
-                  <Grid s={{p:12}} width='100%'>
+                  <Grid width='100%'>
                     <TextField
                       fullWidth
                       label="Correo Electrónico"
@@ -130,13 +130,14 @@ export default function LoginPage() {
                             <EmailIcon />
                           </InputAdornment>
                         ),
+                        /*
                         endAdornment: form.email && (
                           <InputAdornment position="end">
-                            <IconButton onClick={() => setEmail("")}>
+                            <IconButton onClick={() => setForm("")}>
                               ✕
                             </IconButton>
                           </InputAdornment>
-                        ),
+                        ),*/
                         sx: {
                           borderRadius: 2,
                         },
@@ -144,7 +145,7 @@ export default function LoginPage() {
                     />
                   </Grid>
 
-                  <Grid s={12} width='100%'>
+                  <Grid width='100%'>
                     <TextField
                       fullWidth
                       label="Contraseña"
@@ -176,19 +177,19 @@ export default function LoginPage() {
                     />
                   </Grid>
 
-                  <Grid item xs={12} textAlign="right">
+                  <Grid textAlign="right">
                     <Link href="/" variant="body2" sx={{ color: '#7B1FA2' }}>
                       ¿Olvidaste tu contraseña?
                     </Link>
                   </Grid>
 
-                  <Grid item xs={12} width='100%'>
+                  <Grid width='100%'>
                     <Button
                       fullWidth
                       variant="contained"
                       size="large"
                       type="submit"
-                      disabled={loading}
+                      //disabled={loading}
                       sx={{
                         backgroundColor: '#B88A3A',
                         borderRadius: '999px',
@@ -199,11 +200,11 @@ export default function LoginPage() {
                         },
                       }}
                     >
-                      {loading ? "Cargando..." : "Iniciar Sesión"}
+                      {"Iniciar Sesión"}
                     </Button>
                   </Grid>
 
-                  <Grid item xs={12} textAlign="center">
+                  <Grid textAlign="center">
                     <Typography variant="body2">
                       ¿No tienes una cuenta?{" "}
                       <Link href="/registro" sx={{ color: '#7B1FA2', fontWeight: 'bold' }}>

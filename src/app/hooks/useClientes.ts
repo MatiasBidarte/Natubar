@@ -17,6 +17,23 @@ export interface Client {
   tipo: string;
 }
 
+export interface ClientLogin {
+  id?: string;
+  nombre?: string;
+  apellido?: string;
+  nombreEmpresa?: string;
+  rut?: string;
+  nombreContacto?: string;
+  email: string;
+  contrasena: string;
+  departamento?: string;
+  ciudad?: string;
+  direccion?: string;
+  telefono?: string;
+  observaciones?: string;
+  tipo?: string;
+}
+
 export const useClientes = () => {
   const registerClient = async (
     newClient: Client
@@ -78,7 +95,7 @@ export const useClientes = () => {
     }
   };
 
-  const loginClient = async (cliente: Client) => {
+  const loginClient = async (cliente: ClientLogin) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/login`;
 
