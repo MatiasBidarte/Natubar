@@ -7,6 +7,7 @@
   stock?: boolean;
   urlImagen?: string;
   sabores? :Sabor[]
+  
 }
 
 export interface Sabor{

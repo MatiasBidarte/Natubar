@@ -37,6 +37,8 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   };
 
   const handleAddToCart = () => {
+
+    
     const saboresSeleccionados: saborLinea[] = (producto.sabores ?? [])
       .filter((sabor) => (cantidades[sabor.id] || 0) > 0)
       .map((sabor) => ({
@@ -44,7 +46,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
         cantidad: cantidades[sabor.id],
         cantidadTotal: cantidadTotal,
       }));
-
+      
     if (saboresSeleccionados.length === 0) return;
     const sumaSabores = saboresSeleccionados.reduce(
       (acc, saborLinea) => acc + saborLinea.cantidad,
@@ -52,10 +54,13 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
     );
     if (sumaSabores !== 12) {
       setError("Debes seleccionar exactamente 12 unidades entre los sabores.");
+      
       return;
     }
     setError("");
 
+
+    
     addToCart({
       producto,
       sabores: saboresSeleccionados,
