@@ -16,5 +16,5 @@ export const usePedido = create(
       set((state) => ({
         items: [...state.items, item],
       })),
-  }))
+  })),  
 );
