@@ -1,6 +1,7 @@
+import { Pedido } from "../types/pedido";
 import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
 
-export interface Client {
+export interface Cliente {
   id?: string;
   nombre?: string;
   apellido?: string;
@@ -19,7 +20,7 @@ export interface Client {
 
 export const useClientes = () => {
   const registerClient = async (
-    newClient: Client
+    newClient: Cliente
   ): Promise<{ access_token: string }> => {
     try {
       const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes`;
@@ -49,7 +50,7 @@ export const useClientes = () => {
     }
   };
 
-  const updateClient = async (clientId: string, updatedClient: Client) => {
+  const updateClient = async (clientId: string, updatedClient: Cliente) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/${clientId}`;
 
@@ -77,8 +78,44 @@ export const useClientes = () => {
       throw err;
     }
   };
+
+  const obtenerPedidosDeClienteLogueado = async () => {
+    try {
+      const usuario = JSON.parse(
+        localStorage.getItem("usuario") || "{}"
+      ) as Cliente;
+      if (!usuario) {
+        throw new Error("Usuario no logueado o ID de usuario no disponible");
+      }
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/${usuario.id}/pedidos`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+        },
+        redirect: "follow",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw {
+          message:
+            errorData.message || "Error al obtener los pedidos del cliente",
+          statusCode: errorData.statusCode,
+        };
+      }
+
+      const pedidos = await response.json();
+      return pedidos as Pedido[];
+    } catch (err) {
+      throw err;
+    }
+  };
   return {
     registerClient,
     updateClient,
+    obtenerPedidosDeClienteLogueado,
   };
 };

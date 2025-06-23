@@ -28,11 +28,11 @@ export default function ClientLayout({
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="flex justify-center min-h-screen pb-32 md:pb-0">
-        <NavLinksDesktop estaLogueado={estaLogueado} />
+      <NavLinksDesktop estaLogueado={estaLogueado} />
+      <div className="flex justify-center min-h-screen pb-24 md:pb-4 pt-0 md:pt-18 ">
         {children}
-        <NavLinksMobile estaLogueado={estaLogueado} />
       </div>
+      <NavLinksMobile estaLogueado={estaLogueado} />
     </ThemeProvider>
   );
 }

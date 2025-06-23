@@ -22,13 +22,13 @@ import {
   Business,
   AccountCircle,
 } from "@mui/icons-material";
-import { Client, useClientes } from "../hooks/useClientes";
+import { Cliente, useClientes } from "../hooks/useClientes";
 
 const PerfilPage = () => {
   const { updateClient } = useClientes();
-  const [usuario, setUsuario] = useState<Partial<Client>>();
+  const [usuario, setUsuario] = useState<Partial<Cliente>>();
   const [editando, setEditando] = useState(false);
-  const [formUsuario, setFormUsuario] = useState<Partial<Client>>();
+  const [formUsuario, setFormUsuario] = useState<Partial<Cliente>>();
   const [error, setError] = useState<string | null>(null);
   const [respuesta, setRespuesta] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -38,7 +38,7 @@ const PerfilPage = () => {
       const usuario = localStorage.getItem("usuario") || "";
       const objetoUsuario = JSON.parse(usuario);
       console.log(objetoUsuario);
-      const decoded = decodeToken(objetoUsuario.token) as Partial<Client>;
+      const decoded = decodeToken(objetoUsuario.token) as Partial<Cliente>;
       setUsuario({ ...decoded, tipo: objetoUsuario.tipo });
       setFormUsuario({ ...decoded, tipo: objetoUsuario.tipo });
     }
@@ -60,7 +60,7 @@ const PerfilPage = () => {
       setEditando(false);
       const respuesta = await updateClient(
         usuario?.id ?? "",
-        formUsuario as Client
+        formUsuario as Cliente
       );
       if (respuesta && respuesta.access_token) {
         const nuevoUsuario = {

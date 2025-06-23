@@ -10,12 +10,12 @@ const links = [
     icon: Home,
   },
   {
-    href: "/perfil/compras",
+    href: "/perfil/compras/",
     name: "Mis Compras",
     icon: ShoppingBag,
   },
   {
-    href: "/perfil",
+    href: "/perfil/",
     name: "Mi Perfil",
     icon: AccountCircle,
   },
@@ -40,7 +40,7 @@ export default function NavLinksMobile({
             <div className="flex flex-col items-center justify-center">
               <div
                 className={`p-2 w-14 rounded-3xl transition-colors duration-200 ${
-                  isActive ? "bg-amber-200" : "hover:bg-[#D1B9848F]"
+                  isActive ? "bg-[#D1B9848F]" : "hover:bg-[#D1B9848F]"
                 }`}
               >
                 <IconComponent className="inline-block" />

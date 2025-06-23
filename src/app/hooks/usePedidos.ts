@@ -1,0 +1,145 @@
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { lineaCarrito } from "../types/lineaCarrito";
+import { EstadosPedido, Pedido } from "../types/pedido";
+
+interface PedidoState {
+  items: lineaCarrito[];
+  addToCart: (item: lineaCarrito) => void;
+  removeFromCart: (index: number) => void;
+  updateCartItem: (index: number, item: lineaCarrito) => void;
+  clearCart: () => void;
+
+  pedidos: Pedido[];
+  pedidosEnCurso: Pedido[];
+  pedidosFinalizados: Pedido[];
+  loadingPedidos: boolean;
+  errorPedidos: string | null;
+
+  fetchPedidosCliente: (clienteId: string) => Promise<void>;
+  crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
+}
+
+export const usePedidos = create(
+  devtools<PedidoState>((set, get) => ({
+    items: [],
+    addToCart: (item: lineaCarrito) =>
+      set((state) => ({
+        items: [...state.items, item],
+      })),
+    removeFromCart: (index: number) =>
+      set((state) => ({
+        items: state.items.filter((_, i) => i !== index),
+      })),
+    updateCartItem: (index: number, item: lineaCarrito) =>
+      set((state) => {
+        const newItems = [...state.items];
+        newItems[index] = item;
+        return { items: newItems };
+      }),
+    clearCart: () => set({ items: [] }),
+
+    pedidos: [],
+    pedidosEnCurso: [],
+    pedidosFinalizados: [],
+    loadingPedidos: false,
+    errorPedidos: null,
+
+    fetchPedidosCliente: async (clienteId: string) => {
+      set({ loadingPedidos: true, errorPedidos: null });
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/${clienteId}/pedidos`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al obtener pedidos");
+        }
+        const pedidos = (await response.json()) as Pedido[];
+        const enCurso = pedidos.filter(
+          (p) =>
+            p.estado === EstadosPedido.enPreparacion ||
+            p.estado === EstadosPedido.enCamino
+        );
+        const finalizados = pedidos.filter(
+          (p) =>
+            p.estado === EstadosPedido.entregado ||
+            p.estado === EstadosPedido.pendientePago
+        );
+
+        set({
+          pedidos,
+          pedidosEnCurso: enCurso,
+          pedidosFinalizados: finalizados,
+          loadingPedidos: false,
+        });
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Error desconocido";
+        set({
+          errorPedidos: errorMessage,
+          loadingPedidos: false,
+        });
+      }
+    },
+
+    // Función para crear un nuevo pedido
+    crearPedido: async (clienteId: string) => {
+      const { items } = get();
+      if (items.length === 0) return;
+
+      try {
+        const pedidoData = {
+          clienteId,
+          items: items.map((item) => ({
+            productoId: item.producto.id,
+            cantidad: item.cantidad,
+            sabores: item.sabores.map((s) => ({
+              saborId: s.sabor.id,
+              cantidad: s.cantidad,
+            })),
+          })),
+        };
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            body: JSON.stringify(pedidoData),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al crear pedido");
+        }
+
+        const nuevoPedido = (await response.json()) as Pedido;
+        // Limpiar carrito después de crear el pedido
+        get().clearCart();
+        // Refrescar la lista de pedidos
+        await get().fetchPedidosCliente(clienteId);
+
+        return nuevoPedido;
+      } catch (error) {
+        console.error("Error al crear pedido:", error);
+        throw error;
+      }
+    },
+  }))
+);
+
+export default usePedidos;
