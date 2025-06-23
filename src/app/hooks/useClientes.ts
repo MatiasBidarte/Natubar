@@ -18,6 +18,23 @@ export interface Cliente {
   tipo: string;
 }
 
+export interface ClientLogin {
+  id?: string;
+  nombre?: string;
+  apellido?: string;
+  nombreEmpresa?: string;
+  rut?: string;
+  nombreContacto?: string;
+  email: string;
+  contrasena: string;
+  departamento?: string;
+  ciudad?: string;
+  direccion?: string;
+  telefono?: string;
+  observaciones?: string;
+  tipo?: string;
+}
+
 export const useClientes = () => {
   const registerClient = async (
     newClient: Cliente
@@ -113,9 +130,38 @@ export const useClientes = () => {
       throw err;
     }
   };
+
+  const loginClient = async (cliente: ClientLogin) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/login`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+        },
+        body: JSON.stringify(cliente),
+        redirect: "follow",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw {
+          message: errorData.message || "Error al realizar login",
+          statusCode: errorData.statusCode,
+        };
+      }
+      const loginCliente = await response.json();
+      return loginCliente;
+    } catch (err) {
+      throw err;
+    }
+  };
   return {
     registerClient,
     updateClient,
     obtenerPedidosDeClienteLogueado,
+    loginClient,
   };
 };

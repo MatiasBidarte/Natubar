@@ -4,7 +4,7 @@ import { Product } from "../types/product";
 const ProductCard = ({ product }: {product: Product}) => {
 
   return (
-<Card sx={{ maxWidth: 345 }} className= "text-3xl ">
+<Card sx={{ maxWidth: 345, cursor: "pointer" }} className= "text-3xl ">
       <CardMedia
         component="img"
         alt="green iguana"
