@@ -21,7 +21,6 @@ interface CustomModalProps {
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
-  console.log(producto);
   const [error, setError] = useState("");
   const addToCart = usePedidos((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres

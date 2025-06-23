@@ -37,7 +37,6 @@ const PerfilPage = () => {
     if (typeof window !== "undefined") {
       const usuario = localStorage.getItem("usuario") || "";
       const objetoUsuario = JSON.parse(usuario);
-      console.log(objetoUsuario);
       const decoded = decodeToken(objetoUsuario.token) as Partial<Cliente>;
       setUsuario({ ...decoded, tipo: objetoUsuario.tipo });
       setFormUsuario({ ...decoded, tipo: objetoUsuario.tipo });

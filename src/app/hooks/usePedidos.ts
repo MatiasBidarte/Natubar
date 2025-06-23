@@ -92,7 +92,6 @@ export const usePedidos = create(
       }
     },
 
-    // Función para crear un nuevo pedido
     crearPedido: async (clienteId: string) => {
       const { items } = get();
       if (items.length === 0) return;
@@ -128,9 +127,7 @@ export const usePedidos = create(
         }
 
         const nuevoPedido = (await response.json()) as Pedido;
-        // Limpiar carrito después de crear el pedido
         get().clearCart();
-        // Refrescar la lista de pedidos
         await get().fetchPedidosCliente(clienteId);
 
         return nuevoPedido;
