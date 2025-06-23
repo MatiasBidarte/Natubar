@@ -12,10 +12,7 @@ import { useState } from "react";
 import IconCarrito from "./IconCarrito";
 import NumericImput from "./numericImput";
 import { saborLinea } from "../types/lineaCarrito";
-import { usePedido } from "../hooks/usePedido";
-
-
-
+import { usePedidos } from "../hooks/usePedidos";
 
 interface CustomModalProps {
   open: boolean;
@@ -24,9 +21,8 @@ interface CustomModalProps {
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
-  console.log(producto)
   const [error, setError] = useState("");
-  const addToCart = usePedido((state) => state.addToCart);
+  const addToCart = usePedidos((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
   const handleChange = (saborId: number, value: number) => {
@@ -65,7 +61,12 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   };
 
   return (
-    <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" sx={{ borderRadius: 5 }}>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-title"
+      sx={{ borderRadius: 5 }}
+    >
       <Box>
         <Box
           sx={{
@@ -81,7 +82,12 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             p: { xs: 2 },
           }}
         >
-          <Typography id="modal-title" variant="h6" textAlign="center" sx={{ pb: 2 }}>
+          <Typography
+            id="modal-title"
+            variant="h6"
+            textAlign="center"
+            sx={{ pb: 2 }}
+          >
             Personaliza tu pedido
           </Typography>
 
@@ -93,24 +99,52 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               borderRadius: 2,
             }}
           >
-           <Image src={producto.urlImagen ?? "/placeholder.png"} alt={producto.nombre ?? "Imagen del producto"} width={640} height={400} unoptimized />
+            <Image
+              src={producto.urlImagen ?? "/placeholder.png"}
+              alt={producto.nombre ?? "Imagen del producto"}
+              width={640}
+              height={400}
+              unoptimized
+            />
           </Box>
 
-          <Stack spacing={2} direction="row" justifyContent="space-between" sx={{ px: 2, margin: "10px" }}>
+          <Stack
+            spacing={2}
+            direction="row"
+            justifyContent="space-between"
+            sx={{ px: 2, margin: "10px" }}
+          >
             <Typography sx={{ fontSize: "22px" }}>{producto.nombre}</Typography>
             <Typography>${producto.precioPersonas}</Typography>
           </Stack>
 
-          <Divider sx={{ width: "calc(100% + 32px)", marginLeft: "-16px", borderBottomWidth: 1, borderColor: theme.palette.primary.main }} />
+          <Divider
+            sx={{
+              width: "calc(100% + 32px)",
+              marginLeft: "-16px",
+              borderBottomWidth: 1,
+              borderColor: theme.palette.primary.main,
+            }}
+          />
 
           <Stack sx={{ px: 2, margin: "10px" }}>
-            <Typography>¡Elige los sabores que más te gustan y agrega las barras a tu pedido!</Typography>
+            <Typography>
+              ¡Elige los sabores que más te gustan y agrega las barras a tu
+              pedido!
+            </Typography>
             {producto.sabores?.map((sabor) => (
-              <Box key={sabor.id} display="flex" alignItems="center" sx={{ my: 1 }}>
+              <Box
+                key={sabor.id}
+                display="flex"
+                alignItems="center"
+                sx={{ my: 1 }}
+              >
                 <Typography sx={{ minWidth: 120 }}>{sabor.nombre}</Typography>
                 <NumericImput
                   value={cantidades[sabor.id] || 0}
-                  onChange={(e) => handleChange(sabor.id, Number(e.target.value))}
+                  onChange={(e) =>
+                    handleChange(sabor.id, Number(e.target.value))
+                  }
                 />
               </Box>
             ))}
@@ -125,8 +159,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               alignItems: "center",
             }}
           >
-
-            <Grid size={{xs:12, sm:4, md:3}} >
+            <Grid size={{ xs: 12, sm: 4, md: 3 }}>
               <NumericImput
                 value={cantidadTotal}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -134,7 +167,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                 }
               />
             </Grid>
-            <Grid size={{xs:12, sm:8, md:9, xl:9}}>
+            <Grid size={{ xs: 12, sm: 8, md: 9 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -161,7 +194,6 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             </Typography>
           )}
         </Box>
-
       </Box>
     </Modal>
   );

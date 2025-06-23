@@ -1,12 +1,12 @@
 "use client";
-import { alpha, Button, Skeleton, Stack, InputBase, Box } from "@mui/material";
+import { alpha, Skeleton, Stack, InputBase, Box } from "@mui/material";
 import ProductCard from "./components/card";
 import { Product } from "./types/product";
 import { useEffect, useState } from "react";
 import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
-import SearchIcon from '@mui/icons-material/Search';
-import { styled } from '@mui/material/styles';
+import SearchIcon from "@mui/icons-material/Search";
+import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
 
 interface ModalCard {
@@ -15,48 +15,47 @@ interface ModalCard {
   producto: Product;
 }
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(1),
-    width: 'auto',
+    width: "auto",
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  width: "100%",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
+    transition: theme.transitions.create("width"),
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
       },
     },
   },
 }));
-
 
 export default function Home() {
   const { products, fetchProducts, loading, error } = useProductos() as {
@@ -78,7 +77,6 @@ export default function Home() {
     producto.nombre?.toLowerCase().includes(search.toLowerCase())
   );
 
-
   const handleOpen = (producto: Product): void => {
     setSelectedProduct(producto);
     setOpen(true);
@@ -92,9 +90,6 @@ export default function Home() {
         <div className="text-center">
           <h1 className={homemadeApple.className}>La felicidad en barra</h1>
           <h2>NatuBar Barras Artesanales</h2>
-          <Button className="btn-portada">
-            Comprar ahora
-          </Button>
         </div>
       </div>
       <Box display="flex" justifyContent="center" my={2}>
@@ -114,25 +109,39 @@ export default function Home() {
         spacing={{ xs: 1, sm: 2 }}
         direction="row"
         useFlexGap
-        sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+        sx={{ flexWrap: "wrap", justifyContent: "center" }}
+      >
         {loading ? (
           <>
-            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="rounded"
+              width={313.021}
+              height={400}
+            />
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="rounded"
+              width={313.021}
+              height={400}
+            />
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="rounded"
+              width={313.021}
+              height={400}
+            />
           </>
         ) : error ? (
           <p>Error: {error}</p>
+        ) : filteredProducts.length === 0 ? (
+          <p>No se encontraron productos</p>
         ) : (
-          filteredProducts.length === 0 ? (
-            <p>No se encontraron productos</p>
-          ) : (
-            filteredProducts.map((producto) => (
-              <div key={producto.id} onClick={() => handleOpen(producto)}>
-                <ProductCard product={producto} />
-              </div>
-            ))
-          )
+          filteredProducts.map((producto) => (
+            <div key={producto.id} onClick={() => handleOpen(producto)}>
+              <ProductCard product={producto} />
+            </div>
+          ))
         )}
         {selectedProduct && (
           <ModalCard
