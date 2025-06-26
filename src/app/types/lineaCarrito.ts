@@ -1,6 +1,14 @@
 import { Product, Sabor } from "./product";
 
 export interface lineaCarrito {
+  numeral: number;
+  producto: Product;
+  sabores: saborLinea[];
+  cantidad: number;
+}
+
+export interface nuevaLineaCarrito {
+  numeral?: number;
   producto: Product;
   sabores: saborLinea[];
   cantidad: number;

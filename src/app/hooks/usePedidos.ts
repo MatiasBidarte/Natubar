@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { lineaCarrito } from "../types/lineaCarrito";
+import { lineaCarrito, nuevaLineaCarrito } from "../types/lineaCarrito";
 import { EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
   items: lineaCarrito[];
-  addToCart: (item: lineaCarrito) => void;
+  addToCart: (item: nuevaLineaCarrito) => void;
   removeFromCart: (index: number) => void;
   updateCartItem: (index: number, item: lineaCarrito) => void;
+  updateCantidad: (numeral: number, sumar: number) => void;
   clearCart: () => void;
 
   pedidos: Pedido[];
@@ -20,13 +21,17 @@ interface PedidoState {
   crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
 }
 
+let ultimoNumeral = 1;
+
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
-    addToCart: (item: lineaCarrito) =>
+    addToCart: (item: nuevaLineaCarrito) => {
+      const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
       set((state) => ({
-        items: [...state.items, item],
-      })),
+        items: [...state.items, itemConNumeral],
+      }));
+    },
     removeFromCart: (index: number) =>
       set((state) => ({
         items: state.items.filter((_, i) => i !== index),
@@ -37,6 +42,14 @@ export const usePedidos = create(
         newItems[index] = item;
         return { items: newItems };
       }),
+    updateCantidad: (numeral, sumar) =>
+      set((state) => ({
+        items: state.items.map((item) =>
+          item.numeral === numeral
+            ? { ...item, cantidad: item.cantidad + sumar }
+            : item
+        ),
+      })),
     clearCart: () => set({ items: [] }),
 
     pedidos: [],

@@ -17,6 +17,8 @@ import ModalCard from "./components/modalCard";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
+import BotonCarrito from "./components/IconCarrito";
+import {usePedidos} from "./hooks/usePedidos";
 
 interface ModalCard {
   open: boolean;
@@ -24,8 +26,8 @@ interface ModalCard {
   producto: Product;
 }
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
   "&:hover": {
@@ -86,6 +88,8 @@ export default function Home() {
   const filteredProducts = products.filter((producto) =>
     producto.nombre?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const { items } = usePedidos();
 
   const handleOpen = (producto: Product): void => {
     setSelectedProduct(producto);
@@ -192,6 +196,8 @@ export default function Home() {
           />
         )}
       </Stack>
+      <BotonCarrito cantidad={items.length}/>
     </div>
+    
   );
 }
