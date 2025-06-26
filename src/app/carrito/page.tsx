@@ -5,8 +5,7 @@ import {
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { usePedido } from '../hooks/usePedido';
-import { lineaCarrito } from '../types/lineaCarrito';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { homemadeApple } from '../ui/fonts';
 
 const Carrito = () => {

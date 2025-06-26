@@ -24,7 +24,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   console.log(producto)
   
   const { sabores = [], getSabores } = useProductos() ?? { sabores: [], getSabores: () => {} };
-  const {items} = usePedido();
+
   useEffect(() => {
     getSabores();
   }, [getSabores]);
@@ -72,8 +72,6 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
       producto,
       sabores: saboresSeleccionados,
       cantidad: cantidadTotal,
-      eliminado: false,
-      numeral: items.length,
     });
     handleClose();
   };

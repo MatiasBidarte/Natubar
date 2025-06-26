@@ -9,13 +9,20 @@ interface CartState {
   toggleEliminado: (numeral: number) => void;
 }
 
+let ultimoNumeral = 1;
+
 export const usePedido = create(
+  
   devtools<CartState>((set) => ({
     items: [],
-    addToCart: (item: lineaCarrito) =>
+    
+    addToCart: (item: lineaCarrito) => {
+      const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
       set((state) => ({
-        items: [...state.items, item],
-      })),
+        
+        items: [...state.items, itemConNumeral],
+      }));
+    },
 
     updateCantidad: (numeral, sumar) =>
       set((state) => ({
