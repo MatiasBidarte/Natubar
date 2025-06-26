@@ -100,7 +100,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             }}
           >
             <Image
-              src={producto.urlImagen ?? "/placeholder.png"}
+              src={producto.urlImagen!}
               alt={producto.nombre ?? "Imagen del producto"}
               width={640}
               height={400}
@@ -115,7 +115,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             sx={{ px: 2, margin: "10px" }}
           >
             <Typography sx={{ fontSize: "22px" }}>{producto.nombre}</Typography>
-            <Typography>${producto.precioPersonas}</Typography>
+            <Typography>${producto.precioPersonas?.toFixed(2)}</Typography>
           </Stack>
 
           <Divider
@@ -123,7 +123,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               width: "calc(100% + 32px)",
               marginLeft: "-16px",
               borderBottomWidth: 1,
-              borderColor: theme.palette.primary.main,
+              borderColor: theme.palette.secondary.main,
             }}
           />
 

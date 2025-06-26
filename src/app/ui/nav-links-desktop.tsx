@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { Typography } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import Image from "next/image";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const links = [
   {
@@ -22,11 +23,8 @@ const links = [
   },
 ];
 
-export default function NavLinksDesktop({
-  estaLogueado = false,
-}: {
-  estaLogueado?: boolean;
-}) {
+export default function NavLinksDesktop() {
+  const { estaLogueado } = useUsuarioStore();
   const pathname = usePathname();
 
   return (
