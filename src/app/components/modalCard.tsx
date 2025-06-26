@@ -8,14 +8,11 @@ import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import { Product } from "../types/product";
 import theme from "../ui/theme";
-import { useState } from "react";
-import IconCarrito from "./IconCarrito";
+import { useState , useEffect} from "react";
 import NumericImput from "./numericImput";
 import { saborLinea } from "../types/lineaCarrito";
 import { usePedido } from "../hooks/usePedido";
-
-
-
+import  useProductos from "../hooks/useProductos";
 
 interface CustomModalProps {
   open: boolean;
@@ -25,46 +22,58 @@ interface CustomModalProps {
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   console.log(producto)
+  
+  const { sabores = [], getSabores } = useProductos() ?? { sabores: [], getSabores: () => {} };
+  const {items} = usePedido();
+  useEffect(() => {
+    getSabores();
+  }, [getSabores]);
+
   const [error, setError] = useState("");
   const addToCart = usePedido((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
+  
+
   const handleChange = (saborId: number, value: number) => {
     setCantidades((prev) => ({
       ...prev,
       [saborId]: value,
     }));
   };
-
+  
   const handleAddToCart = () => {
-
     
-    const saboresSeleccionados: saborLinea[] = (producto.sabores ?? [])
+    const saboresSeleccionados: saborLinea[] = (sabores ?? [])
       .filter((sabor) => (cantidades[sabor.id] || 0) > 0)
       .map((sabor) => ({
         sabor,
         cantidad: cantidades[sabor.id],
         cantidadTotal: cantidadTotal,
       }));
-      
-    if (saboresSeleccionados.length === 0) return;
+    if( producto.esCajaDeBarras){  
     const sumaSabores = saboresSeleccionados.reduce(
       (acc, saborLinea) => acc + saborLinea.cantidad,
       0
     );
-    if (sumaSabores !== 12) {
-      setError("Debes seleccionar exactamente 12 unidades entre los sabores.");
-      
+
+    
+      if (sumaSabores !== producto.cantidadDeBarras) {
+      setError(`Debes seleccionar exactamente ${producto.cantidadDeBarras} unidades entre los sabores.`);
       return;
     }
+    }
+    
     setError("");
 
-
+    
     
     addToCart({
       producto,
       sabores: saboresSeleccionados,
       cantidad: cantidadTotal,
+      eliminado: false,
+      numeral: items.length,
     });
     handleClose();
   };
@@ -110,7 +119,10 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
 
           <Stack sx={{ px: 2, margin: "10px" }}>
             <Typography>¡Elige los sabores que más te gustan y agrega las barras a tu pedido!</Typography>
-            {producto.sabores?.map((sabor) => (
+            {producto.esCajaDeBarras && (
+              sabores.length === 0 ? (
+                <Typography>Cargando sabores...</Typography>
+              ) : (sabores.map((sabor) => (
               <Box key={sabor.id} display="flex" alignItems="center" sx={{ my: 1 }}>
                 <Typography sx={{ minWidth: 120 }}>{sabor.nombre}</Typography>
                 <NumericImput
@@ -118,7 +130,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                   onChange={(e) => handleChange(sabor.id, Number(e.target.value))}
                 />
               </Box>
-            ))}
+            ))))}
           </Stack>
           <Grid
             container
@@ -155,7 +167,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                 }}
                 onClick={handleAddToCart}
               >
-                <IconCarrito />
+                
                 Agregar al carrito
               </Button>
             </Grid>

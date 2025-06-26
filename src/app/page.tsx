@@ -8,8 +8,8 @@ import ModalCard from "./components/modalCard";
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
 import useProductos from "./hooks/useProductos";
+import BotonCarrito from "./components/IconCarrito";
 import {usePedido} from "./hooks/usePedido";
-import BotonCarrito from "./components/IconCarrito2"
 
 interface ModalCard {
   open: boolean;
@@ -69,8 +69,6 @@ export default function Home() {
     fetchProducts: () => void;
   };
 
-  const { items } = usePedido();
-
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -83,6 +81,7 @@ export default function Home() {
     producto.nombre?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const { items } = usePedido();
 
   const handleOpen = (producto: Product): void => {
     setSelectedProduct(producto);
@@ -147,10 +146,8 @@ export default function Home() {
           />
         )}
       </Stack>
-      <BotonCarrito cantidad={items.length} />
+      <BotonCarrito cantidad={items.length}/>
     </div>
     
   );
 }
-
-//RECORDAR MODIFICAR CANTIDAD A LO QUE SEA DE LOCAL STORAGE DE ITEMS

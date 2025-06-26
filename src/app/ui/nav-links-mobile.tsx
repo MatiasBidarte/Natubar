@@ -3,6 +3,8 @@ import { AccountCircle, Home, ShoppingBag } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 import { Typography } from "@mui/material";
 
+
+
 const links = [
   {
     href: "/",
@@ -27,7 +29,7 @@ export default function NavLinksMobile({
   estaLogueado?: boolean;
 }) {
   const pathname = usePathname();
-
+  
   return (
     <div className="fixed bottom-0 left-0 w-screen md:hidden flex items-center justify-around p-3 bg-[#FFF9ED]">
       {links.map((link, index) => {
@@ -52,6 +54,7 @@ export default function NavLinksMobile({
           </Link>
         );
       })}
+    
     </div>
   );
 }
