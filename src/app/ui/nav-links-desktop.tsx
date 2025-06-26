@@ -16,12 +16,12 @@ const links = [
     type: "text",
   },
   {
-    href: "/perfil/compras",
+    href: "/perfil/compras/",
     name: "Mis Compras",
     type: "text",
   },
   {
-    href: "/perfil",
+    href: "/perfil/",
     name: "Mi Perfil",
     type: "icon",
   },

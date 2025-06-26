@@ -1,7 +1,7 @@
-import { Client } from "../useClientes";
+import { Cliente } from "../useClientes";
 
 export interface ActualizarCLienteResponse {
   message: string;
-  cliente: Client;
+  cliente: Cliente;
   access_token: string;
 }
