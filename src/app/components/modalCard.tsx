@@ -66,8 +66,6 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
     
     setError("");
 
-    
-    
     addToCart({
       producto,
       sabores: saboresSeleccionados,

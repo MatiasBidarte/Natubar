@@ -2,11 +2,11 @@
   id?: number;
   nombre?: string;
   descripcion?: string;
-  precioPersonas?: string;
-  precioEmpresas?: number;
+  precioPersonas: number;
+  precioEmpresas: number;
   stock?: boolean;
   urlImagen?: string;
-  sabores? :Sabor[]
+  //sabores? :Sabor[]
   esCajaDeBarras: boolean;
   cantidadDeBarras: number;
 }

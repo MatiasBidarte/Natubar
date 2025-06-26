@@ -17,7 +17,7 @@ const Carrito = () => {
   };
 
   const calcularTotal = () => {
-    return items.reduce((acc, item) => acc + item.producto.precioPersonas * (item.cantidad), 0);
+    return items.reduce((acc, item) => acc + (item.producto.precioPersonas * (item.cantidad)), 0);
   };
 
   console.log(items);

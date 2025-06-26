@@ -1,6 +1,6 @@
 "use client";
 import { create } from "zustand";
-import { Product } from "../types/product";
+import { Product, Sabor } from "../types/product";
 
 interface StoreProductoState {
   products: Product[];
@@ -10,13 +10,14 @@ interface StoreProductoState {
   fetchProducts: () => Promise<void>;
   addProduct: (product: Product) => void;
   getProductById: (id: number) => Product | undefined;
+  getSabores: () => Sabor[] | undefined | Promise<void>;
 }
 
 const useProductos = create<StoreProductoState>((set, get) => ({
   products: [],
   loading: false,
   error: null,
-
+  sabores: [],
   fetchProducts: async () => {
     set({ loading: true, error: null });
     try {
