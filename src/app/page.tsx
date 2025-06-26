@@ -9,7 +9,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
 import BotonCarrito from "./components/IconCarrito";
-import {usePedido} from "./hooks/usePedido";
+import {usePedidos} from "./hooks/usePedidos";
 
 interface ModalCard {
   open: boolean;
@@ -79,7 +79,7 @@ export default function Home() {
     producto.nombre?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const { items } = usePedido();
+  const { items } = usePedidos();
 
   const handleOpen = (producto: Product): void => {
     setSelectedProduct(producto);

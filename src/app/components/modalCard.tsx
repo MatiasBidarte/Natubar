@@ -11,7 +11,6 @@ import theme from "../ui/theme";
 import { useState , useEffect} from "react";
 import NumericImput from "./numericImput";
 import { saborLinea } from "../types/lineaCarrito";
-import { usePedido } from "../hooks/usePedido";
 import  useProductos from "../hooks/useProductos";
 import { usePedidos } from "../hooks/usePedidos";
 

@@ -20,13 +20,17 @@ interface PedidoState {
   crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
 }
 
+let ultimoNumeral = 1;
+
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
-    addToCart: (item: lineaCarrito) =>
+    addToCart: (item: lineaCarrito) => {
+      const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
       set((state) => ({
-        items: [...state.items, item],
-      })),
+        items: [...state.items, itemConNumeral],
+      }));
+    },
     removeFromCart: (index: number) =>
       set((state) => ({
         items: state.items.filter((_, i) => i !== index),
@@ -37,6 +41,14 @@ export const usePedidos = create(
         newItems[index] = item;
         return { items: newItems };
       }),
+    updateCantidad: (numeral, sumar) =>
+      set((state) => ({
+        items: state.items.map((item) =>
+          item.numeral === numeral
+            ? { ...item, cantidad: item.cantidad + sumar }
+            : item
+        ),
+      })),
     clearCart: () => set({ items: [] }),
 
     pedidos: [],

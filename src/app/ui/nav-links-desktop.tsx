@@ -3,8 +3,7 @@ import { usePathname } from "next/navigation";
 import { Typography } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import Image from "next/image";
-//import BotonCarrito from "../components/IconCarrito2";
-import {usePedido} from "../hooks/usePedido";
+import {usePedidos} from "../hooks/usePedidos";
 import { ShoppingCart } from "@mui/icons-material";
 import { Badge } from "@mui/material";
 
@@ -35,7 +34,7 @@ export default function NavLinksDesktop({
   estaLogueado?: boolean;
 }) {
   const pathname = usePathname();
-  const { items } = usePedido();
+  const { items } = usePedidos();
   return (
     <div className="z-[1000] fixed hidden md:flex items-center justify-between bg-[#201B21] text-[#B99342] w-screen">
       <div className="w-12"></div>

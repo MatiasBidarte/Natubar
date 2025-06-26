@@ -4,14 +4,14 @@ import {
   Box, Typography, IconButton, Button, Divider, Stack, Paper, Snackbar, Container
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { usePedido } from '../hooks/usePedido';
+import { usePedidos } from '../hooks/usePedidos';
 import { useState } from 'react';
 import { homemadeApple } from '../ui/fonts';
 
 const Carrito = () => {
-  const { items } = usePedido();
+  const { items } = usePedidos();
   const [apiError, setApiError] = useState<string | null>(null);
-  const updateCantidad = usePedido((state) => state.updateCantidad);
+  const updateCantidad = usePedidos((state) => state.updateCantidad);
   const handleCantidadChange = (numeral: number, delta: number) => {
     updateCantidad(numeral,delta);
   };
