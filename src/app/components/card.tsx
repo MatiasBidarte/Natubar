@@ -21,18 +21,18 @@ const ProductCard = ({
     <Card
       sx={{
         width: "100%",
-        maxWidth: 280,
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        padding: 0,
         transition: "transform 0.2s",
         "&:hover": {
           transform: "scale(1.02)",
         },
       }}
       onClick={onClick}
-      elevation={2}
+      elevation={1}
     >
       <Box sx={{ position: "relative" }}>
         <CardMedia
@@ -40,8 +40,8 @@ const ProductCard = ({
           alt={product.nombre || "Producto"}
           image={product.urlImagen}
           sx={{
-            width: "230px",
-            height: "230px",
+            width: "393px",
+            height: "250px",
             objectFit: "cover",
           }}
         />

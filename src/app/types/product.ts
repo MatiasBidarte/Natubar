@@ -4,9 +4,12 @@ export interface Product {
   descripcion?: string;
   precioPersonas?: number;
   precioEmpresas?: number;
+  peso?: number;
   stock?: boolean;
   urlImagen?: string;
   sabores?: Sabor[];
+  esCajaDeBarras: boolean;
+  cantidadDeBarras?: number;
 }
 
 export interface Sabor {

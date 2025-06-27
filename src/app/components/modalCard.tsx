@@ -8,11 +8,13 @@ import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import { Product } from "../types/product";
 import theme from "../ui/theme";
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import NumericImput from "./numericImput";
 import { saborLinea } from "../types/lineaCarrito";
-import  useProductos from "../hooks/useProductos";
+import useProductos from "../hooks/useProductos";
 import { usePedidos } from "../hooks/usePedidos";
+import { Close } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 
 interface CustomModalProps {
   open: boolean;
@@ -21,9 +23,10 @@ interface CustomModalProps {
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
-  console.log(producto)
-  
-  const { sabores = [], getSabores } = useProductos() ?? { sabores: [], getSabores: () => {} };
+  const { sabores = [], getSabores } = useProductos() ?? {
+    sabores: [],
+    getSabores: () => {},
+  };
 
   useEffect(() => {
     getSabores();
@@ -31,9 +34,8 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
 
   const [error, setError] = useState("");
   const addToCart = usePedidos((state) => state.addToCart);
-  const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres
+  const [cantidadTotal, setCantidadTotal] = useState(1);
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
-  
 
   const handleChange = (saborId: number, value: number) => {
     setCantidades((prev) => ({
@@ -41,29 +43,33 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
       [saborId]: value,
     }));
   };
-  
+
+  const handleOnClose = () => {
+    setError("");
+    handleClose();
+  };
+
   const handleAddToCart = () => {
-    
     const saboresSeleccionados: saborLinea[] = (sabores ?? [])
       .filter((sabor) => (cantidades[sabor.id] || 0) > 0)
       .map((sabor) => ({
         sabor,
         cantidad: cantidades[sabor.id],
-        cantidadTotal: cantidadTotal,
       }));
-    if( producto.esCajaDeBarras){  
-    const sumaSabores = saboresSeleccionados.reduce(
-      (acc, saborLinea) => acc + saborLinea.cantidad,
-      0
-    );
+    if (producto.esCajaDeBarras) {
+      const sumaSabores = saboresSeleccionados.reduce(
+        (acc, saborLinea) => acc + saborLinea.cantidad,
+        0
+      );
 
-    
       if (sumaSabores !== producto.cantidadDeBarras) {
-      setError(`Debes seleccionar exactamente ${producto.cantidadDeBarras} unidades entre los sabores.`);
-      return;
+        setError(
+          `Debes seleccionar exactamente ${producto.cantidadDeBarras} unidades entre los sabores.`
+        );
+        return;
+      }
     }
-    }
-    
+
     setError("");
 
     addToCart({
@@ -77,7 +83,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={handleOnClose}
       aria-labelledby="modal-title"
       sx={{ borderRadius: 5 }}
     >
@@ -93,32 +99,43 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
-            p: { xs: 2 },
           }}
         >
-          <Typography
-            id="modal-title"
-            variant="h6"
-            textAlign="center"
-            sx={{ pb: 2 }}
+          <Box
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems="center"
           >
-            Personaliza tu pedido
-          </Typography>
+            <Typography
+              id="modal-title"
+              variant="h6"
+              width={"100%"}
+              textAlign="center"
+              sx={{ p: 2 }}
+            >
+              Personaliza tu pedido
+            </Typography>
+            <IconButton>
+              <Close onClick={handleOnClose} />
+            </IconButton>
+          </Box>
 
           <Box
             sx={{
               width: "100%",
-              height: 300,
+              position: "relative",
+              paddingTop: "60%", // Relación de aspecto 5:3
               overflow: "hidden",
-              borderRadius: 2,
             }}
           >
             <Image
               src={producto.urlImagen!}
               alt={producto.nombre ?? "Imagen del producto"}
-              width={640}
-              height={400}
-              unoptimized
+              fill
+              sizes="(max-width: 600px) 95vw, (max-width: 1200px) 600px"
+              style={{
+                objectFit: "cover",
+              }}
             />
           </Box>
 
@@ -126,6 +143,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             spacing={2}
             direction="row"
             justifyContent="space-between"
+            alignItems={"center"}
             sx={{ px: 2, margin: "10px" }}
           >
             <Typography sx={{ fontSize: "22px" }}>{producto.nombre}</Typography>
@@ -134,29 +152,42 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
 
           <Divider
             sx={{
-              width: "calc(100% + 32px)",
-              marginLeft: "-16px",
+              width: "100%",
               borderBottomWidth: 1,
               borderColor: theme.palette.secondary.main,
             }}
           />
 
           <Stack sx={{ px: 2, margin: "10px" }}>
-            <Typography>¡Elige los sabores que más te gustan y agrega las barras a tu pedido!</Typography>
-            {producto.esCajaDeBarras && (
-              sabores.length === 0 ? (
+            <Typography>
+              ¡Elige los sabores que más te gustan y agrega las barras a tu
+              pedido!
+            </Typography>
+            {producto.esCajaDeBarras &&
+              (sabores.length === 0 ? (
                 <Typography>Cargando sabores...</Typography>
-              ) : (sabores.map((sabor) => (
-              <Box key={sabor.id} display="flex" alignItems="center" sx={{ my: 1 }}>
-                <Typography sx={{ minWidth: 120 }}>{sabor.nombre}</Typography>
-                <NumericImput
-                  value={cantidades[sabor.id] || 0}
-                  onChange={(e) =>
-                    handleChange(sabor.id, Number(e.target.value))
-                  }
-                />
-              </Box>
-            ))))}
+              ) : (
+                sabores.map((sabor) => (
+                  <Box
+                    key={sabor.id}
+                    display="flex"
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                    sx={{ my: 1 }}
+                  >
+                    <Typography sx={{ minWidth: 120 }}>
+                      {sabor.nombre}
+                    </Typography>
+                    <NumericImput
+                      width="130px"
+                      value={cantidades[sabor.id] || 0}
+                      onChange={(e) =>
+                        handleChange(sabor.id, Number(e.target.value))
+                      }
+                    />
+                  </Box>
+                ))
+              ))}
           </Stack>
           <Grid
             container
@@ -170,6 +201,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
           >
             <Grid size={{ xs: 12, sm: 4, md: 3 }}>
               <NumericImput
+                width="100%"
                 value={cantidadTotal}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setCantidadTotal(Number(e.target.value))
@@ -192,13 +224,15 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
                 }}
                 onClick={handleAddToCart}
               >
-                
                 Agregar al carrito
               </Button>
             </Grid>
           </Grid>
           {error && (
-            <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+            <Typography
+              color="error"
+              sx={{ mb: 2, pr: 2, pl: 2, textAlign: "center" }}
+            >
               {error}
             </Typography>
           )}
