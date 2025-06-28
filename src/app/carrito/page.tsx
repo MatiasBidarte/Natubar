@@ -1,12 +1,16 @@
 
 "use client";
 import {
-  Box, Typography, IconButton, Button, Divider, Stack, Paper, Snackbar, Container
+  Box, Typography, IconButton, Button, Stack, Paper, Snackbar, Container
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { usePedidos } from '../hooks/usePedidos';
 import { useState } from 'react';
 import { homemadeApple } from '../ui/fonts';
+import Grid from "@mui/material/Grid";
+import NumericImput from "../components/numericImput";
+import theme from "../ui/theme";
+import { useRouter } from 'next/navigation';
 
 const Carrito = () => {
   const { items } = usePedidos();
@@ -15,14 +19,22 @@ const Carrito = () => {
   const handleCantidadChange = (numeral: number, delta: number) => {
     updateCantidad(numeral,delta);
   };
+  const router = useRouter();
+
+  const removeFromCart = usePedidos((state) => state.removeFromCart);
+  const eliminarItem = (numeral: number) => {
+    console.log("eliminar: "+numeral)
+    removeFromCart(numeral);
+    console.log("Carrito items:", items);
+  }
 
   const calcularTotal = () => {
     return items.reduce((acc, item) => acc + (item.producto.precioPersonas * (item.cantidad)), 0);
   };
 
-  console.log(items);
+  //console.log(items);
   return (
-    <div className="flex bg-white px-4 p-14">
+    <div className="flex bg-white px-4 p-14 w-full">
       {apiError && (
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -32,13 +44,24 @@ const Carrito = () => {
           onClose={() => setApiError(null)}
         />
       )}
-      <Container className="p-8 w-full max-w-md">
+      <Container sx={{
+            width: '100%',
+            mx: 'auto',
+            px: 2,
+          }}>
       <Typography variant="h6" p-top={16} mb={2} textAlign="center" className={homemadeApple.className}>
         Carrito de Compras
       </Typography>
 
       <Stack spacing={2}>
-        {items.map((item) => (
+        {  items.length === 0 ? (
+            <Typography textAlign="center" color="text.secondary" mt={4}>
+              El carrito está vacío.
+            </Typography>
+
+        ) :
+        (
+        items.map((item) => (
           <Paper key={item.numeral} elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', gap: 2 }}>
             <Box
               component="img"
@@ -56,25 +79,18 @@ const Carrito = () => {
                 {item.producto.esCajaDeBarras && item.sabores.map((s) => s.sabor.nombre + " (" + s.cantidad +")").join(', ')}
               </Typography>
               <Box mt={1} display="flex" alignItems="center" gap={1}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => handleCantidadChange(item.numeral, -1)}
-                >
-                  -
-                </Button>
-                <Typography>{item.cantidad}</Typography>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => handleCantidadChange(item.numeral, 1)}
-                >
-                  +
-                </Button>
+                <Grid size={{ xs: 12, sm: 4, md: 3 }}>
+              <NumericImput
+                value={item.cantidad}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleCantidadChange(item.numeral, Number(e.target.value))
+                }
+              />
+            </Grid>
               </Box>
             </Box>
             <Box display="flex" flexDirection="column" alignItems="flex-end">
-              <IconButton disabled>
+              <IconButton onClick={() => eliminarItem(item.numeral)}>
                 <DeleteOutlineIcon />
               </IconButton>
               <Typography variant="body2">${item.producto.precioPersonas} c/u</Typography>
@@ -83,20 +99,11 @@ const Carrito = () => {
               </Typography>
             </Box>
           </Paper>
-        ))}
+        )))}
 
         <Box p={2} bgcolor="white" borderRadius={2}>
           <Stack direction="row" justifyContent="space-between">
-            <Typography>Subtotal</Typography>
-            <Typography>${calcularTotal()}</Typography>
-          </Stack>
-          <Stack direction="row" justifyContent="space-between">
-            <Typography>Envío</Typography>
-            <Typography color="green">Gratis</Typography>
-          </Stack>
-          <Divider sx={{ my: 1 }} />
-          <Stack direction="row" justifyContent="space-between">
-            <Typography fontWeight="bold">Total</Typography>
+            <Typography fontWeight="bold">Subtotal</Typography>
             <Typography fontWeight="bold">${calcularTotal()}</Typography>
           </Stack>
         </Box>
@@ -105,9 +112,9 @@ const Carrito = () => {
           variant="contained"
           fullWidth
           sx={{
-            bgcolor: '#b78b36',
+            bgcolor: theme.palette.secondary.main,
             py: 1.5,
-            borderRadius: 2,
+            borderRadius: '28px',
             fontWeight: 'bold',
             fontSize: '16px',
             '&:hover': {
@@ -117,20 +124,21 @@ const Carrito = () => {
         >
           Comprar ahora
         </Button>
-        <Button
+          <Button
           variant="outlined"
           fullWidth
           sx={{
-            borderColor: '#b78b36',
-            color: '#b78b36',
+            borderColor: theme.palette.secondary.main,
+            color: theme.palette.secondary.main,
             py: 1.5,
-            borderRadius: 2,
+            borderRadius: '28px',
             fontWeight: 'bold'
           }}
-          href="/"
+          onClick={() => router.push("/")}
         >
           Seguir comprando
         </Button>
+        
       </Stack>
     </Container>
     </div>

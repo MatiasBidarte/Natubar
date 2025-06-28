@@ -26,16 +26,51 @@ let ultimoNumeral = 1;
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
+    /*
     addToCart: (item: nuevaLineaCarrito) => {
       const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
       set((state) => ({
         items: [...state.items, itemConNumeral],
       }));
-    },
-    removeFromCart: (index: number) =>
-      set((state) => ({
-        items: state.items.filter((_, i) => i !== index),
-      })),
+    },*/
+    addToCart: (item: nuevaLineaCarrito) => {
+  const state = get();
+
+  const mismoProducto = (a: lineaCarrito, b: nuevaLineaCarrito) =>
+    a.producto.id === b.producto.id &&
+    a.sabores.length === b.sabores.length &&
+    a.sabores.every((saborA) =>
+      b.sabores.some(
+        (saborB) =>
+          saborA.sabor.id === saborB.sabor.id &&
+          saborA.cantidad === saborB.cantidad
+      )
+    );
+
+  const itemExistente = state.items.find((i) => mismoProducto(i, item));
+
+  if (itemExistente) {
+    set((state) => ({
+      items: state.items.map((i) =>
+        mismoProducto(i, item)
+          ? { ...i, cantidad: i.cantidad + item.cantidad }
+          : i
+      ),
+    }));
+  } else {
+    const itemConNumeral: lineaCarrito = {
+      ...item,
+      numeral: ultimoNumeral++,
+    };
+    set((state) => ({
+      items: [...state.items, itemConNumeral],
+    }));
+  }
+},
+    removeFromCart: (numeral: number) =>
+  set((state) => ({
+    items: state.items.filter((item) => item.numeral !== numeral),
+  })),
     updateCartItem: (index: number, item: lineaCarrito) =>
       set((state) => {
         const newItems = [...state.items];
@@ -46,7 +81,7 @@ export const usePedidos = create(
       set((state) => ({
         items: state.items.map((item) =>
           item.numeral === numeral
-            ? { ...item, cantidad: item.cantidad + sumar }
+            ? { ...item, cantidad: sumar }
             : item
         ),
       })),

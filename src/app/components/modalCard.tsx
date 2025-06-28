@@ -29,6 +29,15 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
     getSabores();
   }, [getSabores]);
 
+
+  useEffect(() => {
+  if (!open) {
+    setError("");
+    setCantidades({});
+    setCantidadTotal(1);
+  }
+}, [open]);
+
   const [error, setError] = useState("");
   const addToCart = usePedidos((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres
@@ -63,8 +72,6 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
       return;
     }
     }
-    
-    setError("");
 
     addToCart({
       producto,
@@ -72,6 +79,8 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
       cantidad: cantidadTotal,
     });
     handleClose();
+
+    setError("");
   };
 
   return (
