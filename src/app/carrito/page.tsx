@@ -26,7 +26,7 @@ const Carrito = () => {
 
   const calcularTotal = () => {
     return items.reduce(
-      (acc, item) => acc + item.producto.precioPersonas * item.cantidad,
+      (acc, item) => acc + item.producto.precioPersonas! * item.cantidad,
       0
     );
   };
@@ -107,7 +107,7 @@ const Carrito = () => {
                   ${item.producto.precioPersonas} c/u
                 </Typography>
                 <Typography fontWeight="bold">
-                  ${item.producto.precioPersonas * item.cantidad}
+                  ${item.producto.precioPersonas! * item.cantidad}
                 </Typography>
               </Box>
             </Paper>

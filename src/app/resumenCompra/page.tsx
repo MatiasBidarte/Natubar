@@ -23,6 +23,7 @@ import Link from "next/link";
 import { usePedidos } from "../hooks/usePedidos";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 import { useRouter } from "next/navigation";
+import { NuevaLineaCarrito } from "../types/lineaCarrito";
 
 const ResumenCompraPage = () => {
   const {
@@ -32,17 +33,13 @@ const ResumenCompraPage = () => {
     clearCart,
     crearPedido,
     addToCart,
-    loadingPedidos,
-    errorPedidos,
   } = usePedidos();
-  const { usuario, estaLogueado, esEmpresa } = useUsuarioStore();
+  const { usuario, estaLogueado } = useUsuarioStore();
   const router = useRouter();
   const [procesando, setProcesando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Añade esta función dentro del componente ResumenCompraPage
   const addTestProducts = () => {
-    // Datos de prueba
     const testProducts = [
       {
         producto: {
@@ -89,12 +86,10 @@ const ResumenCompraPage = () => {
         cantidad: 1,
         sabores: [{ sabor: { id: 5, nombre: "Almendra" }, cantidad: 1 }],
       },
-    ];
+    ] as NuevaLineaCarrito[];
 
-    // Limpia el carrito primero
     clearCart();
 
-    // Agrega cada producto al carrito
     testProducts.forEach((item) => {
       addToCart(item);
     });
@@ -104,13 +99,15 @@ const ResumenCompraPage = () => {
     addTestProducts();
   }, []);
 
-  // Calcular totales
   const subtotal = items.reduce(
-    (sum, item) => sum + item.producto.precioPersonas * item.cantidad,
+    (sum, item) => sum + item.producto.precioPersonas! * item.cantidad,
     0
   );
-  const impuestos = subtotal * 0.22; // IVA 22%
-  const total = subtotal + impuestos;
+  const envio = process.env.NEXT_PUBLIC_VALOR_ENVIO;
+  const costoEnvio = process.env.NEXT_PUBLIC_COSTO_ENVIO;
+  const total =
+    subtotal +
+    (envio ? (subtotal >= Number(costoEnvio) ? 0 : parseFloat(envio)) : 0);
 
   const handleUpdateQuantity = (index: number, newQuantity: number) => {
     if (newQuantity <= 0) return;
@@ -259,7 +256,7 @@ const ResumenCompraPage = () => {
                       {item.producto.nombre}
                     </Typography>
                     <Typography variant="body2" className="text-gray-500 mb-2">
-                      ${item.producto.precioPersonas.toFixed(2)}
+                      ${item.producto.precioPersonas!.toFixed(2)}
                     </Typography>
 
                     <Box className="flex justify-between items-center">
@@ -313,7 +310,7 @@ const ResumenCompraPage = () => {
                   </Box>
 
                   <Typography variant="body2" className="text-center">
-                    ${item.producto.precioPersonas.toFixed(2)}
+                    ${item.producto.precioPersonas!.toFixed(2)}
                   </Typography>
 
                   <Box className="flex items-center justify-center">
@@ -341,7 +338,7 @@ const ResumenCompraPage = () => {
                   <Box className="flex items-center gap-2">
                     <Typography variant="body2" className="font-medium">
                       $
-                      {(item.producto.precioPersonas * item.cantidad).toFixed(
+                      {(item.producto.precioPersonas! * item.cantidad).toFixed(
                         2
                       )}
                     </Typography>
@@ -384,8 +381,10 @@ const ResumenCompraPage = () => {
                 <Typography>${subtotal.toFixed(2)}</Typography>
               </Box>
               <Box className="flex justify-between">
-                <Typography>IVA (22%)</Typography>
-                <Typography>${impuestos.toFixed(2)}</Typography>
+                <Typography>Envio</Typography>
+                <Typography>
+                  ${total === subtotal ? envio : "Gratis"}
+                </Typography>
               </Box>
               <Divider className="my-3" />
               <Box className="flex justify-between">

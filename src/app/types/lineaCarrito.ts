@@ -7,7 +7,7 @@ export interface lineaCarrito {
   cantidad: number;
 }
 
-export interface nuevaLineaCarrito {
+export interface NuevaLineaCarrito {
   numeral?: number;
   producto: Product;
   sabores: saborLinea[];
