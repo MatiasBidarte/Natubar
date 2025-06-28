@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { lineaCarrito, nuevaLineaCarrito } from "../types/lineaCarrito";
+import { lineaCarrito, NuevaLineaCarrito } from "../types/lineaCarrito";
 import { EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
   items: lineaCarrito[];
-  addToCart: (item: nuevaLineaCarrito) => void;
+  addToCart: (item: NuevaLineaCarrito) => void;
   removeFromCart: (index: number) => void;
   updateCartItem: (index: number, item: lineaCarrito) => void;
   updateCantidad: (numeral: number, sumar: number) => void;
@@ -26,7 +26,7 @@ let ultimoNumeral = 1;
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
-    addToCart: (item: nuevaLineaCarrito) => {
+    addToCart: (item: NuevaLineaCarrito) => {
       const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
       set((state) => ({
         items: [...state.items, itemConNumeral],

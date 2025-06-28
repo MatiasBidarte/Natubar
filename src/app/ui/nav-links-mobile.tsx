@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AccountCircle, Home, ShoppingBag } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 import { Typography } from "@mui/material";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 
 
@@ -23,11 +24,8 @@ const links = [
   },
 ];
 
-export default function NavLinksMobile({
-  estaLogueado = false,
-}: {
-  estaLogueado?: boolean;
-}) {
+export default function NavLinksMobile() {
+  const { estaLogueado } = useUsuarioStore();
   const pathname = usePathname();
   
   return (
