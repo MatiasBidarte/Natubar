@@ -1,5 +1,14 @@
 "use client";
-import { alpha, Skeleton, Stack, InputBase, Box } from "@mui/material";
+import {
+  alpha,
+  Skeleton,
+  Stack,
+  InputBase,
+  Box,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import ProductCard from "./components/card";
 import { Product } from "./types/product";
 import { useEffect, useState } from "react";
@@ -60,6 +69,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Home() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { products, fetchProducts, loading, error } = useProductos() as {
     products: Product[];
     loading: boolean;
@@ -70,7 +81,6 @@ export default function Home() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
   const [open, setOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [search, setSearch] = useState<string>("");
@@ -92,10 +102,41 @@ export default function Home() {
     <div className=" md:border-amber-600">
       <div className="portada flex items-center justify-center">
         <div className="text-center">
-          <h1 className={homemadeApple.className}>La felicidad en barra</h1>
-          <h2>NatuBar Barras Artesanales</h2>
+          <Typography
+            variant={isMobile ? "h4" : "h2"}
+            fontFamily={homemadeApple.style.fontFamily}
+            gutterBottom
+          >
+            La felicidad en barra
+          </Typography>
+          <Typography variant={isMobile ? "h5" : "h3"} fontWeight={300}>
+            NatuBar Barras Artesanales
+          </Typography>
         </div>
       </div>
+      <Box
+        height={"151px"}
+        display="flex"
+        flexDirection={"column"}
+        alignItems="center"
+        justifyContent="center"
+        bgcolor={theme.palette.secondary.main}
+      >
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          fontWeight={300}
+          textAlign="center"
+        >
+          AHORA PODÉS HACER
+        </Typography>
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          fontFamily={homemadeApple.style.fontFamily}
+          textAlign="center"
+        >
+          tu pedido más rápido y fácil
+        </Typography>
+      </Box>
       <Box display="flex" justifyContent="center" my={2}>
         <Search>
           <SearchIconWrapper>

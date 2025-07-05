@@ -3,10 +3,10 @@ import { usePathname } from "next/navigation";
 import { Typography } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import Image from "next/image";
-import {usePedidos} from "../hooks/usePedidos";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
+import { usePedidos } from "../hooks/usePedidos";
 import { ShoppingCart } from "@mui/icons-material";
 import { Badge } from "@mui/material";
-
 
 const links = [
   {
@@ -26,13 +26,8 @@ const links = [
   },
 ];
 
-export default function NavLinksDesktop({
-  
-
-  estaLogueado = false,
-}: {
-  estaLogueado?: boolean;
-}) {
+export default function NavLinksDesktop() {
+  const { estaLogueado } = useUsuarioStore();
   const pathname = usePathname();
   const { items } = usePedidos();
   return (
@@ -106,18 +101,16 @@ export default function NavLinksDesktop({
             }}
           >
             <ShoppingCart
-            className={`transition-colors duration-200
+              className={`transition-colors duration-200
               ${
                 pathname === links[2].href
                   ? "text-amber-300"
                   : "hover:text-amber-200"
               }`}
-          />
+            />
           </Badge>
-          
         </Link>
       </div>
-      
     </div>
   );
 }

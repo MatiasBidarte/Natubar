@@ -22,10 +22,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import { decodeToken } from "@/app/utils/decodeJwt";
 
 export default function LoginPage() {
-  //const [email, setEmail] = useState("");
-  //const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  //const [loading, setLoading] = useState(false);
   const { loginClient } = useClientes();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
@@ -34,30 +31,12 @@ export default function LoginPage() {
     contrasena: "",
   });
 
-  /*const [errors, setErrors] = useState({
-    email: "",
-    contrasena: "",
-  });*/
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    //setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    /*const newErrors = {
-      email: form.email.includes("@") ? "" : "Email inválido.",
-      contrasena:
-        form.contrasena.length >= 8
-          ? ""
-          : "La contraseña debe tener al menos 8 caracteres.",
-    };
-
-    setErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((e) => e);
-    if (!hasErrors) {*/
     try {
       const token = await loginClient(form);
       setApiError(null);
@@ -129,14 +108,6 @@ export default function LoginPage() {
                             <EmailIcon />
                           </InputAdornment>
                         ),
-                        /*
-                        endAdornment: form.email && (
-                          <InputAdornment position="end">
-                            <IconButton onClick={() => setForm("")}>
-                              ✕
-                            </IconButton>
-                          </InputAdornment>
-                        ),*/
                         sx: {
                           borderRadius: 2,
                         },
@@ -192,7 +163,6 @@ export default function LoginPage() {
                       variant="contained"
                       size="large"
                       type="submit"
-                      //disabled={loading}
                       sx={{
                         backgroundColor: "#B88A3A",
                         borderRadius: "999px",
