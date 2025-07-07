@@ -1,15 +1,18 @@
-  export interface Product {
+export interface Product {
   id?: number;
   nombre?: string;
   descripcion?: string;
-  precioPersonas?: string;
+  precioPersonas?: number;
   precioEmpresas?: number;
+  peso?: number;
   stock?: boolean;
   urlImagen?: string;
-  sabores? :Sabor[]
+  sabores?: Sabor[];
+  esCajaDeBarras: boolean;
+  cantidadDeBarras?: number;
 }
 
-export interface Sabor{
-  id: number
+export interface Sabor {
+  id: number;
   nombre: string;
 }

@@ -2,6 +2,9 @@ import Link from "next/link";
 import { AccountCircle, Home, ShoppingBag } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 import { Typography } from "@mui/material";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
+
+
 
 const links = [
   {
@@ -10,24 +13,21 @@ const links = [
     icon: Home,
   },
   {
-    href: "/perfil/compras",
+    href: "/perfil/compras/",
     name: "Mis Compras",
     icon: ShoppingBag,
   },
   {
-    href: "/perfil",
+    href: "/perfil/",
     name: "Mi Perfil",
     icon: AccountCircle,
   },
 ];
 
-export default function NavLinksMobile({
-  estaLogueado = false,
-}: {
-  estaLogueado?: boolean;
-}) {
+export default function NavLinksMobile() {
+  const { estaLogueado } = useUsuarioStore();
   const pathname = usePathname();
-
+  
   return (
     <div className="fixed bottom-0 left-0 w-screen md:hidden flex items-center justify-around p-3 bg-[#FFF9ED]">
       {links.map((link, index) => {
@@ -40,7 +40,7 @@ export default function NavLinksMobile({
             <div className="flex flex-col items-center justify-center">
               <div
                 className={`p-2 w-14 rounded-3xl transition-colors duration-200 ${
-                  isActive ? "bg-amber-200" : "hover:bg-[#D1B9848F]"
+                  isActive ? "bg-[#D1B9848F]" : "hover:bg-[#D1B9848F]"
                 }`}
               >
                 <IconComponent className="inline-block" />
@@ -52,6 +52,7 @@ export default function NavLinksMobile({
           </Link>
         );
       })}
+    
     </div>
   );
 }

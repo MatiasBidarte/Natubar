@@ -1,9 +1,48 @@
-const IconCarrito = () => (
-  <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.66658 7.49998V4.99998H6.16658V3.33331H8.66658V0.833313H10.3333V3.33331H12.8333V4.99998H10.3333V7.49998H8.66658ZM5.33325 18.3333C4.87492 18.3333 4.48256 18.1701 4.15617 17.8437C3.82978 17.5173 3.66659 17.125 3.66659 16.6666C3.66659 16.2083 3.82978 15.816 4.15617 15.4896C4.48256 15.1632 4.87492 15 5.33325 15C5.79158 15 6.18395 15.1632 6.51033 15.4896C6.83672 15.816 6.99992 16.2083 6.99992 16.6666C6.99992 17.125 6.83672 17.5173 6.51033 17.8437C6.18395 18.1701 5.79158 18.3333 5.33325 18.3333ZM13.6666 18.3333C13.2083 18.3333 12.8159 18.1701 12.4895 17.8437C12.1631 17.5173 11.9999 17.125 11.9999 16.6666C11.9999 16.2083 12.1631 15.816 12.4895 15.4896C12.8159 15.1632 13.2083 15 13.6666 15C14.1249 15 14.5173 15.1632 14.8437 15.4896C15.1701 15.816 15.3333 16.2083 15.3333 16.6666C15.3333 17.125 15.1701 17.5173 14.8437 17.8437C14.5173 18.1701 14.1249 18.3333 13.6666 18.3333ZM0.333252 3.33331V1.66665H3.06242L6.60409 9.16665H12.4374L15.6874 3.33331H17.5833L13.9166 9.95831C13.7638 10.2361 13.5589 10.4514 13.302 10.6041C13.0451 10.7569 12.7638 10.8333 12.4583 10.8333H6.24992L5.33325 12.5H15.3333V14.1666H5.33325C4.70825 14.1666 4.23256 13.8958 3.90617 13.3541C3.57978 12.8125 3.56936 12.2639 3.87492 11.7083L4.99992 9.66665L1.99992 3.33331H0.333252Z" fill="white"/>
-</svg>
+import { ShoppingCart } from "@mui/icons-material";
+import { IconButton, Badge } from "@mui/material";
+import Link from "next/link";
+import React from "react";
 
-);
+interface CantidadDeItems {
+  cantidad?: number;
+}
 
-export default IconCarrito;
+const BotonCarrito: React.FC<CantidadDeItems> = ({cantidad}) => {
+  return (
+    <div className="fixed md:hidden bottom-25  right-8 z-[1000]">
+      <Link href="/carrito" passHref>
+        <IconButton
+          aria-label="Carrito de compras"
+          sx={{
+            backgroundColor: "#B99342",
+            color: "white",
+            "&:hover": { backgroundColor: "#A57C2E" },
+            boxShadow: 6,
+            padding: "16px",
+            transition: "transform 0.2s",
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          }}
+        >
+          <Badge
+            badgeContent={cantidad}
+            color="error"
+            overlap="circular"
+            sx={{
+              "& .MuiBadge-badge": {
+                right: -4,
+                top: -4,
+                border: "2px solid white",
+              },
+            }}
+          >
+            <ShoppingCart fontSize="large" />
+          </Badge>
+        </IconButton>
+      </Link>
+    </div>
+  );
+};
 
+export default BotonCarrito;

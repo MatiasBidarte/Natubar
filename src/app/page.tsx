@@ -1,13 +1,24 @@
 "use client";
-import { alpha, Button, Skeleton, Stack, InputBase, Box } from "@mui/material";
+import {
+  alpha,
+  Skeleton,
+  Stack,
+  InputBase,
+  Box,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import ProductCard from "./components/card";
 import { Product } from "./types/product";
 import { useEffect, useState } from "react";
 import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
-import SearchIcon from '@mui/icons-material/Search';
-import { styled } from '@mui/material/styles';
+import SearchIcon from "@mui/icons-material/Search";
+import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
+import BotonCarrito from "./components/IconCarrito";
+import {usePedidos} from "./hooks/usePedidos";
 
 interface ModalCard {
   open: boolean;
@@ -19,46 +30,47 @@ const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(1),
-    width: 'auto',
+    width: "auto",
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  width: "100%",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
+    transition: theme.transitions.create("width"),
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
       },
     },
   },
 }));
 
-
 export default function Home() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { products, fetchProducts, loading, error } = useProductos() as {
     products: Product[];
     loading: boolean;
@@ -69,7 +81,6 @@ export default function Home() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
   const [open, setOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [search, setSearch] = useState<string>("");
@@ -78,6 +89,7 @@ export default function Home() {
     producto.nombre?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const { items } = usePedidos();
 
   const handleOpen = (producto: Product): void => {
     setSelectedProduct(producto);
@@ -90,13 +102,41 @@ export default function Home() {
     <div className=" md:border-amber-600">
       <div className="portada flex items-center justify-center">
         <div className="text-center">
-          <h1 className={homemadeApple.className}>La felicidad en barra</h1>
-          <h2>NatuBar Barras Artesanales</h2>
-          <Button className="btn-portada">
-            Comprar ahora
-          </Button>
+          <Typography
+            variant={isMobile ? "h4" : "h2"}
+            fontFamily={homemadeApple.style.fontFamily}
+            gutterBottom
+          >
+            La felicidad en barra
+          </Typography>
+          <Typography variant={isMobile ? "h5" : "h3"} fontWeight={300}>
+            NatuBar Barras Artesanales
+          </Typography>
         </div>
       </div>
+      <Box
+        height={"151px"}
+        display="flex"
+        flexDirection={"column"}
+        alignItems="center"
+        justifyContent="center"
+        bgcolor={theme.palette.secondary.main}
+      >
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          fontWeight={300}
+          textAlign="center"
+        >
+          AHORA PODÉS HACER
+        </Typography>
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          fontFamily={homemadeApple.style.fontFamily}
+          textAlign="center"
+        >
+          tu pedido más rápido y fácil
+        </Typography>
+      </Box>
       <Box display="flex" justifyContent="center" my={2}>
         <Search>
           <SearchIconWrapper>
@@ -114,25 +154,39 @@ export default function Home() {
         spacing={{ xs: 1, sm: 2 }}
         direction="row"
         useFlexGap
-        sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+        sx={{ flexWrap: "wrap", justifyContent: "center" }}
+      >
         {loading ? (
           <>
-            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
-            <Skeleton sx={{ bgcolor: 'grey.900' }} variant="rounded" width={313.021} height={400} />
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="rounded"
+              width={313.021}
+              height={400}
+            />
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="rounded"
+              width={313.021}
+              height={400}
+            />
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="rounded"
+              width={313.021}
+              height={400}
+            />
           </>
         ) : error ? (
           <p>Error: {error}</p>
+        ) : filteredProducts.length === 0 ? (
+          <p>No se encontraron productos</p>
         ) : (
-          filteredProducts.length === 0 ? (
-            <p>No se encontraron productos</p>
-          ) : (
-            filteredProducts.map((producto) => (
-              <div key={producto.id} onClick={() => handleOpen(producto)}>
-                <ProductCard product={producto} />
-              </div>
-            ))
-          )
+          filteredProducts.map((producto) => (
+            <div key={producto.id} onClick={() => handleOpen(producto)}>
+              <ProductCard product={producto} />
+            </div>
+          ))
         )}
         {selectedProduct && (
           <ModalCard
@@ -142,6 +196,8 @@ export default function Home() {
           />
         )}
       </Stack>
+      <BotonCarrito cantidad={items.length}/>
     </div>
+    
   );
 }

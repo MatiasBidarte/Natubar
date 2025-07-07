@@ -1,17 +1,13 @@
-import { Client } from "../hooks/useClientes";
-import { Sabor } from "./product";
-
-export interface Pedido{
-     id: number;
+export interface Pedido {
+  id: number;
   fechaCreacion: Date;
-  fechaEntrega: Date;
+  fechaEntrega?: Date;
   fechaEntregaEstimada: Date;
   montoTotal: number;
   descuento: number;
-  preferenceId?: string;
   estado: EstadosPedido;
-  productos: DetallePedido[];
-  cliente: Client;
+  productos?: DetallePedido[];
+  preferenceId?: string;
 }
 
 export enum EstadosPedido {
@@ -22,7 +18,7 @@ export enum EstadosPedido {
 }
 
 export interface DetallePedido{
-      cantidad: number;
+  cantidad: number;
   id: number;
   nombre: string;
   descripcion: string;
@@ -33,6 +29,11 @@ export interface DetallePedido{
   peso?: number;
   esCajaDeBarras: boolean;
   cantidadDeBarras?: number;
-  sabores: Sabor[];
+  sabores?: Sabor[];
+}
 
+interface Sabor {
+  id: number;
+  nombre: string;
+  cantidad: number;
 }

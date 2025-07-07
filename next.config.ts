@@ -8,12 +8,16 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "www.delishop.com.uy",
-        pathname: "/wp-content/uploads/**"
+        pathname: "/wp-content/uploads/**",
       },
       {
         protocol: "https",
         hostname: "media.istockphoto.com",
-        pathname: "/id/**"
+        pathname: "/id/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
       },
     ],
   },
