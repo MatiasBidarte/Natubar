@@ -18,6 +18,7 @@ interface PedidoState {
   errorPedidos: string | null;
 
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
+  fetchPedidos: () => Promise<void>;
   crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
 }
 
@@ -104,51 +105,7 @@ export const usePedidos = create(
         });
       }
     },
-  fetchPedidos: async () => {
-    set({ loadingPedidos: true, errorPedidos: null });
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
-          },
-          redirect: "follow",
-        }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al obtener productos");
-      }
-
-      const data = await response.json();
-      const pedidos = (await response.json()) as Pedido[];
-      const enCurso = pedidos.filter(
-          (p) =>
-            p.estado === EstadosPedido.enPreparacion ||
-            p.estado === EstadosPedido.enCamino
-        );
-        const finalizados = pedidos.filter(
-          (p) =>
-            p.estado === EstadosPedido.entregado ||
-            p.estado === EstadosPedido.pendientePago
-        );
-     set({
-          pedidos,
-          pedidosEnCurso: enCurso,
-          pedidosFinalizados: finalizados,
-          loadingPedidos: false,
-        });
-    } catch (err) {
-      set({
-        errorPedidos: err instanceof Error ? err.message : "Error desconocido",
-        loading: false,
-      });
-    }
-  },
     crearPedido: async (clienteId: string) => {
       const { items } = get();
       if (items.length === 0) return;
@@ -193,8 +150,36 @@ export const usePedidos = create(
         throw error;
       }
     },
+    fetchPedidos: async () => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            redirect: "follow",
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al obtener productos");
+        }
+
+        const data = await response.json();
+        set({ pedidos: data, loadingPedidos: false });
+      } catch (err) {
+        set({
+          errorPedidos: err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
+      }
+    },
   }))
 );
-
 
 export default usePedidos;

@@ -10,18 +10,11 @@ export interface Pedido {
   preferenceId?: string;
 }
 
-export enum EstadosPedido {
-  enPreparacion = 'En Preparación',
-  enCamino = 'En Camino',
-  entregado = 'Entregado',
-  pendientePago = 'Pendiente de Pago',
-}
-
-export interface DetallePedido{
-  cantidad: number;
+interface DetallePedido {
   id: number;
+  cantidad: number;
   nombre: string;
-  descripcion: string;
+  descripcion?: string;
   precioPersonas: number;
   precioEmpresas: number;
   stock: boolean;
@@ -36,4 +29,11 @@ interface Sabor {
   id: number;
   nombre: string;
   cantidad: number;
+}
+
+export enum EstadosPedido {
+  enPreparacion = "En Preparación",
+  enCamino = "En Camino",
+  entregado = "Entregado",
+  pendientePago = "Pendiente de Pago",
 }
