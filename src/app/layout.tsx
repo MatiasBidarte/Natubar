@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { roboto } from "./ui/fonts";
 import ClientLayout from "./ui/root-layout";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Natubar",
@@ -16,7 +17,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+
     <html lang="en">
+      <head>
+        <Script
+          src="https://sdk.mercadopago.com/js/v2"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={`${roboto.className} antialiased`}>
         <ClientLayout>{children}</ClientLayout>
       </body>
