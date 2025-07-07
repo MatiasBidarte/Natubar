@@ -14,7 +14,6 @@ import {
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import PaymentBrick from './mercadoPago/page';
 import TransferenciaForm from './transeferencia/page';
-import { Padding } from '@mui/icons-material';
 import theme from '../ui/theme';
 
 export default function MetodoPago() {

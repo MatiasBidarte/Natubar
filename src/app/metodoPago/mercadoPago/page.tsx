@@ -5,7 +5,6 @@ import { Box } from '@mui/material';
 
 export default function PaymentBrick() {
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
-    const [estadoPago, setEstadoPago] = useState<'pendiente' | 'aprobado' | 'rechazado' | 'procesando'>('pendiente');
     useEffect(() => {
         initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY!, { locale: 'es-UY' });
 
@@ -61,21 +60,6 @@ export default function PaymentBrick() {
                 <Box mb={2} textAlign="center">
                     <strong>Total a pagar:</strong> ${initialization.amount}
                 </Box>
-                {estadoPago === 'procesando' && (
-                    <Box textAlign="center" color="info.main" mb={2}>
-                        Pago en proceso... Esperando confirmación.
-                    </Box>
-                )}
-                {estadoPago === 'aprobado' && (
-                    <Box textAlign="center" color="success.main" mb={2}>
-                        ¡Pago aprobado! Gracias por tu compra.
-                    </Box>
-                )}
-                {estadoPago === 'rechazado' && (
-                    <Box textAlign="center" color="error.main" mb={2}>
-                        El pago fue rechazado. Intenta nuevamente.
-                    </Box>
-                )}
                 <Payment
                     initialization={initialization}
                     customization={customization}

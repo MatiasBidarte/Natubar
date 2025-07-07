@@ -12,7 +12,7 @@ import { useState } from "react";
 import IconCarrito from "./IconCarrito";
 import NumericImput from "./numericImput";
 import { saborLinea } from "../types/lineaCarrito";
-import { usePedido } from "../hooks/usePedido";
+import { useCarrito } from "../hooks/useCarrito";
 
 
 
@@ -26,7 +26,7 @@ interface CustomModalProps {
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   console.log(producto)
   const [error, setError] = useState("");
-  const addToCart = usePedido((state) => state.addToCart);
+  const addToCart = useCarrito((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1); // o 0 si prefieres
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
   const handleChange = (saborId: number, value: number) => {
