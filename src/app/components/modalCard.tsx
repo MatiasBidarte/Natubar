@@ -16,6 +16,7 @@ import { usePedidos } from "../hooks/usePedidos";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 
+
 interface CustomModalProps {
   open: boolean;
   handleClose: () => void;
@@ -35,6 +36,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   const [error, setError] = useState("");
   const addToCart = usePedidos((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1);
+
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
 
   const handleChange = (saborId: number, value: number) => {
