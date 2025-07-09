@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import ProductCard from "./components/card";
-import { Product } from "./types/product";
+import { Producto } from "./types/producto";
 import { useEffect, useState } from "react";
 import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
@@ -18,16 +18,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
 import BotonCarrito from "./components/IconCarrito";
-import {usePedidos} from "./hooks/usePedidos";
+import { usePedidos } from "./hooks/usePedidos";
 
 interface ModalCard {
   open: boolean;
   handleClose: () => void;
-  producto: Product;
+  producto: Producto;
 }
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
   "&:hover": {
@@ -72,7 +72,7 @@ export default function Home() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { products, fetchProducts, loading, error } = useProductos() as {
-    products: Product[];
+    products: Producto[];
     loading: boolean;
     error: string | null;
     fetchProducts: () => void;
@@ -82,7 +82,7 @@ export default function Home() {
     fetchProducts();
   }, [fetchProducts]);
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
   const [search, setSearch] = useState<string>("");
 
   const filteredProducts = products.filter((producto) =>
@@ -91,7 +91,7 @@ export default function Home() {
 
   const { items } = usePedidos();
 
-  const handleOpen = (producto: Product): void => {
+  const handleOpen = (producto: Producto): void => {
     setSelectedProduct(producto);
     setOpen(true);
   };
@@ -196,8 +196,7 @@ export default function Home() {
           />
         )}
       </Stack>
-      <BotonCarrito cantidad={items.length}/>
+      <BotonCarrito cantidad={items.length} />
     </div>
-    
   );
 }

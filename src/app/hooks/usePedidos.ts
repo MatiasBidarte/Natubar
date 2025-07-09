@@ -1,16 +1,18 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { lineaCarrito, NuevaLineaCarrito } from "../types/lineaCarrito";
+import { CrearPedidoDto, LineaCarrito } from "../types/lineaCarrito";
 import { EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
-  items: lineaCarrito[];
-  addToCart: (item: NuevaLineaCarrito) => void;
+  crearPedidoEnStore: (observaciones: string) => void;
+  addToCart: (item: LineaCarrito) => void;
   removeFromCart: (index: number) => void;
-  updateCartItem: (index: number, item: lineaCarrito) => void;
+  updateCartItem: (index: number, item: LineaCarrito) => void;
   updateCantidad: (numeral: number, sumar: number) => void;
   clearCart: () => void;
 
+  items: LineaCarrito[];
+  pedido?: CrearPedidoDto;
   pedidos: Pedido[];
   pedidosEnCurso: Pedido[];
   pedidosFinalizados: Pedido[];
@@ -18,7 +20,10 @@ interface PedidoState {
   errorPedidos: string | null;
 
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
-  crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
+  crearPedido: (
+    clienteId: string,
+    observaciones: string
+  ) => Promise<Pedido | undefined>;
 }
 
 let ultimoNumeral = 1;
@@ -26,7 +31,8 @@ let ultimoNumeral = 1;
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
-    addToCart: (item: NuevaLineaCarrito) => {
+    pedido: undefined,
+    addToCart: (item: LineaCarrito) => {
       const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
       set((state) => ({
         items: [...state.items, itemConNumeral],
@@ -36,7 +42,7 @@ export const usePedidos = create(
       set((state) => ({
         items: state.items.filter((_, i) => i !== index),
       })),
-    updateCartItem: (index: number, item: lineaCarrito) =>
+    updateCartItem: (index: number, item: LineaCarrito) =>
       set((state) => {
         const newItems = [...state.items];
         newItems[index] = item;
@@ -57,6 +63,16 @@ export const usePedidos = create(
     pedidosFinalizados: [],
     loadingPedidos: false,
     errorPedidos: null,
+
+    crearPedidoEnStore: (observaciones: string) => {
+      const { items } = get();
+      if (items.length === 0) return;
+      const pedidoData: CrearPedidoDto = {
+        observaciones,
+        productos: items,
+      };
+      set({ pedido: pedidoData });
+    },
 
     fetchPedidosCliente: async (clienteId: string) => {
       set({ loadingPedidos: true, errorPedidos: null });

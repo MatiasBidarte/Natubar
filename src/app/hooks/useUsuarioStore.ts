@@ -8,7 +8,7 @@ interface AuthState {
   inicializado: boolean;
   inicializarUsuario: () => void;
   actualizarUsuario: (usuario: Cliente) => void;
-  eliminarUsuario: () => void;
+  cerrarSesion: () => void;
 }
 
 export const useUsuarioStore = create<AuthState>((set) => ({
@@ -18,8 +18,6 @@ export const useUsuarioStore = create<AuthState>((set) => ({
   inicializado: false,
 
   inicializarUsuario: () => {
-    if (typeof window === "undefined") return;
-
     try {
       const usuarioData = localStorage.getItem("usuario");
       if (usuarioData) {
@@ -30,8 +28,6 @@ export const useUsuarioStore = create<AuthState>((set) => ({
           esEmpresa: usuario.tipo === "Empresa",
           inicializado: true,
         });
-      } else {
-        set({ inicializado: true });
       }
     } catch (error) {
       console.error("Error al obtener usuario:", error);
@@ -49,9 +45,10 @@ export const useUsuarioStore = create<AuthState>((set) => ({
     window.dispatchEvent(new Event("auth-change"));
   },
 
-  eliminarUsuario: () => {
+  cerrarSesion: () => {
     localStorage.removeItem("usuario");
     set({ usuario: null, estaLogueado: false, esEmpresa: false });
     window.dispatchEvent(new Event("auth-change"));
+    window.location.href = "/";
   },
 }));

@@ -6,11 +6,11 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
-import { Product } from "../types/product";
+import { Producto } from "../types/producto";
 import theme from "../ui/theme";
 import { useState, useEffect } from "react";
 import NumericImput from "./numericImput";
-import { saborLinea } from "../types/lineaCarrito";
+import { SaborLinea } from "../types/lineaCarrito";
 import useProductos from "../hooks/useProductos";
 import { usePedidos } from "../hooks/usePedidos";
 import { Close } from "@mui/icons-material";
@@ -19,7 +19,7 @@ import { IconButton } from "@mui/material";
 interface CustomModalProps {
   open: boolean;
   handleClose: () => void;
-  producto: Product;
+  producto: Producto;
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
@@ -50,7 +50,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   };
 
   const handleAddToCart = () => {
-    const saboresSeleccionados: saborLinea[] = (sabores ?? [])
+    const saboresSeleccionados: SaborLinea[] = (sabores ?? [])
       .filter((sabor) => (cantidades[sabor.id] || 0) > 0)
       .map((sabor) => ({
         sabor,
@@ -159,10 +159,13 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
           />
 
           <Stack sx={{ px: 2, margin: "10px" }}>
-            <Typography>
-              ¡Elige los sabores que más te gustan y agrega las barras a tu
-              pedido!
-            </Typography>
+            {producto.esCajaDeBarras && (
+              <Typography>
+                ¡Elige los sabores que más te gustan y agrega las barras a tu
+                pedido!
+              </Typography>
+            )}
+
             {producto.esCajaDeBarras &&
               (sabores.length === 0 ? (
                 <Typography>Cargando sabores...</Typography>

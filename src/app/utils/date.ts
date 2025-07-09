@@ -15,3 +15,11 @@ export const formatDateToString = (date: string | Date) => {
     year: "numeric",
   });
 };
+
+export const formatDateToStringWithoutYear = (date: string | Date) => {
+  const dateObj = new Date(date);
+  return dateObj.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+  });
+};
