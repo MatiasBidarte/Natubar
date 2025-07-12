@@ -15,6 +15,7 @@ import useProductos from "../hooks/useProductos";
 import { usePedidos } from "../hooks/usePedidos";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 
 interface CustomModalProps {
@@ -46,6 +47,14 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   const addToCart = usePedidos((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1);
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
+
+  const { usuario, esEmpresa } = useUsuarioStore();
+
+  const precioProducto = usuario
+    ? esEmpresa
+      ? producto.precioEmpresas
+      : producto.precioPersonas
+    : producto.precioPersonas;
 
   const handleChange = (saborId: number, value: number) => {
     setCantidades((prev) => ({
@@ -159,7 +168,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             sx={{ px: 2, margin: "10px" }}
           >
             <Typography sx={{ fontSize: "22px" }}>{producto.nombre}</Typography>
-            <Typography>${producto.precioPersonas?.toFixed(2)}</Typography>
+            <Typography>${precioProducto.toFixed(2)}</Typography>
           </Stack>
 
           <Divider

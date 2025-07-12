@@ -23,6 +23,7 @@ import {
   AccountCircle,
 } from "@mui/icons-material";
 import { Cliente, useClientes } from "../hooks/useClientes";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const PerfilPage = () => {
   const { updateClient } = useClientes();
@@ -32,6 +33,7 @@ const PerfilPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [respuesta, setRespuesta] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const { esEmpresa } = useUsuarioStore();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -87,8 +89,6 @@ const PerfilPage = () => {
       </Box>
     );
   }
-
-  const esEmpresa = usuario.tipo === "Empresa";
 
   return (
     <>

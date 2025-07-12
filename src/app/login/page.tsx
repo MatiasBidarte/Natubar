@@ -47,6 +47,10 @@ export default function LoginPage() {
           token: token.access_token,
         })
       );
+      console.log(JSON.stringify({
+          ...decodeToken(token.access_token),
+          token: token.access_token,
+        }))
       window.dispatchEvent(new Event("auth-change"));
       router.push("/");
     } catch (error) {

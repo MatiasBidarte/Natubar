@@ -15,10 +15,12 @@ import { usePedidos } from "../hooks/usePedidos";
 import { useState } from "react";
 import { homemadeApple } from "../ui/fonts";
 import Link from "next/link";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const Carrito = () => {
   const { items } = usePedidos();
   const [apiError, setApiError] = useState<string | null>(null);
+  const { usuario, esEmpresa } = useUsuarioStore();
 
   const updateCantidad = usePedidos((state) => state.updateCantidad);
   const handleCantidadChange = (numeral: number, delta: number) => {
@@ -32,10 +34,16 @@ const Carrito = () => {
 
   const calcularTotal = () => {
     return items.reduce(
-      (acc, item) => acc + item.producto.precioPersonas! * item.cantidad,
+      (acc, item) => acc + (usuario
+    ? esEmpresa
+      ? item.producto.precioEmpresas
+      : item.producto.precioPersonas
+    : item.producto.precioPersonas) * item.cantidad,
       0
     );
   };
+
+  
 
   return (
     <div className="flex bg-white px-4 p-14 w-full">
@@ -110,10 +118,18 @@ const Carrito = () => {
                   <DeleteOutlineIcon />
                 </IconButton>
                 <Typography variant="body2">
-                  ${item.producto.precioPersonas} c/u
+                  ${(usuario
+                    ? esEmpresa
+                      ? item.producto.precioEmpresas
+                      : item.producto.precioPersonas
+                    : item.producto.precioPersonas)} c/u
                 </Typography>
                 <Typography fontWeight="bold">
-                  ${item.producto.precioPersonas! * item.cantidad}
+                  ${(usuario
+                    ? esEmpresa
+                      ? item.producto.precioEmpresas
+                      : item.producto.precioPersonas
+                    : item.producto.precioPersonas) * item.cantidad}
                 </Typography>
               </Box>
             </Paper>
@@ -138,6 +154,8 @@ const Carrito = () => {
           <Button
             variant="contained"
             fullWidth
+            component={Link}
+            href={usuario == null ? "/login" : "/resumenCompra"}
             sx={{
               bgcolor: "#b78b36",
               py: 1.5,
