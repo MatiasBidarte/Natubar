@@ -25,15 +25,8 @@ let ultimoNumeral = 1;
 
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
-    items: [],
-    /*
-    addToCart: (item: nuevaLineaCarrito) => {
-      const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
-      set((state) => ({
-        items: [...state.items, itemConNumeral],
-      }));
-    },*/
-    addToCart: (item: nuevaLineaCarrito) => {
+  items: [],
+  addToCart: (item: nuevaLineaCarrito) => {
   const state = get();
 
   const mismoProducto = (a: lineaCarrito, b: nuevaLineaCarrito) =>

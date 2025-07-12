@@ -4,7 +4,7 @@ import {
   Typography,
   IconButton,
   Button,
- 
+  Divider,
   Stack,
   Paper,
   Snackbar,
@@ -15,25 +15,19 @@ import { usePedidos } from "../hooks/usePedidos";
 import { useState } from "react";
 import { homemadeApple } from "../ui/fonts";
 import Link from "next/link";
-import Grid from "@mui/material/Grid";
-import NumericImput from "../components/numericImput";
-import theme from "../ui/theme";
-import { useRouter } from 'next/navigation';
 
 const Carrito = () => {
   const { items } = usePedidos();
   const [apiError, setApiError] = useState<string | null>(null);
+
   const updateCantidad = usePedidos((state) => state.updateCantidad);
   const handleCantidadChange = (numeral: number, delta: number) => {
     updateCantidad(numeral, delta);
   };
-  const router = useRouter();
 
   const removeFromCart = usePedidos((state) => state.removeFromCart);
   const eliminarItem = (numeral: number) => {
-    console.log("eliminar: "+numeral)
     removeFromCart(numeral);
-    console.log("Carrito items:", items);
   }
 
   const calcularTotal = () => {
@@ -97,7 +91,7 @@ const Carrito = () => {
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleCantidadChange(item.numeral, -1)}
+                    onClick={() => item.cantidad>1 && handleCantidadChange(item.numeral, item.cantidad-1)}
                   >
                     -
                   </Button>
@@ -105,14 +99,14 @@ const Carrito = () => {
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleCantidadChange(item.numeral, 1)}
+                    onClick={() => handleCantidadChange(item.numeral, item.cantidad+1)}
                   >
                     +
                   </Button>
                 </Box>
               </Box>
               <Box display="flex" flexDirection="column" alignItems="flex-end">
-                <IconButton disabled>
+                <IconButton onClick={()=>eliminarItem(item.numeral)}>
                   <DeleteOutlineIcon />
                 </IconButton>
                 <Typography variant="body2">
