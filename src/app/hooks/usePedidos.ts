@@ -18,6 +18,7 @@ interface PedidoState {
   errorPedidos: string | null;
 
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
+  fetchPedidos: () => Promise<void>;
   crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
 }
 
@@ -175,6 +176,35 @@ export const usePedidos = create(
       } catch (error) {
         console.error("Error al crear pedido:", error);
         throw error;
+      }
+    },
+    fetchPedidos: async () => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            redirect: "follow",
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al obtener productos");
+        }
+
+        const data = await response.json();
+        set({ pedidos: data, loadingPedidos: false });
+      } catch (err) {
+        set({
+          errorPedidos: err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
       }
     },
   }))

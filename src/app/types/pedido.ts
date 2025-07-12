@@ -7,6 +7,7 @@ export interface Pedido {
   descuento: number;
   estado: EstadosPedido;
   productos?: DetallePedido[];
+  preferenceId?: string;
 }
 
 interface DetallePedido {
