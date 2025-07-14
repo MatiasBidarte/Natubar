@@ -69,7 +69,6 @@ const Carrito = () => {
 
   const empresaPuedeComprar = esEmpresa && total >= costoCompraMinimoEmpresas;
 
-  // Mensaje para mostrar cuando no se cumplen las condiciones
   const getMensajeCompra = () => {
     if (!usuario) {
       return "Inicia sesión para continuar con la compra";

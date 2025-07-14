@@ -88,7 +88,7 @@ export default function MetodoPago() {
                       margin: 1,
                       "&.Mui-checked": {
                         border: "2px solid black",
-                        backgroundColor: "#f5f5f5", // opcional: para un fondo levemente resaltado
+                        backgroundColor: "#f5f5f5",
                       },
                     }}
                   />
@@ -103,7 +103,7 @@ export default function MetodoPago() {
                       margin: 1,
                       "&.Mui-checked": {
                         border: "2px solid black",
-                        backgroundColor: "#f5f5f5", // opcional: para un fondo levemente resaltado
+                        backgroundColor: "#f5f5f5",
                       },
                     }}
                   />
@@ -116,7 +116,7 @@ export default function MetodoPago() {
                     margin: 1,
                     "&.Mui-checked": {
                       border: "2px solid black",
-                      backgroundColor: "#f5f5f5", // opcional: para un fondo levemente resaltado
+                      backgroundColor: "#f5f5f5",
                     },
                   }}
                 >
