@@ -24,6 +24,7 @@ interface PedidoState {
   errorPedidos: string | null;
 
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
+  fetchPedidos: () => Promise<void>;
   crearPedido: (
     clienteId: string,
     observaciones: string

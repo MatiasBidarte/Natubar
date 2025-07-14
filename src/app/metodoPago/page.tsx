@@ -13,20 +13,21 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
-import PaymentBrick from "./mercadoPago/page";
 import TransferenciaForm from "./transeferencia/page";
 import theme from "../ui/theme";
 import CheckoutStepper from "../ui/CheckoutStepper";
 import usePedidos from "../hooks/usePedidos";
+import { useRouter } from "next/navigation";
+import MercadoPagoPage from "./mercadoPago/page";
 
 export default function MetodoPago() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { pedido } = usePedidos();
+  const router = useRouter();
   const [metodo, setMetodo] = useState<"mp" | "transferencia" | null>(null);
   const [metodoSeleccionado, setMetodoSeleccionado] = useState<
     "mp" | "transferencia" | null
   >(null);
-  const [pedidoId, setPedidoId] = useState<string>("");
 
   const handlePagarAhora = async () => {
     const pedidoResponse = await fetch(
@@ -45,9 +46,11 @@ export default function MetodoPago() {
       throw new Error(errorData.message || "Error al crear el pedido");
     }
     const pedidoBody = await pedidoResponse.json();
-    console.log(pedidoBody);
     setMetodo(metodoSeleccionado);
-    setPedidoId(pedidoBody.id);
+
+    if (metodoSeleccionado === "mp") {
+      router.push(`/metodoPago/mercadoPago?pedidoId=${pedidoBody.id}`);
+    }
   };
 
   return (
@@ -150,7 +153,7 @@ export default function MetodoPago() {
       {metodo === "mp" && (
         <Box mt={3}>
           <Typography variant="h6">Pago con Mercado Pago</Typography>
-          <PaymentBrick pedidoId={pedidoId} />
+          <MercadoPagoPage />
         </Box>
       )}
 

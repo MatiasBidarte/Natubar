@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -20,7 +20,6 @@ import { usePedidos } from "../hooks/usePedidos";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 import { useRouter } from "next/navigation";
 import CheckoutStepper from "../ui/CheckoutStepper";
-import { LineaCarrito } from "../types/lineaCarrito";
 
 const ResumenCompraPage = () => {
   const { items, crearPedidoEnStore } = usePedidos();
@@ -31,94 +30,6 @@ const ResumenCompraPage = () => {
   const [procesando, setProcesando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [observaciones, setObservaciones] = useState("");
-
-  // Función para cargar productos de prueba
-  const addTestProducts = () => {
-    // Limpiar el carrito actual
-    const clearCart = usePedidos.getState().clearCart;
-    clearCart();
-
-    // Productos de prueba
-    const testProducts: LineaCarrito[] = [
-      {
-        numeral: 1,
-        producto: {
-          id: 1,
-          nombre: "Caja de Barras Mixta",
-          descripcion: "Selección de nuestras mejores barras de cereal",
-          precioPersonas: 450,
-          precioEmpresas: 410,
-          peso: 500,
-          stock: true,
-          urlImagen:
-            "https://res.cloudinary.com/dpozwwyuy/image/upload/v1749679888/barras_surtidas_nrrzmw.jpg",
-          esCajaDeBarras: true,
-          cantidadDeBarras: 12,
-        },
-        cantidad: 1,
-        sabores: [
-          {
-            sabor: { id: 1, nombre: "Chocolate" },
-            cantidad: 4,
-          },
-          {
-            sabor: { id: 2, nombre: "Mani" },
-            cantidad: 4,
-          },
-          {
-            sabor: { id: 3, nombre: "Nueces" },
-            cantidad: 4,
-          },
-        ],
-      },
-      {
-        numeral: 2,
-        producto: {
-          id: 2,
-          nombre: "Barra Proteica Premium",
-          descripcion:
-            "Alta en proteínas, ideal para después del entrenamiento",
-          precioPersonas: 180,
-          precioEmpresas: 165,
-          peso: 70,
-          stock: true,
-          urlImagen:
-            "https://res.cloudinary.com/dpozwwyuy/image/upload/v1749679888/barras_surtidas_nrrzmw.jpg",
-          esCajaDeBarras: false,
-        },
-        cantidad: 3,
-        sabores: [],
-      },
-      {
-        numeral: 3,
-        producto: {
-          id: 3,
-          nombre: "Mix Energético",
-          descripcion: "Combinación de frutos secos y semillas",
-          precioPersonas: 250,
-          precioEmpresas: 230,
-          peso: 200,
-          stock: true,
-          urlImagen:
-            "https://res.cloudinary.com/dpozwwyuy/image/upload/v1749679888/barras_surtidas_nrrzmw.jpg",
-          esCajaDeBarras: false,
-        },
-        cantidad: 2,
-        sabores: [],
-      },
-    ];
-
-    const addToCart = usePedidos.getState().addToCart;
-    testProducts.forEach((product) => {
-      addToCart(product);
-    });
-  };
-
-  useEffect(() => {
-    if (items.length === 0) {
-      addTestProducts();
-    }
-  }, []);
 
   const calcularSubtotal = () => {
     if (typeof usuario === "undefined" || typeof esEmpresa === "undefined") {

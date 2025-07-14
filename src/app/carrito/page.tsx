@@ -180,7 +180,7 @@ const Carrito = () => {
                     variant="outlined"
                     onClick={() =>
                       item.cantidad > 1 &&
-                      handleCantidadChange(item.numeral, item.cantidad - 1)
+                      handleCantidadChange(item.numeral ?? 1, item.cantidad - 1)
                     }
                   >
                     -
@@ -190,7 +190,7 @@ const Carrito = () => {
                     size="small"
                     variant="outlined"
                     onClick={() =>
-                      handleCantidadChange(item.numeral, item.cantidad + 1)
+                      handleCantidadChange(item.numeral ?? 1, item.cantidad + 1)
                     }
                   >
                     +
@@ -198,7 +198,7 @@ const Carrito = () => {
                 </Box>
               </Box>
               <Box display="flex" flexDirection="column" alignItems="flex-end">
-                <IconButton onClick={() => eliminarItem(item.numeral)}>
+                <IconButton onClick={() => eliminarItem(item.numeral ?? 1)}>
                   <DeleteOutlineIcon />
                 </IconButton>
                 <Typography variant="body2">

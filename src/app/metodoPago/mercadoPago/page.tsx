@@ -1,14 +1,23 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { initMercadoPago, Payment } from "@mercadopago/sdk-react";
-import { Box } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import usePedidos from "@/app/hooks/usePedidos";
+import { useSearchParams } from "next/navigation";
 
-export default function PaymentBrick({ pedidoId }: { pedidoId: string }) {
+// Componente interno que usa useSearchParams
+function PaymentContent() {
+  const searchParams = useSearchParams();
+  const pedidoId = searchParams.get("pedidoId") || "";
+
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { pedido } = usePedidos();
+
   useEffect(() => {
-    if (pedidoId === "") return;
+    if (!pedidoId) return;
+
+    setLoading(true);
     initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY!, {
       locale: "es-UY",
     });
@@ -23,12 +32,19 @@ export default function PaymentBrick({ pedidoId }: { pedidoId: string }) {
         },
         body: JSON.stringify({
           productos: pedido?.productos,
-          pedidoId: pedidoId,
+          pedidoId,
         }),
       }
     )
       .then((res) => res.json())
-      .then((data) => setPreferenceId(data.preferenceId));
+      .then((data) => {
+        setPreferenceId(data.preferenceId);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching preference:", error);
+        setLoading(false);
+      });
   }, [pedido, pedidoId]);
 
   const customization = {
@@ -40,18 +56,33 @@ export default function PaymentBrick({ pedidoId }: { pedidoId: string }) {
       mercadoPago: "all" as const,
     },
   };
+
   const initialization = {
-    amount: 1000, // Monto total del pedido
+    amount: pedido?.montoTotal || 1000,
     preferenceId: preferenceId ?? "",
   };
 
-  if (!preferenceId) {
-    return <Box textAlign="center">Cargando pago...</Box>;
+  if (loading || !preferenceId) {
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
+        <CircularProgress sx={{ color: "#B99342" }} />
+        <Typography mt={2}>Cargando pago...</Typography>
+      </Box>
+    );
   }
 
-  const onSubmit = async (param1, param2) => {
-    console.log(param1, param2);
+  const onSubmit = async (formData: unknown) => {
+    console.log("Payment submission:", formData);
+    // Handle payment submission here
+    // Redirect based on payment status
   };
+
   return (
     <Box
       display="flex"
@@ -72,16 +103,40 @@ export default function PaymentBrick({ pedidoId }: { pedidoId: string }) {
         p={{ xs: 2, sm: 4 }}
       >
         <Box mb={2} textAlign="center">
-          <strong>Total a pagar:</strong> ${initialization.amount}
+          <Typography variant="h6">Total a pagar:</Typography>
+          <Typography variant="h5" fontWeight="bold" color="#B99342">
+            ${initialization.amount.toFixed(2)}
+          </Typography>
         </Box>
         <Payment
           customization={customization}
           initialization={initialization}
           onSubmit={onSubmit}
-          onReady={() => console.log("Listo")}
-          onError={(err) => console.error(err)}
+          onReady={() => console.log("Pago listo")}
+          onError={(err) => console.error("Error en pago:", err)}
         />
       </Box>
     </Box>
+  );
+}
+
+export default function MercadoPagoPage() {
+  return (
+    <Suspense
+      fallback={
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="50vh"
+        >
+          <CircularProgress sx={{ color: "#B99342" }} />
+          <Typography mt={2}>Cargando página de pago...</Typography>
+        </Box>
+      }
+    >
+      <PaymentContent />
+    </Suspense>
   );
 }
