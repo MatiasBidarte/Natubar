@@ -8,6 +8,7 @@ export interface Pedido {
   estado: EstadosPedido;
   observaciones?: string;
   productos?: DetallePedido[];
+  preferenceId?: string;
 }
 
 interface DetallePedido {

@@ -4,7 +4,11 @@ import { CrearPedidoDto, LineaCarrito } from "../types/lineaCarrito";
 import { EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
-  crearPedidoEnStore: (observaciones: string) => void;
+  crearPedidoEnStore: (
+    observaciones: string,
+    montoTotal: number,
+    clienteId: string
+  ) => void;
   addToCart: (item: LineaCarrito) => void;
   removeFromCart: (index: number) => void;
   updateCartItem: (index: number, item: LineaCarrito) => void;
@@ -64,12 +68,20 @@ export const usePedidos = create(
     loadingPedidos: false,
     errorPedidos: null,
 
-    crearPedidoEnStore: (observaciones: string) => {
+    crearPedidoEnStore: (
+      observaciones: string,
+      montoTotal: number,
+      clienteId: string
+    ) => {
       const { items } = get();
       if (items.length === 0) return;
       const pedidoData: CrearPedidoDto = {
         observaciones,
         productos: items,
+        montoTotal,
+        cliente: {
+          id: clienteId,
+        },
       };
       set({ pedido: pedidoData });
     },
@@ -163,6 +175,36 @@ export const usePedidos = create(
       } catch (error) {
         console.error("Error al crear pedido:", error);
         throw error;
+      }
+    },
+    fetchPedidos: async () => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            redirect: "follow",
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al obtener productos");
+        }
+
+        const data = await response.json();
+        set({ pedidos: data, loadingPedidos: false });
+      } catch (err) {
+        set({
+          errorPedidos:
+            err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
       }
     },
   }))

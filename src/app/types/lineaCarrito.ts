@@ -15,4 +15,8 @@ export interface SaborLinea {
 export interface CrearPedidoDto {
   observaciones?: string;
   productos: LineaCarrito[];
+  montoTotal: number;
+  cliente: {
+    id: string;
+  };
 }
