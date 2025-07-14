@@ -20,7 +20,7 @@ import { useUsuarioStore } from "../hooks/useUsuarioStore";
 const Carrito = () => {
   const { items } = usePedidos();
   const [apiError, setApiError] = useState<string | null>(null);
-  const { usuario, esEmpresa } = useUsuarioStore();
+  const { usuario = null, esEmpresa = false} = useUsuarioStore();
 
   const updateCantidad = usePedidos((state) => state.updateCantidad);
   const handleCantidadChange = (numeral: number, delta: number) => {
@@ -33,7 +33,14 @@ const Carrito = () => {
   }
 
   const calcularTotal = () => {
-    return items.reduce(
+
+    if(typeof usuario === "undefined" || typeof esEmpresa === "undefined"){
+      return items.reduce(
+      (acc, item) => acc + item.producto.precioPersonas * item.cantidad,
+      0
+    );
+    }else{
+      return items.reduce(
       (acc, item) => acc + (usuario
     ? esEmpresa
       ? item.producto.precioEmpresas
@@ -41,6 +48,8 @@ const Carrito = () => {
     : item.producto.precioPersonas) * item.cantidad,
       0
     );
+    }
+    
   };
 
   
