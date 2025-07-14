@@ -6,21 +6,22 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
-import { Product } from "../types/product";
+import { Producto } from "../types/producto";
 import theme from "../ui/theme";
 import { useState, useEffect } from "react";
 import NumericImput from "./numericImput";
-import { saborLinea } from "../types/lineaCarrito";
+import { SaborLinea } from "../types/lineaCarrito";
 import useProductos from "../hooks/useProductos";
 import { usePedidos } from "../hooks/usePedidos";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 
 interface CustomModalProps {
   open: boolean;
   handleClose: () => void;
-  producto: Product;
+  producto: Producto;
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
@@ -33,10 +34,27 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
     getSabores();
   }, [getSabores]);
 
+
+  useEffect(() => {
+  if (!open) {
+    setError("");
+    setCantidades({});
+    setCantidadTotal(1);
+  }
+}, [open]);
+
   const [error, setError] = useState("");
   const addToCart = usePedidos((state) => state.addToCart);
   const [cantidadTotal, setCantidadTotal] = useState(1);
   const [cantidades, setCantidades] = useState<{ [key: number]: number }>({});
+
+  const { usuario, esEmpresa } = useUsuarioStore();
+
+  const precioProducto = usuario
+    ? esEmpresa
+      ? producto.precioEmpresas
+      : producto.precioPersonas
+    : producto.precioPersonas;
 
   const handleChange = (saborId: number, value: number) => {
     setCantidades((prev) => ({
@@ -51,7 +69,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
   };
 
   const handleAddToCart = () => {
-    const saboresSeleccionados: saborLinea[] = (sabores ?? [])
+    const saboresSeleccionados: SaborLinea[] = (sabores ?? [])
       .filter((sabor) => (cantidades[sabor.id] || 0) > 0)
       .map((sabor) => ({
         sabor,
@@ -79,6 +97,8 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
       cantidad: cantidadTotal,
     });
     handleClose();
+
+    setError("");
   };
 
   return (
@@ -148,7 +168,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             sx={{ px: 2, margin: "10px" }}
           >
             <Typography sx={{ fontSize: "22px" }}>{producto.nombre}</Typography>
-            <Typography>${producto.precioPersonas?.toFixed(2)}</Typography>
+            <Typography>${precioProducto.toFixed(2)}</Typography>
           </Stack>
 
           <Divider
@@ -160,10 +180,13 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
           />
 
           <Stack sx={{ px: 2, margin: "10px" }}>
-            <Typography>
-              ¡Elige los sabores que más te gustan y agrega las barras a tu
-              pedido!
-            </Typography>
+            {producto.esCajaDeBarras && (
+              <Typography>
+                ¡Elige los sabores que más te gustan y agrega las barras a tu
+                pedido!
+              </Typography>
+            )}
+
             {producto.esCajaDeBarras &&
               (sabores.length === 0 ? (
                 <Typography>Cargando sabores...</Typography>

@@ -1,16 +1,22 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { lineaCarrito, NuevaLineaCarrito } from "../types/lineaCarrito";
+import { CrearPedidoDto, LineaCarrito } from "../types/lineaCarrito";
 import { EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
-  items: lineaCarrito[];
-  addToCart: (item: NuevaLineaCarrito) => void;
+  crearPedidoEnStore: (
+    observaciones: string,
+    montoTotal: number,
+    clienteId: string
+  ) => void;
+  addToCart: (item: LineaCarrito) => void;
   removeFromCart: (index: number) => void;
-  updateCartItem: (index: number, item: lineaCarrito) => void;
+  updateCartItem: (index: number, item: LineaCarrito) => void;
   updateCantidad: (numeral: number, sumar: number) => void;
   clearCart: () => void;
 
+  items: LineaCarrito[];
+  pedido?: CrearPedidoDto;
   pedidos: Pedido[];
   pedidosEnCurso: Pedido[];
   pedidosFinalizados: Pedido[];
@@ -19,7 +25,10 @@ interface PedidoState {
 
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
   fetchPedidos: () => Promise<void>;
-  crearPedido: (clienteId: string) => Promise<Pedido | undefined>;
+  crearPedido: (
+    clienteId: string,
+    observaciones: string
+  ) => Promise<Pedido | undefined>;
 }
 
 let ultimoNumeral = 1;
@@ -27,17 +36,45 @@ let ultimoNumeral = 1;
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
-    addToCart: (item: NuevaLineaCarrito) => {
-      const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
-      set((state) => ({
-        items: [...state.items, itemConNumeral],
-      }));
+    addToCart: (item: LineaCarrito) => {
+      const state = get();
+
+      const mismoProducto = (a: LineaCarrito, b: LineaCarrito) =>
+        a.producto.id === b.producto.id &&
+        a.sabores.length === b.sabores.length &&
+        a.sabores.every((saborA) =>
+          b.sabores.some(
+            (saborB) =>
+              saborA.sabor.id === saborB.sabor.id &&
+              saborA.cantidad === saborB.cantidad
+          )
+        );
+
+      const itemExistente = state.items.find((i) => mismoProducto(i, item));
+
+      if (itemExistente) {
+        set((state) => ({
+          items: state.items.map((i) =>
+            mismoProducto(i, item)
+              ? { ...i, cantidad: i.cantidad + item.cantidad }
+              : i
+          ),
+        }));
+      } else {
+        const itemConNumeral: LineaCarrito = {
+          ...item,
+          numeral: ultimoNumeral++,
+        };
+        set((state) => ({
+          items: [...state.items, itemConNumeral],
+        }));
+      }
     },
-    removeFromCart: (index: number) =>
+    removeFromCart: (numeral: number) =>
       set((state) => ({
-        items: state.items.filter((_, i) => i !== index),
+        items: state.items.filter((item) => item.numeral !== numeral),
       })),
-    updateCartItem: (index: number, item: lineaCarrito) =>
+    updateCartItem: (index: number, item: LineaCarrito) =>
       set((state) => {
         const newItems = [...state.items];
         newItems[index] = item;
@@ -46,9 +83,7 @@ export const usePedidos = create(
     updateCantidad: (numeral, sumar) =>
       set((state) => ({
         items: state.items.map((item) =>
-          item.numeral === numeral
-            ? { ...item, cantidad: item.cantidad + sumar }
-            : item
+          item.numeral === numeral ? { ...item, cantidad: sumar } : item
         ),
       })),
     clearCart: () => set({ items: [] }),
@@ -58,6 +93,24 @@ export const usePedidos = create(
     pedidosFinalizados: [],
     loadingPedidos: false,
     errorPedidos: null,
+
+    crearPedidoEnStore: (
+      observaciones: string,
+      montoTotal: number,
+      clienteId: string
+    ) => {
+      const { items } = get();
+      if (items.length === 0) return;
+      const pedidoData: CrearPedidoDto = {
+        observaciones,
+        productos: items,
+        montoTotal,
+        cliente: {
+          id: clienteId,
+        },
+      };
+      set({ pedido: pedidoData });
+    },
 
     fetchPedidosCliente: async (clienteId: string) => {
       set({ loadingPedidos: true, errorPedidos: null });
@@ -174,7 +227,8 @@ export const usePedidos = create(
         set({ pedidos: data, loadingPedidos: false });
       } catch (err) {
         set({
-          errorPedidos: err instanceof Error ? err.message : "Error desconocido",
+          errorPedidos:
+            err instanceof Error ? err.message : "Error desconocido",
           loadingPedidos: false,
         });
       }

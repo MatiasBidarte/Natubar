@@ -1,15 +1,15 @@
 "use client";
 import { create } from "zustand";
-import { Product, Sabor } from "../types/product";
+import { Producto, Sabor } from "../types/producto";
 
 interface StoreProductoState {
-  products: Product[];
+  products: Producto[];
   sabores: Sabor[];
   loading: boolean;
   error: string | null;
   fetchProducts: () => Promise<void>;
-  addProduct: (product: Product) => void;
-  getProductById: (id: number) => Product | undefined;
+  addProduct: (product: Producto) => void;
+  getProductById: (id: number) => Producto | undefined;
   getSabores: () => Sabor[] | undefined | Promise<void>;
 }
 
@@ -48,7 +48,7 @@ const useProductos = create<StoreProductoState>((set, get) => ({
     }
   },
 
-  addProduct: (product: Product) =>
+  addProduct: (product: Producto) =>
     set((state) => ({ products: [...state.products, product] })),
 
   getProductById: (id: number) =>
@@ -76,12 +76,13 @@ const useProductos = create<StoreProductoState>((set, get) => ({
 
       const data = await response.json();
       set({ sabores: data, loading: false });
-  }catch (err) {
+    } catch (err) {
       set({
         error: err instanceof Error ? err.message : "Error desconocido",
         loading: false,
       });
-    }},
+    }
+  },
 }));
 
 export default useProductos;

@@ -6,6 +6,9 @@ import NavLinksMobile from "./nav-links-mobile";
 import { useEffect } from "react";
 import NavLinksDesktop from "./nav-links-desktop";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
+import dynamic from "next/dynamic";
+
+const EnvioBanner = dynamic(() => import("./EnvioBanner"), { ssr: false });
 
 export default function ClientLayout({
   children,
@@ -19,21 +22,20 @@ export default function ClientLayout({
   }, [inicializarUsuario]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const handleAuthChange = () => {
-        inicializarUsuario();
-      };
-      window.addEventListener("auth-change", handleAuthChange);
-      return () => {
-        window.removeEventListener("auth-change", handleAuthChange);
-      };
-    }
+    const handleAuthChange = () => {
+      inicializarUsuario();
+    };
+    window.addEventListener("auth-change", handleAuthChange);
+    return () => {
+      window.removeEventListener("auth-change", handleAuthChange);
+    };
   }, [inicializarUsuario]);
 
   return (
     <ThemeProvider theme={theme}>
+      <EnvioBanner />
       <NavLinksDesktop />
-      <div className="flex justify-center min-h-screen pb-24 md:pb-4 pt-0 md:pt-18">
+      <div className="flex justify-center min-h-screen pb-24 md:pb-4 pt-11 md:pt-28">
         {children}
       </div>
       <NavLinksMobile />

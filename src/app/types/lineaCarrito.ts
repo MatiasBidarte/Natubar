@@ -1,20 +1,22 @@
-import { Product, Sabor } from "./product";
+import { Producto, Sabor } from "./producto";
 
-export interface lineaCarrito {
-  numeral: number;
-  producto: Product;
-  sabores: saborLinea[];
-  cantidad: number;
-}
-
-export interface NuevaLineaCarrito {
+export interface LineaCarrito {
   numeral?: number;
-  producto: Product;
-  sabores: saborLinea[];
+  producto: Producto;
+  sabores: SaborLinea[];
   cantidad: number;
 }
 
-export interface saborLinea {
+export interface SaborLinea {
   sabor: Sabor;
   cantidad: number;
+}
+
+export interface CrearPedidoDto {
+  observaciones?: string;
+  productos: LineaCarrito[];
+  montoTotal: number;
+  cliente: {
+    id: string;
+  };
 }

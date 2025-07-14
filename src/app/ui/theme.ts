@@ -11,6 +11,7 @@ const theme = createTheme({
     },
     secondary: {
       main: "#D1B984", // dorado
+      dark: "#B99342",
       contrastText: "#000",
     },
     background: {

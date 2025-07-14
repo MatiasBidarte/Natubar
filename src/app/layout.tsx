@@ -17,15 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-
     <html lang="en">
-      <head>
-        <Script
-          src="https://sdk.mercadopago.com/js/v2"
-          strategy="beforeInteractive"
-        />
-      </head>
       <body className={`${roboto.className} antialiased`}>
+        <Script src="https://sdk.mercadopago.com/js/v2" />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

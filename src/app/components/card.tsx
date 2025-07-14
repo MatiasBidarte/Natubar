@@ -1,12 +1,12 @@
 import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
-import { Product } from "../types/product";
+import { Producto } from "../types/producto";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const ProductCard = ({
   product,
   onClick,
 }: {
-  product: Product;
+  product: Producto;
   onClick?: () => void;
 }) => {
   const { usuario, esEmpresa } = useUsuarioStore();

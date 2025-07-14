@@ -9,30 +9,122 @@ import {
   Paper,
   Snackbar,
   Container,
+  Alert,
+  Tooltip,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { usePedidos } from "../hooks/usePedidos";
 import { useState } from "react";
 import { homemadeApple } from "../ui/fonts";
 import Link from "next/link";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const Carrito = () => {
   const { items } = usePedidos();
   const [apiError, setApiError] = useState<string | null>(null);
+  const { usuario = null, esEmpresa = false } = useUsuarioStore();
+
   const updateCantidad = usePedidos((state) => state.updateCantidad);
   const handleCantidadChange = (numeral: number, delta: number) => {
     updateCantidad(numeral, delta);
   };
 
-  const calcularTotal = () => {
-    return items.reduce(
-      (acc, item) => acc + item.producto.precioPersonas! * item.cantidad,
-      0
-    );
+  const removeFromCart = usePedidos((state) => state.removeFromCart);
+  const eliminarItem = (numeral: number) => {
+    removeFromCart(numeral);
   };
 
+  const calcularSubtotal = () => {
+    if (typeof usuario === "undefined" || typeof esEmpresa === "undefined") {
+      return items.reduce(
+        (acc, item) => acc + item.producto.precioPersonas * item.cantidad,
+        0
+      );
+    } else {
+      return items.reduce(
+        (acc, item) =>
+          acc +
+          (usuario
+            ? esEmpresa
+              ? item.producto.precioEmpresas
+              : item.producto.precioPersonas
+            : item.producto.precioPersonas) *
+            item.cantidad,
+        0
+      );
+    }
+  };
+
+  const envio = process.env.NEXT_PUBLIC_VALOR_ENVIO;
+  const costoParaEnvio = Number(
+    process.env.NEXT_PUBLIC_VALOR_MINIMO_PARA_ENVIO
+  );
+  const costoCompraMinimoEmpresas = Number(
+    process.env.NEXT_PUBLIC_COSTO_COMPRA_MINIMO_EMPRESAS
+  );
+
+  const subtotal = calcularSubtotal();
+  const envioGratis = esEmpresa || subtotal >= costoParaEnvio;
+  const total = subtotal + (envioGratis ? 0 : Number(envio));
+
+  const empresaPuedeComprar = esEmpresa && total >= costoCompraMinimoEmpresas;
+
+  const getMensajeCompra = () => {
+    if (!usuario) {
+      return "Inicia sesión para continuar con la compra";
+    }
+    if (esEmpresa && !empresaPuedeComprar) {
+      return `El monto mínimo de compra para empresas es de $${costoCompraMinimoEmpresas}`;
+    }
+    return null;
+  };
+
+  const mensajeCompra = getMensajeCompra();
+  const botonDeshabilitado = !usuario || (esEmpresa && !empresaPuedeComprar);
+
+  if (items.length === 0) {
+    return (
+      <Container className="p-8 w-full max-w-md">
+        <Typography
+          variant="h6"
+          p-top={16}
+          mb={4}
+          textAlign="center"
+          className={homemadeApple.className}
+        >
+          Carrito de Compras
+        </Typography>
+
+        <Paper
+          elevation={0}
+          className="p-8 rounded-xl bg-[#FFF9ED] text-center"
+        >
+          <Typography variant="h6" className="mb-4">
+            Tu carrito está vacío
+          </Typography>
+          <Typography className="text-gray-500 mb-6">
+            Parece que aún no has agregado productos a tu carrito.
+          </Typography>
+          <Button
+            component={Link}
+            href="/"
+            variant="contained"
+            sx={{
+              bgcolor: "#b78b36",
+              "&:hover": { bgcolor: "#a8772f" },
+              borderRadius: "24px",
+              px: 4,
+            }}
+          >
+            Ver productos
+          </Button>
+        </Paper>
+      </Container>
+    );
+  }
+
   return (
-    <div className="flex bg-white px-4 p-14">
+    <div className="flex bg-white px-4 p-14 w-full">
       {apiError && (
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -85,7 +177,10 @@ const Carrito = () => {
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleCantidadChange(item.numeral, -1)}
+                    onClick={() =>
+                      item.cantidad > 1 &&
+                      handleCantidadChange(item.numeral ?? 1, item.cantidad - 1)
+                    }
                   >
                     -
                   </Button>
@@ -93,21 +188,34 @@ const Carrito = () => {
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleCantidadChange(item.numeral, 1)}
+                    onClick={() =>
+                      handleCantidadChange(item.numeral ?? 1, item.cantidad + 1)
+                    }
                   >
                     +
                   </Button>
                 </Box>
               </Box>
               <Box display="flex" flexDirection="column" alignItems="flex-end">
-                <IconButton disabled>
+                <IconButton onClick={() => eliminarItem(item.numeral ?? 1)}>
                   <DeleteOutlineIcon />
                 </IconButton>
                 <Typography variant="body2">
-                  ${item.producto.precioPersonas} c/u
+                  $
+                  {usuario
+                    ? esEmpresa
+                      ? item.producto.precioEmpresas
+                      : item.producto.precioPersonas
+                    : item.producto.precioPersonas}{" "}
+                  c/u
                 </Typography>
                 <Typography fontWeight="bold">
-                  ${item.producto.precioPersonas! * item.cantidad}
+                  $
+                  {(usuario
+                    ? esEmpresa
+                      ? item.producto.precioEmpresas
+                      : item.producto.precioPersonas
+                    : item.producto.precioPersonas) * item.cantidad}
                 </Typography>
               </Box>
             </Paper>
@@ -116,35 +224,72 @@ const Carrito = () => {
           <Box p={2} bgcolor="white" borderRadius={2}>
             <Stack direction="row" justifyContent="space-between">
               <Typography>Subtotal</Typography>
-              <Typography>${calcularTotal()}</Typography>
+              <Typography>${calcularSubtotal()}</Typography>
             </Stack>
             <Stack direction="row" justifyContent="space-between">
               <Typography>Envío</Typography>
-              <Typography color="green">Gratis</Typography>
+              <Typography color={envioGratis ? "green" : "inherit"}>
+                {envioGratis ? "Gratis" : `$${envio}`}
+                {!envioGratis && !esEmpresa && (
+                  <Typography
+                    variant="caption"
+                    display="block"
+                    color="text.secondary"
+                    align="right"
+                  >
+                    Envío gratis a partir de ${costoParaEnvio}
+                  </Typography>
+                )}
+              </Typography>
             </Stack>
             <Divider sx={{ my: 1 }} />
             <Stack direction="row" justifyContent="space-between">
               <Typography fontWeight="bold">Total</Typography>
-              <Typography fontWeight="bold">${calcularTotal()}</Typography>
+              <Typography fontWeight="bold">${total.toFixed(2)}</Typography>
             </Stack>
           </Box>
 
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              bgcolor: "#b78b36",
-              py: 1.5,
-              borderRadius: 2,
-              fontWeight: "bold",
-              fontSize: "16px",
-              "&:hover": {
-                bgcolor: "#a8772f",
-              },
-            }}
+          {esEmpresa && !empresaPuedeComprar && (
+            <Alert severity="info" sx={{ borderRadius: 2 }}>
+              El monto mínimo de compra para empresas es de $
+              {costoCompraMinimoEmpresas}
+            </Alert>
+          )}
+
+          <Tooltip
+            title={mensajeCompra || ""}
+            placement="top"
+            arrow
+            open={!!mensajeCompra}
           >
-            Comprar ahora
-          </Button>
+            <span>
+              <Button
+                variant="contained"
+                fullWidth
+                component={Link}
+                href={
+                  usuario == null ? "/login?redirect=carrito" : "/resumenCompra"
+                }
+                disabled={botonDeshabilitado}
+                sx={{
+                  bgcolor: "#b78b36",
+                  py: 1.5,
+                  borderRadius: 2,
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  "&:hover": {
+                    bgcolor: "#a8772f",
+                  },
+                  "&.Mui-disabled": {
+                    bgcolor: "#e0e0e0",
+                    color: "rgba(0, 0, 0, 0.38)",
+                  },
+                }}
+              >
+                Comprar ahora
+              </Button>
+            </span>
+          </Tooltip>
           <Button
             variant="outlined"
             fullWidth
