@@ -26,6 +26,7 @@ import { Cliente, useClientes } from "../hooks/useClientes";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const PerfilPage = () => {
+  const { cerrarSesion } = useUsuarioStore();
   const { updateClient } = useClientes();
   const [usuario, setUsuario] = useState<Partial<Cliente>>();
   const [editando, setEditando] = useState(false);
@@ -54,6 +55,12 @@ const PerfilPage = () => {
       ...formUsuario,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleCerrarSesion = () => {
+    if (typeof window !== "undefined") {
+      cerrarSesion();
+    }
   };
 
   const handleSave = async () => {
@@ -352,6 +359,13 @@ const PerfilPage = () => {
             </Button>
           </Box>
         )}
+        <Button
+          variant="contained"
+          onClick={handleCerrarSesion}
+          className="mt-4 text-[#B99342] hover:text-amber-600"
+        >
+          Cerrar sesión
+        </Button>
       </Box>
     </>
   );

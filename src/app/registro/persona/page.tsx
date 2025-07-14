@@ -78,7 +78,6 @@ export default function RegistroCliente() {
           JSON.stringify({
             ...decodeToken(token.access_token),
             token: token.access_token,
-            tipo: "Persona",
           })
         );
         window.dispatchEvent(new Event("auth-change"));

@@ -1,4 +1,4 @@
-export interface Product {
+export interface Producto {
   id?: number;
   nombre?: string;
   descripcion?: string;
@@ -7,7 +7,6 @@ export interface Product {
   peso?: number;
   stock?: boolean;
   urlImagen?: string;
-  sabores?: Sabor[];
   esCajaDeBarras: boolean;
   cantidadDeBarras?: number;
 }
