@@ -153,6 +153,7 @@ export const useClientes = () => {
         };
       }
       const loginCliente = await response.json();
+      console.log(loginCliente)
       return loginCliente;
     } catch (err) {
       throw err;

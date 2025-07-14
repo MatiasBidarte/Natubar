@@ -35,16 +35,43 @@ let ultimoNumeral = 1;
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
-    pedido: undefined,
     addToCart: (item: LineaCarrito) => {
-      const itemConNumeral = { ...item, numeral: ultimoNumeral++ };
-      set((state) => ({
-        items: [...state.items, itemConNumeral],
-      }));
+      const state = get();
+
+      const mismoProducto = (a: LineaCarrito, b: LineaCarrito) =>
+        a.producto.id === b.producto.id &&
+        a.sabores.length === b.sabores.length &&
+        a.sabores.every((saborA) =>
+          b.sabores.some(
+            (saborB) =>
+              saborA.sabor.id === saborB.sabor.id &&
+              saborA.cantidad === saborB.cantidad
+          )
+        );
+
+      const itemExistente = state.items.find((i) => mismoProducto(i, item));
+
+      if (itemExistente) {
+        set((state) => ({
+          items: state.items.map((i) =>
+            mismoProducto(i, item)
+              ? { ...i, cantidad: i.cantidad + item.cantidad }
+              : i
+          ),
+        }));
+      } else {
+        const itemConNumeral: LineaCarrito = {
+          ...item,
+          numeral: ultimoNumeral++,
+        };
+        set((state) => ({
+          items: [...state.items, itemConNumeral],
+        }));
+      }
     },
-    removeFromCart: (index: number) =>
+    removeFromCart: (numeral: number) =>
       set((state) => ({
-        items: state.items.filter((_, i) => i !== index),
+        items: state.items.filter((item) => item.numeral !== numeral),
       })),
     updateCartItem: (index: number, item: LineaCarrito) =>
       set((state) => {
@@ -55,9 +82,7 @@ export const usePedidos = create(
     updateCantidad: (numeral, sumar) =>
       set((state) => ({
         items: state.items.map((item) =>
-          item.numeral === numeral
-            ? { ...item, cantidad: item.cantidad + sumar }
-            : item
+          item.numeral === numeral ? { ...item, cantidad: sumar } : item
         ),
       })),
     clearCart: () => set({ items: [] }),

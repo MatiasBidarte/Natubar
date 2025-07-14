@@ -120,10 +120,28 @@ const ResumenCompraPage = () => {
     }
   }, []);
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.producto.precioPersonas! * item.cantidad,
-    0
-  );
+  const calcularSubtotal = () => {
+    if (typeof usuario === "undefined" || typeof esEmpresa === "undefined") {
+      return items.reduce(
+        (acc, item) => acc + item.producto.precioPersonas * item.cantidad,
+        0
+      );
+    } else {
+      return items.reduce(
+        (acc, item) =>
+          acc +
+          (usuario
+            ? esEmpresa
+              ? item.producto.precioEmpresas
+              : item.producto.precioPersonas
+            : item.producto.precioPersonas) *
+            item.cantidad,
+        0
+      );
+    }
+  };
+
+  const subtotal = calcularSubtotal();
   const envio = process.env.NEXT_PUBLIC_VALOR_ENVIO;
   const costoParaEnvio = Number(
     process.env.NEXT_PUBLIC_VALOR_MINIMO_PARA_ENVIO
@@ -234,8 +252,8 @@ const ResumenCompraPage = () => {
                         $
                         {(
                           (esEmpresa
-                            ? item.producto.precioPersonas!
-                            : item.producto.precioEmpresas!) * item.cantidad
+                            ? item.producto.precioEmpresas!
+                            : item.producto.precioPersonas!) * item.cantidad
                         ).toFixed(2)}
                       </Typography>
                     </Box>
@@ -304,8 +322,8 @@ const ResumenCompraPage = () => {
                           $
                           {(
                             (esEmpresa
-                              ? item.producto.precioPersonas!
-                              : item.producto.precioEmpresas!) * item.cantidad
+                              ? item.producto.precioEmpresas!
+                              : item.producto.precioPersonas!) * item.cantidad
                           ).toFixed(2)}
                         </Typography>
                       </Box>

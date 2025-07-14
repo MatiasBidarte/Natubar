@@ -2,8 +2,8 @@ export interface Producto {
   id?: number;
   nombre?: string;
   descripcion?: string;
-  precioPersonas?: number;
-  precioEmpresas?: number;
+  precioPersonas: number;
+  precioEmpresas: number;
   peso?: number;
   stock?: boolean;
   urlImagen?: string;

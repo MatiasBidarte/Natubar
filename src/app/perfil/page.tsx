@@ -34,6 +34,7 @@ const PerfilPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [respuesta, setRespuesta] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const { esEmpresa } = useUsuarioStore();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -95,8 +96,6 @@ const PerfilPage = () => {
       </Box>
     );
   }
-
-  const esEmpresa = usuario.tipo === "Empresa";
 
   return (
     <>
