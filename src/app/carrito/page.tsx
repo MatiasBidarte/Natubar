@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const Carrito = () => {
-  const { items } = usePedidos();
+  const { items, calcularCostoEnvio } = usePedidos();
   const [apiError, setApiError] = useState<string | null>(null);
   const { usuario = null, esEmpresa = false } = useUsuarioStore();
 
@@ -55,16 +55,13 @@ const Carrito = () => {
     }
   };
 
-  const envio = process.env.NEXT_PUBLIC_VALOR_ENVIO;
-  const costoParaEnvio = Number(
-    process.env.NEXT_PUBLIC_VALOR_MINIMO_PARA_ENVIO
-  );
+  const envio = calcularCostoEnvio();
   const costoCompraMinimoEmpresas = Number(
     process.env.NEXT_PUBLIC_COSTO_COMPRA_MINIMO_EMPRESAS
   );
 
   const subtotal = calcularSubtotal();
-  const envioGratis = esEmpresa || subtotal >= costoParaEnvio;
+  const envioGratis = esEmpresa || !Boolean(envio);
   const total = subtotal + (envioGratis ? 0 : Number(envio));
 
   const empresaPuedeComprar = esEmpresa && total >= costoCompraMinimoEmpresas;
@@ -230,16 +227,6 @@ const Carrito = () => {
               <Typography>Envío</Typography>
               <Typography color={envioGratis ? "green" : "inherit"}>
                 {envioGratis ? "Gratis" : `$${envio}`}
-                {!envioGratis && !esEmpresa && (
-                  <Typography
-                    variant="caption"
-                    display="block"
-                    color="text.secondary"
-                    align="right"
-                  >
-                    Envío gratis a partir de ${costoParaEnvio}
-                  </Typography>
-                )}
               </Typography>
             </Stack>
             <Divider sx={{ my: 1 }} />
