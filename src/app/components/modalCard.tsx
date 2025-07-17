@@ -25,12 +25,14 @@ interface CustomModalProps {
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
+  
   const { sabores = [], getSabores } = useProductos() ?? {
     sabores: [],
     getSabores: () => {},
   };
 
   useEffect(() => {
+    
     getSabores();
   }, [getSabores]);
 

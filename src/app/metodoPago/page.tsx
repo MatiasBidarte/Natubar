@@ -31,7 +31,7 @@ export default function MetodoPago() {
 
   const handlePagarAhora = async () => {
     const pedidoResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
+      `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/crear-preferencia`,
       {
         method: "POST",
         headers: {
