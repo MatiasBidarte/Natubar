@@ -1,3 +1,6 @@
+import { Cliente } from "../hooks/useClientes";
+import { Producto } from "./producto";
+
 export interface Pedido {
   id: number;
   fechaCreacion: Date;
@@ -9,22 +12,20 @@ export interface Pedido {
   observaciones?: string;
   productos?: DetallePedido[];
   preferenceId?: string;
+  cliente?: Cliente;
 }
 
 interface DetallePedido {
   id: number;
   cantidad: number;
-  nombre: string;
-  descripcion?: string;
-  precioPersonas: number;
-  precioEmpresas: number;
-  stock: boolean;
-  urlImagen?: string;
-  peso?: number;
-  esCajaDeBarras: boolean;
-  cantidadDeBarras?: number;
-  sabores?: Sabor[];
+  producto: Producto;
+  productoSabores?: {
+    id: number;
+    cantidad: number;
+    sabor: Sabor;
+  }[];
 }
+
 
 interface Sabor {
   id: number;

@@ -194,11 +194,11 @@ const ComprasCliente = () => {
             onClick={() => togglePedidoExpand(pedido.id)}
           >
             <Box className="flex items-center">
-              {primerProducto?.urlImagen && (
+              {primerProducto?.producto.urlImagen && primerProducto?.producto.nombre && (
                 <Box className="w-16 h-16 mr-4 rounded-lg overflow-hidden relative">
                   <Image
-                    src={primerProducto.urlImagen}
-                    alt={primerProducto.nombre}
+                    src={primerProducto.producto.urlImagen}
+                    alt={primerProducto.producto.nombre}
                     fill
                     className="object-cover"
                   />
@@ -206,7 +206,7 @@ const ComprasCliente = () => {
               )}
               <Box>
                 <Typography variant="body1" className="font-medium">
-                  {primerProducto ? primerProducto.nombre : "Pedido"}
+                  {primerProducto ? primerProducto.producto.nombre : "Pedido"}
                 </Typography>
                 {primerProducto &&
                   pedido.productos &&
@@ -249,17 +249,17 @@ const ComprasCliente = () => {
                           variant="body2"
                           className="font-medium text-gray-800"
                         >
-                          {item.cantidad}x {item.nombre}
+                          {item.cantidad}x {item.producto.nombre}
                         </Typography>
                         <Typography variant="body2" className="font-medium">
                           $
                           {usuario?.tipo === "Persona"
-                            ? (item.cantidad * item.precioPersonas).toFixed(2)
-                            : (item.cantidad * item.precioEmpresas).toFixed(2)}
+                            ? (item.cantidad * item.producto.precioPersonas).toFixed(2)
+                            : (item.cantidad * item.producto.precioEmpresas).toFixed(2)}
                         </Typography>
                       </Box>
 
-                      {item.sabores && item.sabores.length > 0 && (
+                      {item.productoSabores && item.productoSabores.length > 0 && (
                         <Box className="ml-4 mt-1">
                           <Typography
                             variant="caption"
@@ -268,13 +268,13 @@ const ComprasCliente = () => {
                             Sabores:
                           </Typography>
                           <Box className="flex flex-wrap gap-1">
-                            {item.sabores.map((sabor, idx) => (
+                            {item.productoSabores.map((sabor, idx) => (
                               <Typography
                                 key={idx}
                                 variant="caption"
                                 className="bg-gray-100 px-2 py-1 rounded-full text-gray-700"
                               >
-                                {sabor.nombre} x{sabor.cantidad}
+                                {sabor.sabor.nombre} x{sabor.cantidad}
                               </Typography>
                             ))}
                           </Box>

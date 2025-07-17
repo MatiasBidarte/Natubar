@@ -25,7 +25,7 @@ interface PedidoState {
   errorPedidos: string | null;
 
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
-  fetchPedidos: () => Promise<void>;
+  fetchPedidos: (estado: EstadosPedido) => Promise<void>;
   crearPedido: (
     clienteId: string,
     observaciones: string
@@ -157,7 +157,7 @@ export const usePedidos = create(
         );
 
         set({
-          pedidos,
+          pedidos: pedidos,
           pedidosEnCurso: enCurso,
           pedidosFinalizados: finalizados,
           loadingPedidos: false,
@@ -216,11 +216,11 @@ export const usePedidos = create(
         throw error;
       }
     },
-    fetchPedidos: async () => {
+    fetchPedidos: async (estado: EstadosPedido) => {
       set({ loadingPedidos: true, errorPedidos: null });
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/PedidosPorEstado/${estado}`,
           {
             method: "GET",
             headers: {
@@ -236,8 +236,24 @@ export const usePedidos = create(
           throw new Error(errorData.message || "Error al obtener productos");
         }
 
-        const data = await response.json();
-        set({ pedidos: data, loadingPedidos: false });
+        const pedidos = (await response.json()) as Pedido[];
+        const enCurso = pedidos.filter(
+          (p) =>
+            p.estado === EstadosPedido.enPreparacion ||
+            p.estado === EstadosPedido.enCamino
+        );
+        const finalizados = pedidos.filter(
+          (p) =>
+            p.estado === EstadosPedido.entregado ||
+            p.estado === EstadosPedido.pendientePago
+        );
+
+        set({
+          pedidos: pedidos,
+          pedidosEnCurso: enCurso,
+          pedidosFinalizados: finalizados,
+          loadingPedidos: false,
+        });
       } catch (err) {
         set({
           errorPedidos:
