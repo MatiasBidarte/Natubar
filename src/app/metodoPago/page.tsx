@@ -22,7 +22,7 @@ import MercadoPagoPage from "./mercadoPago/page";
 
 export default function MetodoPago() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const { pedido } = usePedidos();
+  const { pedido, clearCart } = usePedidos();
   const router = useRouter();
   const [metodo, setMetodo] = useState<"mp" | "transferencia" | null>(null);
   const [metodoSeleccionado, setMetodoSeleccionado] = useState<
@@ -51,6 +51,11 @@ export default function MetodoPago() {
     if (metodoSeleccionado === "mp") {
       router.push(`/metodoPago/mercadoPago?pedidoId=${pedidoBody.id}`);
     }
+  };
+
+  const handleCancelar = () => {
+    clearCart();
+    router.push("/");
   };
 
   return (
@@ -141,6 +146,7 @@ export default function MetodoPago() {
               Pagar ahora
             </Button>
             <Button
+              onClick={handleCancelar}
               variant="outlined"
               sx={{ width: "100%", borderRadius: "20px", mt: 2 }}
             >
@@ -152,14 +158,12 @@ export default function MetodoPago() {
 
       {metodo === "mp" && (
         <Box mt={3}>
-          <Typography variant="h6">Pago con Mercado Pago</Typography>
           <MercadoPagoPage />
         </Box>
       )}
 
       {metodo === "transferencia" && (
         <Box mt={3}>
-          <Typography variant="h6">Datos para transferencia</Typography>
           <TransferenciaForm />
         </Box>
       )}

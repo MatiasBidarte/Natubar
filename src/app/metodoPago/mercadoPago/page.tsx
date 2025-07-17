@@ -4,23 +4,36 @@ import { initMercadoPago, Payment } from "@mercadopago/sdk-react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import usePedidos from "@/app/hooks/usePedidos";
 import { useSearchParams } from "next/navigation";
+import { useUsuarioStore } from "@/app/hooks/useUsuarioStore";
+import ArrowBack from "@/app/ui/arrowBack";
 
-// Componente interno que usa useSearchParams
 function PaymentContent() {
   const searchParams = useSearchParams();
   const pedidoId = searchParams.get("pedidoId") || "";
 
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const { pedido } = usePedidos();
+  const { pedido, calcularCostoEnvio } = usePedidos();
+  const { esEmpresa } = useUsuarioStore();
 
   useEffect(() => {
     if (!pedidoId) return;
+
+    const productosParaPreferencia = pedido?.productos.map((item) => ({
+      id: item.producto.id?.toString(),
+      title: item.producto.nombre,
+      quantity: item.cantidad,
+      unit_price: esEmpresa
+        ? item.producto.precioEmpresas
+        : item.producto.precioPersonas,
+    }));
 
     setLoading(true);
     initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY!, {
       locale: "es-UY",
     });
+
+    const envio = calcularCostoEnvio();
 
     fetch(
       `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/crear-preferencia`,
@@ -31,8 +44,9 @@ function PaymentContent() {
           "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
         },
         body: JSON.stringify({
-          productos: pedido?.productos,
+          productos: productosParaPreferencia,
           pedidoId,
+          envio,
         }),
       }
     )
@@ -45,14 +59,10 @@ function PaymentContent() {
         console.error("Error fetching preference:", error);
         setLoading(false);
       });
-  }, [pedido, pedidoId]);
+  }, [pedido, pedidoId, esEmpresa, calcularCostoEnvio]);
 
   const customization = {
     paymentMethods: {
-      ticket: "all" as const,
-      creditCard: "all" as const,
-      prepaidCard: "all" as const,
-      debitCard: "all" as const,
       mercadoPago: "all" as const,
     },
   };
@@ -77,23 +87,19 @@ function PaymentContent() {
     );
   }
 
-  const onSubmit = async (formData: unknown) => {
-    console.log("Payment submission:", formData);
-    // Handle payment submission here
-    // Redirect based on payment status
-  };
-
   return (
     <Box
       display="flex"
+      flexDirection="column"
       justifyContent="center"
-      alignItems="center"
+      alignItems="flex-start"
       minHeight="100vh"
       sx={{
         px: { xs: 2, sm: 4 },
         boxSizing: "border-box",
       }}
     >
+      <ArrowBack />
       <Box
         width="100%"
         maxWidth={400}
@@ -111,7 +117,10 @@ function PaymentContent() {
         <Payment
           customization={customization}
           initialization={initialization}
-          onSubmit={onSubmit}
+          onSubmit={async () => {
+            console.log("Pago enviado");
+            return Promise.resolve();
+          }}
           onReady={() => console.log("Pago listo")}
           onError={(err) => console.error("Error en pago:", err)}
         />
