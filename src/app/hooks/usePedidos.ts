@@ -30,6 +30,17 @@ interface PedidoState {
     clienteId: string,
     observaciones: string
   ) => Promise<Pedido | undefined>;
+  actualizarPedidoEnStore: ({
+    pedidosEnCurso,
+    pedidosFinalizados,
+  }: {
+    pedidosEnCurso: Pedido[];
+    pedidosFinalizados: Pedido[];
+  }) => void;
+  actualizarEstadoPedido: (
+    pedidoId: number,
+    nuevoEstado: EstadosPedido
+  ) => Promise<void>;
 }
 
 let ultimoNumeral = 1;
@@ -219,6 +230,19 @@ export const usePedidos = create(
     fetchPedidos: async (estado: EstadosPedido) => {
       set({ loadingPedidos: true, errorPedidos: null });
       try {
+        const pedidosExistentes = [
+          ...get().pedidosEnCurso,
+          ...get().pedidosFinalizados,
+        ];
+        const yaTenemosEstado = pedidosExistentes.some(
+          (p) => p.estado === estado
+        );
+
+        if (yaTenemosEstado) {
+          set({ loadingPedidos: false });
+          return;
+        }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/PedidosPorEstado/${estado}`,
           {
@@ -236,31 +260,72 @@ export const usePedidos = create(
           throw new Error(errorData.message || "Error al obtener productos");
         }
 
-        const pedidos = (await response.json()) as Pedido[];
-        const enCurso = pedidos.filter(
-          (p) =>
-            p.estado === EstadosPedido.enPreparacion ||
-            p.estado === EstadosPedido.enCamino
-        );
-        const finalizados = pedidos.filter(
-          (p) =>
-            p.estado === EstadosPedido.entregado ||
-            p.estado === EstadosPedido.pendientePago
-        );
+        const pedidosNuevos = (await response.json()) as Pedido[];
 
+        if (
+          estado === EstadosPedido.enPreparacion ||
+          estado === EstadosPedido.enCamino
+        ) {
+          set((state) => ({
+            pedidosEnCurso: [
+              ...state.pedidosEnCurso.filter((p) => p.estado !== estado),
+              ...pedidosNuevos,
+            ],
+          }));
+        } else if (
+          estado === EstadosPedido.entregado ||
+          estado === EstadosPedido.pendientePago
+        ) {
+          set((state) => ({
+            pedidosFinalizados: [
+              ...state.pedidosFinalizados.filter((p) => p.estado !== estado),
+              ...pedidosNuevos,
+            ],
+          }));
+        }
+
+        set({ loadingPedidos: false });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Error desconocido";
         set({
-          pedidos: pedidos,
-          pedidosEnCurso: enCurso,
-          pedidosFinalizados: finalizados,
-          loadingPedidos: false,
-        });
-      } catch (err) {
-        set({
-          errorPedidos:
-            err instanceof Error ? err.message : "Error desconocido",
+          errorPedidos: errorMessage,
           loadingPedidos: false,
         });
       }
+    },
+    actualizarEstadoPedido: async (
+      pedidoId: number,
+      nuevoEstado: EstadosPedido
+    ) => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/${pedidoId}/estado`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            body: JSON.stringify({ estado: nuevoEstado }),
+          }
+        );
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || "Error al actualizar estado del pedido"
+          );
+        }
+      } catch (error) {
+        console.error("Error al actualizar estado del pedido:", error);
+        throw error;
+      }
+    },
+    actualizarPedidoEnStore: ({ pedidosEnCurso, pedidosFinalizados }) => {
+      set({
+        pedidosEnCurso,
+        pedidosFinalizados,
+      });
     },
   }))
 );

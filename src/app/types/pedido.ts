@@ -9,13 +9,14 @@ export interface Pedido {
   montoTotal: number;
   descuento: number;
   estado: EstadosPedido;
+  estadoPago: EstadosPagoPedido;
   observaciones?: string;
   productos?: DetallePedido[];
   preferenceId?: string;
   cliente?: Cliente;
 }
 
-interface DetallePedido {
+export interface DetallePedido {
   id: number;
   cantidad: number;
   producto: Producto;
@@ -26,6 +27,11 @@ interface DetallePedido {
   }[];
 }
 
+export interface ProductoSabor {
+  id: number;
+  sabor: Sabor;
+  cantidad: number;
+}
 
 interface Sabor {
   id: number;
@@ -38,4 +44,10 @@ export enum EstadosPedido {
   enCamino = "En Camino",
   entregado = "Entregado",
   pendientePago = "Pendiente de Pago",
+}
+
+export enum EstadosPagoPedido {
+  pendiente = "Pendiente pago",
+  pagado = "Pagado",
+  rechazado = "Pago rechazado",
 }

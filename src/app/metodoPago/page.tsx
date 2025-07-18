@@ -30,8 +30,9 @@ export default function MetodoPago() {
   >(null);
 
   const handlePagarAhora = async () => {
+    setMetodo(metodoSeleccionado);
     const pedidoResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/crear-preferencia`,
+      `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
       {
         method: "POST",
         headers: {
@@ -46,7 +47,6 @@ export default function MetodoPago() {
       throw new Error(errorData.message || "Error al crear el pedido");
     }
     const pedidoBody = await pedidoResponse.json();
-    setMetodo(metodoSeleccionado);
 
     if (metodoSeleccionado === "mp") {
       router.push(`/metodoPago/mercadoPago?pedidoId=${pedidoBody.id}`);
