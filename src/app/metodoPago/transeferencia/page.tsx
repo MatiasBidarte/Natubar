@@ -89,7 +89,7 @@ export default function TransferenciaForm() {
         <Typography variant="body2">
           Una vez realizada la transferencia, envianos el comprobante al{" "}
           <Typography component="span" fontWeight="bold">
-            099916215
+            099916215, de lo contrario, el pedido no será procesado.
           </Typography>{" "}
         </Typography>
       </Paper>
