@@ -205,7 +205,8 @@ const ListaPedidosPage = () => {
         minHeight: 500,
         width: "50%",
         mx: "auto",
-        p: 3,
+        p: 4,
+        mt: 2,
       }}
     >
       <Stack

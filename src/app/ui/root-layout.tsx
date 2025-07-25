@@ -31,15 +31,16 @@ export default function ClientLayout({
     };
   }, [inicializarUsuario]);
 
-  const { verificarIntegridad } = useUsuarioStore();
+  const { verificarIntegridad, usuario } = useUsuarioStore();
 
   useEffect(() => {
     verificarIntegridad();
-  }, []);
+  });
 
   return (
     <ThemeProvider theme={theme}>
-      <EnvioBanner />
+      {!usuario || usuario.tipo != "ADMINISTRADOR" ? <EnvioBanner />: ""}
+      
       <NavLinksDesktop />
       <div className="flex justify-center min-h-screen pb-24 md:pb-4 pt-11 md:pt-28">
         {children}

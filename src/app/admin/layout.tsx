@@ -10,14 +10,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (inicializado && (!usuario || usuario.tipo !== 'ADMINISTRADOR')) {
       router.push('/');
     }
-  }, [usuario]);
+  }, [usuario, inicializado, router]);
 
   if (!usuario || usuario.tipo !== 'ADMINISTRADOR') {
     return null;
   }
 
   return (
-    <div className="p-6">
+    <div className='w-screen'>
       {children}
     </div>
   );

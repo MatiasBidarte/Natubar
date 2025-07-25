@@ -16,7 +16,7 @@ const links = [
 ];
 
 export default function NavLinksDesktop() {
-  const { estaLogueado, usuario, verificarIntegridad } = useUsuarioStore();
+  const { estaLogueado, usuario } = useUsuarioStore();
   const { items } = usePedidos();
   const pathname = usePathname();
   
@@ -24,7 +24,6 @@ export default function NavLinksDesktop() {
 
   useEffect(() => {
     //setReload((prev) => prev + 1);
-    verificarIntegridad()
   }, [usuario]);
   
   const getHref = (link: typeof links[number]) =>
@@ -36,7 +35,7 @@ export default function NavLinksDesktop() {
     (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "ADMINISTRADOR" || link.mostrarAlAdmin && usuario.tipo == "ADMINISTRADOR")
 
   return (
-    <div className="z-[1000] fixed hidden md:flex mt-11 items-center justify-between bg-[#201B21] text-[#B99342] w-screen">
+    <div className={`z-[1000] fixed hidden md:flex ${!usuario || usuario.tipo != "ADMINISTRADOR" ? "mt-11" : ""} items-center justify-between bg-[#201B21] text-[#B99342] w-screen`}>
       <div className={`w-32${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`} />
 
       <div className="flex-grow flex items-center justify-center gap-16">

@@ -1,7 +1,5 @@
 'use client';
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function AdminHomePage() {
   const { usuario } = useUsuarioStore();
