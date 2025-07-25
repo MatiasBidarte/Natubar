@@ -31,6 +31,12 @@ export default function ClientLayout({
     };
   }, [inicializarUsuario]);
 
+  const { verificarIntegridad } = useUsuarioStore();
+
+  useEffect(() => {
+    verificarIntegridad();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <EnvioBanner />

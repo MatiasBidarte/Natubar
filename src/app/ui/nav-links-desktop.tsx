@@ -1,53 +1,64 @@
+'use client';
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Typography } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import { Typography, Badge } from "@mui/material";
+import { AccountCircle, ShoppingCart } from "@mui/icons-material";
 import Image from "next/image";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 import { usePedidos } from "../hooks/usePedidos";
-import { ShoppingCart } from "@mui/icons-material";
-import { Badge } from "@mui/material";
+import { useEffect } from "react";
 
 const links = [
-  {
-    href: "/",
-    name: "Inicio",
-    type: "text",
-  },
-  {
-    href: "/perfil/compras/",
-    name: "Mis Compras",
-    type: "text",
-  },
-  {
-    href: "/perfil/",
-    name: "Mi Perfil",
-    type: "icon",
-  },
+  { href: "/", name: "Inicio", type: "text", requireLogin: false, mostrarAlAdmin: true, mostrarAlUsuario: true, columnaIzq: true },
+  { href: "/perfil/compras/", name: "Mis Compras", type: "text", requireLogin: true, mostrarAlAdmin: false, mostrarAlUsuario: true, columnaIzq: false },
+  { href: "/admin/", name: "Admin", type: "text", requireLogin: true, mostrarAlAdmin: true, mostrarAlUsuario: false, columnaIzq: false },
 ];
 
 export default function NavLinksDesktop() {
-  const { estaLogueado } = useUsuarioStore();
-  const pathname = usePathname();
+  const { estaLogueado, usuario, verificarIntegridad } = useUsuarioStore();
   const { items } = usePedidos();
+  const pathname = usePathname();
+  
+  //const [reload, setReload] = useState(0);
+
+  useEffect(() => {
+    //setReload((prev) => prev + 1);
+    verificarIntegridad()
+  }, [usuario]);
+  
+  const getHref = (link: typeof links[number]) =>
+    link.requireLogin && !estaLogueado ? "/login" : link.href;
+
+  const isActive = (href: string) => pathname === href;
+
+  const getMostrar = (link: typeof links[number]) =>
+    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "ADMINISTRADOR" || link.mostrarAlAdmin && usuario.tipo == "ADMINISTRADOR")
+
   return (
     <div className="z-[1000] fixed hidden md:flex mt-11 items-center justify-between bg-[#201B21] text-[#B99342] w-screen">
-      <div className="w-32"></div>
+      <div className={`w-32${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`} />
+
       <div className="flex-grow flex items-center justify-center gap-16">
-        <Link href={links[0].href} className="inline-block">
-          <Typography
-            variant="body1"
-            className={`relative transition-colors duration-200
-              ${
-                pathname === links[0].href
-                  ? "text-amber-300 after:bg-amber-300 after:h-0.5"
-                  : "hover:text-amber-200 after:bg-amber-200 hover:after:h-0.5 after:h-0"
-              }
-              after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:transition-all`}
-          >
-            {links[0].name}
-          </Typography>
-        </Link>
+        {links
+          .filter((link) => link.type === "text" && getMostrar(link) && link.columnaIzq)
+          .map((link) => (
+            <Link key={link.name} href={getHref(link)} className="inline-block">
+              <Typography
+                variant="body1"
+                className={`relative transition-colors duration-200
+                  ${
+                    isActive(link.href)
+                      ? "text-amber-300 after:bg-amber-300 after:h-0.5"
+                      : "hover:text-amber-200 after:bg-amber-200 hover:after:h-0.5 after:h-0"
+                  }
+                  after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:transition-all`}
+              >
+                {link.name}
+              </Typography>
+            </Link>
+          ))}
+
         <div className="flex justify-center">
           <Image
             width={76}
@@ -56,37 +67,38 @@ export default function NavLinksDesktop() {
             alt="Natubar"
           />
         </div>
-        <Link
-          href={estaLogueado ? links[1].href : "/login"}
-          className="inline-block"
-        >
-          <Typography
-            variant="body1"
-            className={`relative transition-colors duration-200
-              ${
-                pathname === links[1].href
-                  ? "text-amber-300 after:bg-amber-300 after:h-0.5"
-                  : "hover:text-amber-200 after:bg-amber-200 hover:after:h-0.5 after:h-0"
-              }
-              after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:transition-all`}
-          >
-            {links[1].name}
-          </Typography>
-        </Link>
+
+
+        {links
+          .filter((link) => link.type === "text" && getMostrar(link) && !link.columnaIzq)
+          .map((link) => (
+            <Link key={link.name} href={getHref(link)} className="inline-block">
+              <Typography
+                variant="body1"
+                className={`relative transition-colors duration-200
+                  ${
+                    isActive(link.href)
+                      ? "text-amber-300 after:bg-amber-300 after:h-0.5"
+                      : "hover:text-amber-200 after:bg-amber-200 hover:after:h-0.5 after:h-0"
+                  }
+                  after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:transition-all`}
+              >
+                {link.name}
+              </Typography>
+            </Link>
+          ))}
       </div>
-      <div className="flex items-center mr-8">
-        <Link href={estaLogueado ? links[2].href : "/login"}>
+
+      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`}>
+        <Link href={!estaLogueado ? "/login" : "/perfil/"}>
           <AccountCircle
-            className={`transition-colors duration-200
-              ${
-                pathname === links[2].href
-                  ? "text-amber-300"
-                  : "hover:text-amber-200"
+            className={`transition-colors duration-200 ${
+                pathname === "/perfil" ? "text-amber-300" : "hover:text-amber-200"
               }`}
           />
         </Link>
       </div>
-      <div className="flex items-center mr-8">
+      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`}>
         <Link href="/carrito">
           <Badge
             badgeContent={items.length}
@@ -101,11 +113,8 @@ export default function NavLinksDesktop() {
             }}
           >
             <ShoppingCart
-              className={`transition-colors duration-200
-              ${
-                pathname === links[2].href
-                  ? "text-amber-300"
-                  : "hover:text-amber-200"
+              className={`transition-colors duration-200 ${
+                pathname === "/carrito" ? "text-amber-300" : "hover:text-amber-200"
               }`}
             />
           </Badge>
