@@ -4,6 +4,7 @@ import { CrearPedidoDto, LineaCarrito } from "../types/lineaCarrito";
 import { EstadosPago, EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
+  calcularCostoEnvio: () => number;
   crearPedidoEnStore: (
     observaciones: string,
     montoTotal: number,
@@ -88,7 +89,7 @@ export const usePedidos = create(
           item.numeral === numeral ? { ...item, cantidad: sumar } : item
         ),
       })),
-    clearCart: () => set({ items: [] }),
+    clearCart: () => set({ items: [], pedido: undefined }),
 
     pedidos: [],
     pedidosEnCurso: [],
@@ -112,6 +113,18 @@ export const usePedidos = create(
         },
       };
       set({ pedido: pedidoData });
+    },
+    calcularCostoEnvio: () => {
+      const { items } = get();
+      const subtotal = items.reduce(
+        (acc, item) => acc + item.producto.precioPersonas * item.cantidad,
+        0
+      );
+      const envio = Number(process.env.NEXT_PUBLIC_VALOR_ENVIO || 0);
+      const costoParaEnvio = Number(
+        process.env.NEXT_PUBLIC_VALOR_MINIMO_PARA_ENVIO || 0
+      );
+      return subtotal >= costoParaEnvio ? 0 : envio;
     },
 
     fetchPedidosCliente: async (clienteId: string) => {
@@ -208,6 +221,19 @@ export const usePedidos = create(
     fetchPedidos: async (estado: EstadosPedido) => {
       set({ loadingPedidos: true, errorPedidos: null });
       try {
+        const pedidosExistentes = [
+          ...get().pedidosEnCurso,
+          ...get().pedidosFinalizados,
+        ];
+        const yaTenemosEstado = pedidosExistentes.some(
+          (p) => p.estado === estado
+        );
+
+        if (yaTenemosEstado) {
+          set({ loadingPedidos: false });
+          return;
+        }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/PedidosPorEstado/${estado}`,
           {

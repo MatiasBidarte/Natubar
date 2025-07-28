@@ -22,7 +22,8 @@ import { useRouter } from "next/navigation";
 import CheckoutStepper from "../ui/CheckoutStepper";
 
 const ResumenCompraPage = () => {
-  const { items, crearPedidoEnStore } = usePedidos();
+  const { items, crearPedidoEnStore, clearCart, calcularCostoEnvio } =
+    usePedidos();
   const { usuario, estaLogueado, esEmpresa } = useUsuarioStore();
   const router = useRouter();
   const theme = useTheme();
@@ -53,16 +54,13 @@ const ResumenCompraPage = () => {
   };
 
   const subtotal = calcularSubtotal();
-  const envio = process.env.NEXT_PUBLIC_VALOR_ENVIO;
-  const costoParaEnvio = Number(
-    process.env.NEXT_PUBLIC_VALOR_MINIMO_PARA_ENVIO
-  );
+  const envio = calcularCostoEnvio();
   const costoCompraMinimoEmpresas = Number(
     process.env.NEXT_PUBLIC_COSTO_COMPRA_MINIMO_EMPRESAS
   );
 
-  const envioGratis = esEmpresa || subtotal >= costoParaEnvio;
-  const total = subtotal + (envioGratis ? 0 : Number(envio));
+  const envioGratis = esEmpresa || !Boolean(envio);
+  const total = subtotal + (envioGratis ? 0 : envio);
 
   const empresaPuedeComprar = esEmpresa && total >= costoCompraMinimoEmpresas;
 
@@ -82,6 +80,11 @@ const ResumenCompraPage = () => {
     } finally {
       setProcesando(false);
     }
+  };
+
+  const handleCancelar = () => {
+    clearCart();
+    router.push("/");
   };
 
   if (items.length === 0) {
@@ -356,6 +359,7 @@ const ResumenCompraPage = () => {
                 variant="outlined"
                 fullWidth
                 component={Link}
+                onClick={handleCancelar}
                 href="/"
                 sx={{
                   color: "#B99342",

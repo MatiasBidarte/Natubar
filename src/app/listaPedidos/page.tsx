@@ -1,266 +1,294 @@
-'use client'
-import { useEffect, useState } from "react";
+"use client";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import usePedidos from "../hooks/usePedidos";
-import { EstadosPago, EstadosPedido } from "../types/pedido";
-import { Alert, Box, Button, CircularProgress, Collapse, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
-import { formatDateToLocalDate, formatDateToString } from "../utils/date";
-import Image from "next/image";
-import { AccessTime, CalendarMonth, KeyboardArrowDown, KeyboardArrowUp, LocalShipping } from "@mui/icons-material";
-import { Cliente } from "../hooks/useClientes";
+import { EstadosPedido, EstadosPagoPedido } from "../types/pedido";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  Stack,
+  Typography,
+  Pagination,
+} from "@mui/material";
+import { AccessTime, CalendarMonth, LocalShipping } from "@mui/icons-material";
+import PedidoItem from "./componentes/PedidoItem";
 
 const ListaPedidosPage = () => {
-    const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadosPedido>(EstadosPedido.enPreparacion);
-    const [expandedPedidos, setExpandedPedidos] = useState<Record<number, boolean>>({});
-    const {
-        pedidosEnCurso,
-        pedidosFinalizados,
-        loadingPedidos,
-        errorPedidos,
-        fetchPedidos,
-        cambiarEstado,
-        cambiarEstadoPago,
-    } = usePedidos();
-    const [usuario, setUsuario] = useState<Cliente>();
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadosPedido>(
+    EstadosPedido.enPreparacion
+  );
+  const [expandedPedidos, setExpandedPedidos] = useState<
+    Record<number, boolean>
+  >({});
+  const [estadosCargados, setEstadosCargados] = useState<Set<EstadosPedido>>(
+    new Set()
+  );
+  const [paginaActual, setPaginaActual] = useState(1);
+  const pedidosPorPagina = 5;
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            try {
-                const usuarioData = localStorage.getItem("usuario");
-                if (usuarioData) {
-                    const usuario = JSON.parse(usuarioData);
-                    setUsuario(usuario);
-                }
-            } catch (error) {
-                console.error("Error al obtener datos del usuario:", error);
-            }
+  const {
+    pedidosEnCurso,
+    pedidosFinalizados,
+    loadingPedidos,
+    errorPedidos,
+    fetchPedidos,
+    actualizarPedidoEnStore,
+    actualizarEstadoPedido,
+  } = usePedidos();
+
+  // Actualizar la función para considerar también el estadoPago
+  const hayPedidosParaEstado = useCallback(
+    (estado: EstadosPedido) => {
+      return [...pedidosEnCurso, ...pedidosFinalizados].some(
+        (p) =>
+          p.estado === estado ||
+          (estado === EstadosPedido.pendientePago &&
+            p.estado === EstadosPedido.entregado &&
+            p.estadoPago === EstadosPagoPedido.pendiente)
+      );
+    },
+    [pedidosEnCurso, pedidosFinalizados]
+  );
+
+  useEffect(() => {
+    if (
+      !hayPedidosParaEstado(EstadosPedido.enPreparacion) &&
+      !estadosCargados.has(EstadosPedido.enPreparacion)
+    ) {
+      fetchPedidos(EstadosPedido.enPreparacion);
+      setEstadosCargados((prev) =>
+        new Set(prev).add(EstadosPedido.enPreparacion)
+      );
+    }
+  }, [fetchPedidos, hayPedidosParaEstado, estadosCargados]);
+
+  const handleEstadoClick = (estado: EstadosPedido) => {
+    setEstadoSeleccionado(estado);
+    setPaginaActual(1);
+
+    if (!hayPedidosParaEstado(estado) && !estadosCargados.has(estado)) {
+      fetchPedidos(estado);
+      setEstadosCargados((prev) => new Set([...prev, estado]));
+    }
+  };
+
+  const togglePedidoExpand = useCallback((id: number) => {
+    setExpandedPedidos((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  }, []);
+
+  const pedidosFiltrados = useMemo(
+    () =>
+      [...pedidosEnCurso, ...pedidosFinalizados].filter(
+        (p) =>
+          (p.estado === estadoSeleccionado &&
+            !(
+              estadoSeleccionado === EstadosPedido.entregado &&
+              p.estadoPago === EstadosPagoPedido.pendiente
+            )) ||
+          (estadoSeleccionado === EstadosPedido.pendientePago &&
+            p.estado === EstadosPedido.entregado &&
+            p.estadoPago === EstadosPagoPedido.pendiente)
+      ),
+    [pedidosEnCurso, pedidosFinalizados, estadoSeleccionado]
+  );
+
+  const pedidosPaginados = useMemo(() => {
+    const startIndex = (paginaActual - 1) * pedidosPorPagina;
+    return pedidosFiltrados.slice(startIndex, startIndex + pedidosPorPagina);
+  }, [pedidosFiltrados, paginaActual, pedidosPorPagina]);
+
+  const getStatusColor = useCallback((estado: EstadosPedido) => {
+    switch (estado) {
+      case EstadosPedido.enPreparacion:
+        return "bg-amber-400 text-[#201B21]";
+      case EstadosPedido.pendientePago:
+        return "bg-amber-300 text-[#201B21]";
+      case EstadosPedido.enCamino:
+        return "bg-blue-400 text-white";
+      case EstadosPedido.entregado:
+        return "bg-green-500 text-white";
+      default:
+        return "bg-gray-400 text-white";
+    }
+  }, []);
+
+  const getStatusIcon = useCallback((estado: EstadosPedido) => {
+    switch (estado) {
+      case EstadosPedido.enPreparacion:
+      case EstadosPedido.pendientePago:
+        return <AccessTime className="mr-1" fontSize="small" />;
+      case EstadosPedido.enCamino:
+        return <LocalShipping className="mr-1" fontSize="small" />;
+      case EstadosPedido.entregado:
+        return <CalendarMonth className="mr-1" fontSize="small" />;
+      default:
+        return null;
+    }
+  }, []);
+
+  const actualizarEstadoPedidoFunc = useCallback(
+    async (pedidoId: number, nuevoEstado: EstadosPedido) => {
+      try {
+        await actualizarEstadoPedido(pedidoId, nuevoEstado);
+
+        if (
+          nuevoEstado === EstadosPedido.enCamino ||
+          nuevoEstado === EstadosPedido.pendientePago
+        ) {
+          const pedidosEnCursoActualizados = pedidosEnCurso.map((p) =>
+            p.id === pedidoId ? { ...p, estado: nuevoEstado } : p
+          );
+          actualizarPedidoEnStore({
+            pedidosEnCurso: pedidosEnCursoActualizados,
+            pedidosFinalizados,
+          });
+        } else if (nuevoEstado === EstadosPedido.entregado) {
+          const pedidoAMover = pedidosEnCurso.find((p) => p.id === pedidoId);
+          if (pedidoAMover) {
+            const nuevoPedidoFinalizado = {
+              ...pedidoAMover,
+              estado: nuevoEstado,
+            };
+            actualizarPedidoEnStore({
+              pedidosEnCurso: pedidosEnCurso.filter((p) => p.id !== pedidoId),
+              pedidosFinalizados: [
+                ...pedidosFinalizados,
+                nuevoPedidoFinalizado,
+              ],
+            });
+          }
+          actualizarPedidoEnStore({
+            pedidosEnCurso,
+            pedidosFinalizados: pedidosFinalizados.map((p) =>
+              p.id === pedidoId ? { ...p, estado: nuevoEstado } : p
+            ),
+          });
         }
-    }, []);
+      } catch (error) {
+        console.error("Error:", error);
+        throw error;
+      }
+    },
+    [
+      pedidosEnCurso,
+      pedidosFinalizados,
+      actualizarPedidoEnStore,
+      actualizarEstadoPedido,
+    ]
+  );
 
-    const handleEstadoClick = (estado: EstadosPedido) => {
-        setEstadoSeleccionado(estado);
-        fetchPedidos(estado)
-
-    };
-
-    const togglePedidoExpand = (id: number) => {
-        setExpandedPedidos(prev => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
-    };
-
-    const pedidosFiltrados = [...pedidosEnCurso, ...pedidosFinalizados].filter(
-        (p) => p.estado === estadoSeleccionado
-    );
-
-    const finalizarPedido = (pedidoId: number) => {
-        cambiarEstado(EstadosPedido.entregado, pedidoId)
-    }
-    const pagarPedido = (pedidoId: number) => {
-        cambiarEstadoPago(EstadosPago.pagado, pedidoId)
-    }
-    const getStatusColor = (estado: EstadosPedido) => {
-        switch (estado) {
-            case EstadosPedido.enPreparacion:
-                return "bg-amber-400 text-[#201B21]";
-            case EstadosPedido.pendientePago:
-                return "bg-amber-300 text-[#201B21]";
-            case EstadosPedido.enCamino:
-                return "bg-blue-400 text-white";
-            case EstadosPedido.entregado:
-                return "bg-green-500 text-white";
-            default:
-                return "bg-gray-400 text-white";
-        }
-    };
-
-    const getStatusIcon = (estado: EstadosPedido) => {
-        switch (estado) {
-            case EstadosPedido.enPreparacion:
-            case EstadosPedido.pendientePago:
-                return <AccessTime className="mr-1" fontSize="small" />;
-            case EstadosPedido.enCamino:
-                return <LocalShipping className="mr-1" fontSize="small" />;
-            case EstadosPedido.entregado:
-                return <CalendarMonth className="mr-1" fontSize="small" />;
-            default:
-                return null;
-        }
-    };
-
-    if (errorPedidos) {
-        return (
-            <Alert severity="error" className="my-6 rounded-lg">
-                {errorPedidos}
-            </Alert>
-        );
-    }
-
-
-    if (loadingPedidos) {
-        return (
-            <Box className="flex justify-center my-12">
-                <CircularProgress sx={{ color: '#B99342' }} />
-            </Box>
-        );
-    }
-
+  if (errorPedidos) {
     return (
-        <Paper
-            elevation={3}
-            sx={{
-                minHeight: 500,
-                maxWidth: { xs: '95vw', sm: '90vw', md: '85vw', lg: '70vw' },
-                mx: 'auto',
-                p: { xs: 1, sm: 2, md: 3 },
-            }}
-        >
-            {/* Filtro por estado */}
-            <Stack direction="row" spacing={2} className="mb-4">
-                {Object.values(EstadosPedido).map((estado) => (
-                    <Button
-                        key={estado}
-                        variant={estadoSeleccionado === estado ? 'contained' : 'outlined'}
-                        onClick={() => handleEstadoClick(estado)}
-                    >
-                        {estado}
-                    </Button>
-                ))}
-            </Stack>
+      <Alert severity="error" className="my-6 rounded-lg">
+        {errorPedidos}
+      </Alert>
+ );
+  }
 
-            {/* Render de pedidos detallado */}
-            {pedidosFiltrados.length === 0 ? (
-                <Typography>No hay pedidos para este estado.</Typography>
-            ) : (
-                pedidosFiltrados.map((pedido) => {
-                    const primerProducto = pedido.productos?.[0] ?? null;
-                    const isExpanded = expandedPedidos[pedido.id] || false;
-
-                    return (
-                        <Paper key={pedido.id} elevation={1} className="mb-5 rounded-xl overflow-hidden">
-                            {/* Encabezado */}
-                            <Box className="flex justify-between items-center p-4 bg-[#FFF9ED]">
-                                <Box>
-                                    <Typography variant="subtitle1" className="font-bold">
-                                        Cliente: {pedido.cliente?.email}
-                                    </Typography>
-                                    <Typography variant="subtitle1" className="font-bold">
-                                        Pedido del {formatDateToString(pedido.fechaCreacion)}
-                                    </Typography>
-                                    <Typography variant="body2" className="text-gray-500">
-                                        {pedido.fechaEntrega
-                                            ? `Entregado el: ${formatDateToLocalDate(pedido.fechaEntrega)}`
-                                            : `Entrega estimada: ${formatDateToLocalDate(pedido.fechaEntregaEstimada)}`}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <span className={`px-3 py-1 rounded-full ${getStatusColor(pedido.estado)}`}>
-                                        {getStatusIcon(pedido.estado)}
-                                        {pedido.estado}
-                                    </span>
-                                </Box>
-                            </Box>
-
-                            {/* Resumen */}
-                            <Box className="p-4 bg-white flex justify-between cursor-pointer" onClick={() => togglePedidoExpand(pedido.id)}>
-                                <Box className="flex items-center">
-                                    {primerProducto?.producto.urlImagen && primerProducto?.producto.nombre && (
-                                        <Box className="w-16 h-16 mr-4 rounded-lg overflow-hidden relative">
-                                            <Image src={primerProducto.producto.urlImagen} alt={primerProducto.producto.nombre} fill className="object-cover" />
-                                        </Box>
-                                    )}
-                                    <Box>
-                                        <Typography variant="body1" className="font-medium">
-                                            {primerProducto?.producto.nombre ?? 'Pedido'}
-                                        </Typography>
-                                        {pedido.productos && pedido.productos?.length > 1 && (
-                                            <Typography variant="body2" className="text-gray-500">
-                                                + {pedido.productos.length - 1} productos más
-                                            </Typography>
-                                        )}
-                                    </Box>
-                                </Box>
-                                <Box className="flex flex-col items-start">
-                                    <Box className="flex items-center justify-between w-full mb-2">
-                                        <Typography variant="subtitle1" className="font-bold">
-                                            ${pedido.montoTotal.toFixed(2)}
-                                        </Typography>
-                                        <IconButton size="small">
-                                            {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                                        </IconButton>
-                                    </Box>
-                                </Box>
-
-                            </Box>
-
-                            {/* Detalle expandido */}
-                            <Collapse in={isExpanded}>
-                                <Box className="p-4 pt-0 bg-white border-t border-gray-100">
-                                    {pedido.productos?.map((item, index) => (
-                                        <Box key={index} className="py-3 border-b border-gray-100 last:border-b-0">
-                                            <Box className="flex justify-between">
-                                                <Typography className="font-medium">
-                                                    {item.cantidad}x {item.producto.nombre}
-                                                </Typography>
-                                                <Typography>
-                                                    ${usuario?.tipo === 'Persona'
-                                                        ? (item.cantidad * item.producto.precioPersonas).toFixed(2)
-                                                        : (item.cantidad * item.producto.precioEmpresas).toFixed(2)}
-                                                </Typography>
-                                            </Box>
-                                            {item.productoSabores && item.productoSabores?.length > 0 && (
-                                                <Box className="ml-4 mt-1">
-                                                    <Typography variant="caption" className="text-gray-600">Sabores:</Typography>
-                                                    <Box className="flex flex-wrap gap-1">
-                                                        {item.productoSabores.map((sabor, idx) => (
-                                                            <Typography key={idx} variant="caption" className="bg-gray-100 px-2 py-1 rounded-full text-gray-700">
-                                                                {sabor.sabor.nombre} x{sabor.cantidad}
-                                                            </Typography>
-                                                        ))}
-                                                    </Box>
-                                                </Box>
-                                            )}
-                                        </Box>
-                                    ))}
-
-                                    {/* Total */}
-                                    <Divider className="my-3" />
-                                    <Box className="flex justify-between">
-                                        <Typography variant="subtitle1" className="font-bold">Total</Typography>
-                                        <Typography variant="subtitle1" className="font-bold">
-                                            ${pedido.montoTotal.toFixed(2)}
-                                        </Typography>
-                                    </Box>
-                                      {pedido.estado == EstadosPedido.pendientePago &&
-                                        <Box>
-                                            <Button variant="outlined" size="small" sx={{ margin: 1 }}>
-                                                Recordar pago
-                                            </Button>
-                                        </Box>
-                                    }
-                                    {pedido.estadoPago == EstadosPago.pendiente &&
-                                        <Box>
-                                            <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => pagarPedido(pedido.id)}>
-                                                Marcar como pago
-                                            </Button>
-                                        </Box>
-                                    }
-                                    {pedido.estado == EstadosPedido.enCamino &&
-                                        <Box>
-                                            <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => finalizarPedido(pedido.id)}>
-                                                Finalizar pedido
-                                            </Button>
-
-                                        </Box>
-                                    }
-                                </Box>
-                            </Collapse>
-                        </Paper>
-                    );
-                })
-            )}
-        </Paper>
+  if (loadingPedidos && !estadosCargados.has(estadoSeleccionado)) {
+    return (
+      <Box className="flex justify-center my-12">
+        <CircularProgress sx={{ color: "#B99342" }} />
+      </Box>
     );
+  }
+
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        minHeight: 500,
+        width: "50%",
+        mx: "auto",
+        p: 3,
+      }}
+    >
+      <Stack
+        display="flex"
+        justifyContent={"center"}
+        direction="row"
+        spacing={2}
+        className="mb-4 flex-wrap"
+      >
+        {Object.values(EstadosPedido).map((estado) => (
+          <Button
+            key={estado}
+            variant={estadoSeleccionado === estado ? "contained" : "outlined"}
+            onClick={() => handleEstadoClick(estado)}
+            sx={{
+              backgroundColor:
+                estadoSeleccionado === estado ? "#B99342" : "transparent",
+              borderColor: "#B99342",
+              color: estadoSeleccionado === estado ? "white" : "#B99342",
+              "&:hover": {
+                backgroundColor:
+                  estadoSeleccionado === estado
+                    ? "#9A7835"
+                    : "rgba(185, 147, 66, 0.08)",
+              },
+              mb: { xs: 1, sm: 0 },
+            }}
+          >
+            {estado}
+          </Button>
+        ))}
+      </Stack>
+
+      {loadingPedidos && !estadosCargados.has(estadoSeleccionado) ? (
+        <Box className="flex justify-center my-12">
+          <CircularProgress sx={{ color: "#B99342" }} />
+        </Box>
+      ) : pedidosFiltrados.length === 0 ? (
+        <Typography>No hay pedidos para este estado.</Typography>
+      ) : (
+        <>
+          {pedidosPaginados.map((pedido) => (
+            <PedidoItem
+              key={pedido.id}
+              pedido={pedido}
+              isExpanded={expandedPedidos[pedido.id] || false}
+              togglePedidoExpand={togglePedidoExpand}
+              getStatusColor={getStatusColor}
+              getStatusIcon={getStatusIcon}
+              actualizarEstadoPedido={actualizarEstadoPedidoFunc}
+            />
+          ))}
+
+          {pedidosFiltrados.length > pedidosPorPagina && (
+            <Box display="flex" justifyContent="center" mt={4}>
+              <Pagination
+                count={Math.ceil(pedidosFiltrados.length / pedidosPorPagina)}
+                page={paginaActual}
+                onChange={(e, page) => setPaginaActual(page)}
+                size="large"
+                sx={{
+                  ".MuiPaginationItem-root.Mui-selected": {
+                    backgroundColor: "#B99342",
+                    color: "white",
+                    "&:hover": {
+                      backgroundColor: "#9A7835",
+                    },
+                  },
+                  ".MuiPaginationItem-root": {
+                    color: "#B99342",
+                    borderRadius: "16px",
+                  },
+                  ".MuiPagination-ul": {
+                    backgroundColor: "white",
+                  },
+                }}
+              />
+            </Box>
+          )}
+        </>
+      )}
+    </Paper>
+  );
 };
 
 export default ListaPedidosPage;
