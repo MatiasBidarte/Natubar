@@ -5,7 +5,6 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import usePedidos from "@/app/hooks/usePedidos";
 import { useSearchParams } from "next/navigation";
 
-// Componente interno que usa useSearchParams
 function PaymentContent() {
   const searchParams = useSearchParams();
   const pedidoId = searchParams.get("pedidoId") || "";
@@ -79,8 +78,6 @@ function PaymentContent() {
 
   const onSubmit = async (formData: unknown) => {
     console.log("Payment submission:", formData);
-    // Handle payment submission here
-    // Redirect based on payment status
   };
 
   return (

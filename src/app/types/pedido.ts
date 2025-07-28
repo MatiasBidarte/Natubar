@@ -9,6 +9,7 @@ export interface Pedido {
   montoTotal: number;
   descuento: number;
   estado: EstadosPedido;
+  estadoPago: EstadosPago;
   observaciones?: string;
   productos?: DetallePedido[];
   preferenceId?: string;
@@ -38,4 +39,11 @@ export enum EstadosPedido {
   enCamino = "En Camino",
   entregado = "Entregado",
   pendientePago = "Pendiente de Pago",
+}
+
+
+export enum EstadosPago {
+  pendiente = 'Pendiente pago',
+  pagado = 'Pagado',
+  cancelado = 'Pago rechazado',
 }

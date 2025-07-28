@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import usePedidos from "../hooks/usePedidos";
-import { EstadosPedido } from "../types/pedido";
+import { EstadosPago, EstadosPedido } from "../types/pedido";
 import { Alert, Box, Button, CircularProgress, Collapse, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { formatDateToLocalDate, formatDateToString } from "../utils/date";
 import Image from "next/image";
@@ -16,7 +16,9 @@ const ListaPedidosPage = () => {
         pedidosFinalizados,
         loadingPedidos,
         errorPedidos,
-        fetchPedidos
+        fetchPedidos,
+        cambiarEstado,
+        cambiarEstadoPago,
     } = usePedidos();
     const [usuario, setUsuario] = useState<Cliente>();
 
@@ -51,6 +53,12 @@ const ListaPedidosPage = () => {
         (p) => p.estado === estadoSeleccionado
     );
 
+    const finalizarPedido = (pedidoId: number) => {
+        cambiarEstado(EstadosPedido.entregado, pedidoId)
+    }
+    const pagarPedido = (pedidoId: number) => {
+        cambiarEstadoPago(EstadosPago.pagado, pedidoId)
+    }
     const getStatusColor = (estado: EstadosPedido) => {
         switch (estado) {
             case EstadosPedido.enPreparacion:
@@ -223,12 +231,23 @@ const ListaPedidosPage = () => {
                                             ${pedido.montoTotal.toFixed(2)}
                                         </Typography>
                                     </Box>
-                                    {pedido.estado == EstadosPedido.pendientePago &&
+                                      {pedido.estado == EstadosPedido.pendientePago &&
                                         <Box>
-                                            <Button variant="outlined" size="small" sx={{margin:1}}>
+                                            <Button variant="outlined" size="small" sx={{ margin: 1 }}>
                                                 Recordar pago
                                             </Button>
-                                                 <Button variant="outlined" size="small" sx={{margin:1}}>
+                                        </Box>
+                                    }
+                                    {pedido.estadoPago == EstadosPago.pendiente &&
+                                        <Box>
+                                            <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => pagarPedido(pedido.id)}>
+                                                Marcar como pago
+                                            </Button>
+                                        </Box>
+                                    }
+                                    {pedido.estado == EstadosPedido.enCamino &&
+                                        <Box>
+                                            <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => finalizarPedido(pedido.id)}>
                                                 Finalizar pedido
                                             </Button>
 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CrearPedidoDto, LineaCarrito } from "../types/lineaCarrito";
-import { EstadosPedido, Pedido } from "../types/pedido";
+import { EstadosPago, EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
   crearPedidoEnStore: (
@@ -29,6 +29,8 @@ interface PedidoState {
     clienteId: string,
     observaciones: string
   ) => Promise<Pedido | undefined>;
+  cambiarEstado(estado: EstadosPedido, pedido: number): Promise<void>;
+  cambiarEstadoPago(estado: EstadosPago, pedido: number): Promise<void>;
 }
 
 let ultimoNumeral = 1;
@@ -240,6 +242,120 @@ export const usePedidos = create(
           pedidosEnCurso: enCurso,
           pedidosFinalizados: finalizados,
           loadingPedidos: false,
+        });
+      } catch (err) {
+        set({
+          errorPedidos:
+            err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
+      }
+    },
+    cambiarEstado: async (estado: EstadosPedido, pedidoId: number) => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/CambiarEstado/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            body: JSON.stringify({ estado: estado, pedido: pedidoId }),
+            redirect: "follow",
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al cambiar estado");
+        }
+        const pedidoActualizado = (await response.json()) as Pedido;
+        console.log(pedidoActualizado);
+        set((state) => {
+          const pedidosEnCurso = state.pedidosEnCurso.filter(
+            (p) => p.id !== pedidoId
+          );
+          const pedidosFinalizados = state.pedidosFinalizados.filter(
+            (p) => p.id !== pedidoId
+          );
+          if (
+            estado === EstadosPedido.enPreparacion ||
+            estado === EstadosPedido.enCamino
+          ) {
+            pedidosEnCurso.push(pedidoActualizado);
+          } else {
+            pedidosFinalizados.push(pedidoActualizado);
+          }
+          const pedidosActualizados = [
+            ...state.pedidos.filter((p) => p.id !== pedidoId),
+            pedidoActualizado,
+          ];
+
+          return {
+            pedidos: pedidosActualizados,
+            pedidosEnCurso,
+            pedidosFinalizados,
+            loadingPedidos: false,
+          };
+        });
+      } catch (err) {
+        set({
+          errorPedidos:
+            err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
+      }
+    },
+    cambiarEstadoPago: async (estado: EstadosPago, pedidoId: number) => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/CambiarEstadoPago/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            body: JSON.stringify({ estado: estado, pedido: pedidoId }),
+            redirect: "follow",
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al cambiar estado");
+        }
+        const pedidoActualizado = (await response.json()) as Pedido;
+        console.log(pedidoActualizado);
+        set((state) => {
+          const pedidosEnCurso = state.pedidosEnCurso.filter(
+            (p) => p.id !== pedidoId
+          );
+          const pedidosFinalizados = state.pedidosFinalizados.filter(
+            (p) => p.id !== pedidoId
+          );
+          if (
+            pedidoActualizado.estado === EstadosPedido.enPreparacion ||
+            pedidoActualizado.estado === EstadosPedido.enCamino
+          ) {
+            pedidosEnCurso.push(pedidoActualizado);
+          } else {
+            pedidosFinalizados.push(pedidoActualizado);
+          }
+          const pedidosActualizados = [
+            ...state.pedidos.filter((p) => p.id !== pedidoId),
+            pedidoActualizado,
+          ];
+
+          return {
+            pedidos: pedidosActualizados,
+            pedidosEnCurso,
+            pedidosFinalizados,
+            loadingPedidos: false,
+          };
         });
       } catch (err) {
         set({
