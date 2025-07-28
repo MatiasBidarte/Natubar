@@ -86,11 +86,6 @@ function PaymentContent() {
       </Box>
     );
   }
-
-  const onSubmit = async (formData: unknown) => {
-    console.log("Payment submission:", formData);
-  };
-
   return (
     <Box
       display="flex"
