@@ -187,7 +187,7 @@ const ListaPedidosPage = () => {
       <Alert severity="error" className="my-6 rounded-lg">
         {errorPedidos}
       </Alert>
-    );
+ );
   }
 
   if (loadingPedidos && !estadosCargados.has(estadoSeleccionado)) {

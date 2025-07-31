@@ -25,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import Image from "next/image";
 import { formatDateToLocalDate, formatDateToString } from "@/app/utils/date";
+import usePedidos from "@/app/hooks/usePedidos";
 
 interface PedidoItemProps {
   pedido: Pedido;
@@ -45,11 +46,13 @@ const PedidoItem = memo(
     togglePedidoExpand,
     getStatusColor,
     getStatusIcon,
-    actualizarEstadoPedido,
   }: PedidoItemProps) => {
     const primerProducto = pedido.productos?.[0] ?? null;
     const [loading, setLoading] = useState(false);
-
+    const {
+      cambiarEstado,
+      cambiarEstadoPago,
+    } = usePedidos();
     // Determinar el siguiente estado en la secuencia
     const getNextState = (
       currentState: EstadosPedido
@@ -73,7 +76,7 @@ const PedidoItem = memo(
 
       setLoading(true);
       try {
-        await actualizarEstadoPedido(pedido.id, nextState);
+        await cambiarEstado( nextState,pedido.id);
       } catch (error) {
         console.error("Error al actualizar el estado del pedido:", error);
       } finally {
@@ -123,6 +126,12 @@ const PedidoItem = memo(
       }
     };
 
+    const finalizarPedido = (pedidoId: number) => {
+      cambiarEstado(EstadosPedido.entregado, pedidoId)
+    }
+    const pagarPedido = (pedidoId: number) => {
+      cambiarEstadoPago(EstadosPagoPedido.pagado, pedidoId)
+    }
     return (
       <Paper
         key={pedido.id}
@@ -141,8 +150,8 @@ const PedidoItem = memo(
               {pedido.fechaEntrega
                 ? `Entregado el: ${formatDateToLocalDate(pedido.fechaEntrega)}`
                 : `Entrega estimada: ${formatDateToLocalDate(
-                    pedido.fechaEntregaEstimada
-                  )}`}
+                  pedido.fechaEntregaEstimada
+                )}`}
             </Typography>
           </Box>
           <Box className="flex flex-col gap-2">
@@ -222,11 +231,11 @@ const PedidoItem = memo(
                     $
                     {pedido.cliente?.tipo === "Persona"
                       ? (item.cantidad * item.producto.precioPersonas).toFixed(
-                          2
-                        )
+                        2
+                      )
                       : (item.cantidad * item.producto.precioEmpresas).toFixed(
-                          2
-                        )}
+                        2
+                      )}
                   </Typography>
                 </Box>
                 {item.productoSabores && item.productoSabores?.length > 0 && (
@@ -268,12 +277,15 @@ const PedidoItem = memo(
                   <Button variant="outlined" size="small" sx={{ margin: 1 }}>
                     Recordar pago
                   </Button>
-                  <Button variant="outlined" size="small" sx={{ margin: 1 }}>
+                  <Box>
+                    <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => pagarPedido(pedido.id)}>
+                      Marcar como pago
+                    </Button>
+                  </Box>                  <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => finalizarPedido(pedido.id)}>
                     Finalizar pedido
                   </Button>
                 </>
               )}
-
               {/* Nuevo botón para cambiar estado - solo visible si hay un siguiente estado */}
               {getNextState(pedido.estado) && (
                 <Button
