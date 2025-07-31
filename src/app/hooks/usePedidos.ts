@@ -299,7 +299,7 @@ export const usePedidos = create(
     ) => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/${pedidoId}/estado`,
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/${pedidoId}/CambiarEstado`,
           {
             method: "PUT",
             headers: {

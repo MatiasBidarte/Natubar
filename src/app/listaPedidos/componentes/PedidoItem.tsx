@@ -46,7 +46,6 @@ const PedidoItem = memo(
     togglePedidoExpand,
     getStatusColor,
     getStatusIcon,
-    actualizarEstadoPedido,
   }: PedidoItemProps) => {
     const primerProducto = pedido.productos?.[0] ?? null;
     const [loading, setLoading] = useState(false);
@@ -77,7 +76,7 @@ const PedidoItem = memo(
 
       setLoading(true);
       try {
-        await actualizarEstadoPedido(pedido.id, nextState);
+        await cambiarEstado( nextState,pedido.id);
       } catch (error) {
         console.error("Error al actualizar el estado del pedido:", error);
       } finally {
