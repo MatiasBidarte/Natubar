@@ -43,7 +43,6 @@ const TopCustomersChart: React.FC<TopCustomersChartProps> = ({
     );
   }
 
-  // Preparar datos para el gráfico
   const chartData = topClientes.map((cliente) => ({
     name: cliente.nombre || `Cliente ${cliente.clienteId}`,
     total: cliente.total,

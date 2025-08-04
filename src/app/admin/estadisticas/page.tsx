@@ -50,10 +50,6 @@ const EstadisticasPage = () => {
     setEstadisticas(stats);
   };
 
-  /* if (!estaLogueado || !esAdmin) {
-    return null;
-  } */
-
   if (loadingEstadisticas || !estadisticas) {
     return (
       <Box

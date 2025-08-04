@@ -50,7 +50,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ pedidos }) => {
     }
   };
 
-  // Memoizar la vista paginada para evitar recálculos innecesarios
   const paginatedPedidos = useMemo(() => {
     return pedidos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   }, [pedidos, page, rowsPerPage]);

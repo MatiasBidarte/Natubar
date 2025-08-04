@@ -48,10 +48,8 @@ const ProductsChart: React.FC<ProductsChartProps> = ({ productosVendidos }) => {
     );
   }
 
-  // Limitar a los 6 productos más vendidos para el gráfico
   const topProductos = productosVendidos.slice(0, 6);
 
-  // Preparar datos para el gráfico
   const chartData = topProductos.map((prod) => ({
     name: prod.nombre,
     value: prod.cantidad,
