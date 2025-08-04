@@ -5,6 +5,7 @@ interface AuthState {
   usuario: Cliente | null;
   estaLogueado: boolean;
   esEmpresa: boolean;
+  esAdmin: boolean;
   inicializado: boolean;
   inicializarUsuario: () => void;
   actualizarUsuario: (usuario: Cliente) => void;
@@ -15,6 +16,7 @@ export const useUsuarioStore = create<AuthState>((set) => ({
   usuario: null,
   estaLogueado: false,
   esEmpresa: false,
+  esAdmin: false,
   inicializado: false,
 
   inicializarUsuario: () => {
@@ -25,7 +27,8 @@ export const useUsuarioStore = create<AuthState>((set) => ({
         set({
           usuario,
           estaLogueado: true,
-          esEmpresa: usuario.tipo === "EMPRESA",
+          esEmpresa: usuario.tipo === "Empresa",
+          esAdmin: usuario.tipo === "Admin",
           inicializado: true,
         });
       }
