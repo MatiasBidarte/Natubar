@@ -1,24 +1,24 @@
 "use client";
-import { useUsuarioStore } from '../hooks/useUsuarioStore';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { usuario, inicializado } = useUsuarioStore();
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { usuario, inicializado, esAdmin } = useUsuarioStore();
   const router = useRouter();
   useEffect(() => {
-    if (inicializado && (!usuario || usuario.tipo !== 'ADMINISTRADOR')) {
-      router.push('/');
+    if (inicializado && (!usuario || !esAdmin)) {
+      router.push("/");
     }
-  }, [usuario, inicializado, router]);
+  }, [usuario, inicializado, router, esAdmin]);
 
-  if (!usuario || usuario.tipo !== 'ADMINISTRADOR') {
+  if (!usuario || !esAdmin) {
     return null;
   }
 
-  return (
-    <div className='w-screen'>
-      {children}
-    </div>
-  );
+  return <div className="w-screen">{children}</div>;
 }
