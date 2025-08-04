@@ -52,7 +52,17 @@ export default function LoginPage() {
           token: token.access_token,
         }))
       window.dispatchEvent(new Event("auth-change"));
-      router.push("/");
+
+      const usuarioParsed = JSON.parse(JSON.stringify({
+          ...decodeToken(token.access_token),
+          token: token.access_token,
+        }))
+      if(usuarioParsed.tipo == "ADMINISTRADOR"){
+        router.push("/admin/")
+      }else{
+        router.push("/");
+      }
+      
     } catch (error) {
       const errorData = error as { statusCode?: number; message?: string };
       if (errorData.statusCode === 500)

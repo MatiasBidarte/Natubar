@@ -12,8 +12,8 @@ import {
   TablePagination,
   Chip,
 } from "@mui/material";
-import { formatDateToString } from "../../utils/date";
-import { EstadosPedido, Pedido } from "../../types/pedido";
+import { formatDateToString } from "../../../utils/date";
+import { EstadosPedido, Pedido } from "../../../types/pedido";
 import type { ChipProps } from "@mui/material";
 
 interface OrdersTableProps {

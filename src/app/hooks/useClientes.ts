@@ -1,6 +1,7 @@
+import OneSignal from "react-onesignal";
 import { Pedido } from "../types/pedido";
 import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
-
+import  suscribir  from "./useNotificaciones";
 export interface Cliente {
   id?: string;
   nombre?: string;
@@ -59,8 +60,13 @@ export const useClientes = () => {
           statusCode: errorData.statusCode,
         };
       }
-
       const token = await response.json();
+      if (!OneSignal.User?.onesignalId) {
+        await OneSignal.init({
+          appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
+        });
+      }
+      OneSignal.User.addAlias(token.email, token.id);
       return token;
     } catch (err) {
       throw err;
@@ -153,6 +159,19 @@ export const useClientes = () => {
         };
       }
       const loginCliente = await response.json();
+      if (!OneSignal.User?.onesignalId) {
+        await OneSignal.init({
+          appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
+          allowLocalhostAsSecureOrigin: true,
+        });
+      }
+      if (OneSignal.User) {
+        OneSignal.User.externalId = loginCliente.id;
+        const yaSuscripto = OneSignal.User?.PushSubscription?.optedIn;
+        if (!yaSuscripto) {
+          await suscribir();
+        }
+      }
       return loginCliente;
     } catch (err) {
       throw err;

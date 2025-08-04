@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, CircularProgress, Grid } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useUsuarioStore } from "../hooks/useUsuarioStore";
+import { useUsuarioStore } from "../../hooks/useUsuarioStore";
 
 import FilterControls from "./components/FilterControls";
 import StatisticsSummary from "./components/StatisticsSummary";
@@ -10,8 +10,8 @@ import OrdersChart from "./components/OrdersChart";
 import TopCustomersChart from "./components/TopCustomersChart";
 import ProductsChart from "./components/ProductsChart";
 import OrdersTable from "./components/OrdersTable";
-import useEstadisticas from "../hooks/useEstadisticas";
-import { EstadisticasResumen } from "../hooks/interfaces/EstadisticasInterfaces";
+import useEstadisticas from "../../hooks/useEstadisticas";
+import { EstadisticasResumen } from "../../hooks/interfaces/EstadisticasInterfaces";
 
 const EstadisticasPage = () => {
   const router = useRouter();
@@ -29,11 +29,11 @@ const EstadisticasPage = () => {
     null
   );
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (!estaLogueado || !esAdmin) {
       router.push("/");
     }
-  }, [estaLogueado, esAdmin, router]); */
+  }, [estaLogueado, esAdmin, router]);
 
   useEffect(() => {
     fetchAllPedidosForStats().then(() => {

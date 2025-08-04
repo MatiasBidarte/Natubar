@@ -139,7 +139,6 @@ const ComprasCliente = () => {
     }
 
     return pedidosActuales.map((pedido) => {
-      // Obtener el primer producto para mostrar en el resumen
       const primerProducto =
         pedido.productos && pedido.productos.length > 0
           ? pedido.productos[0]

@@ -1,4 +1,3 @@
-// utils/decodeJwt.ts
 import { jwtDecode } from "jwt-decode";
 
 interface MyTokenPayload {

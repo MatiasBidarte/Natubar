@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import usePedidos from "../hooks/usePedidos";
-import { EstadosPedido, EstadosPagoPedido } from "../types/pedido";
+import usePedidos from "../../hooks/usePedidos";
+import { EstadosPedido, EstadosPagoPedido } from "../../types/pedido";
 import {
   Alert,
   Box,
@@ -13,7 +13,7 @@ import {
   Pagination,
 } from "@mui/material";
 import { AccessTime, CalendarMonth, LocalShipping } from "@mui/icons-material";
-import PedidoItem from "./componentes/PedidoItem";
+import PedidoItem from "./components/PedidoItem";
 
 const ListaPedidosPage = () => {
   const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadosPedido>(
@@ -187,7 +187,7 @@ const ListaPedidosPage = () => {
       <Alert severity="error" className="my-6 rounded-lg">
         {errorPedidos}
       </Alert>
-    );
+ );
   }
 
   if (loadingPedidos && !estadosCargados.has(estadoSeleccionado)) {
@@ -205,7 +205,8 @@ const ListaPedidosPage = () => {
         minHeight: 500,
         width: "50%",
         mx: "auto",
-        p: 3,
+        p: 4,
+        mt: 2,
       }}
     >
       <Stack
