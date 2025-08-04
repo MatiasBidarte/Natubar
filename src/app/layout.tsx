@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <Script src="https://sdk.mercadopago.com/js/v2" />
       </head>
-      <body className={roboto.className}>
+      <body className={`${roboto.className} antialiased`}>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
