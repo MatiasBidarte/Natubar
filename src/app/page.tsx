@@ -12,7 +12,7 @@ import {
 import ProductCard from "./components/card";
 import { Producto } from "./types/producto";
 import { useEffect, useState } from "react";
-import { homemadeApple } from "./ui/fonts";
+// import { homemadeApple } from "./ui/fonts";
 import ModalCard from "./components/modalCard";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
@@ -67,8 +67,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
-
 export default function Home() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -105,7 +103,7 @@ export default function Home() {
         <div className="text-center">
           <Typography
             variant={isMobile ? "h4" : "h2"}
-            fontFamily={homemadeApple.style.fontFamily}
+            // fontFamily={homemadeApple.style.fontFamily}
             gutterBottom
           >
             La felicidad en barra
@@ -132,7 +130,7 @@ export default function Home() {
         </Typography>
         <Typography
           variant={isMobile ? "h5" : "h4"}
-          fontFamily={homemadeApple.style.fontFamily}
+          // fontFamily={homemadeApple.style.fontFamily}
           textAlign="center"
         >
           tu pedido más rápido y fácil
