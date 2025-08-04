@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { roboto } from "./ui/fonts";
+// import { roboto } from "./ui/fonts";
 import ClientLayout from "./ui/root-layout";
 import Script from "next/script";
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <Script src="https://sdk.mercadopago.com/js/v2" />
       </head>
-      <body className={`${roboto.className} antialiased`}>
+      <body>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

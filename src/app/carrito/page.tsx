@@ -15,7 +15,7 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { usePedidos } from "../hooks/usePedidos";
 import { useState } from "react";
-import { homemadeApple } from "../ui/fonts";
+// import { homemadeApple } from "../ui/fonts";
 import Link from "next/link";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
@@ -87,7 +87,7 @@ const Carrito = () => {
           p-top={16}
           mb={4}
           textAlign="center"
-          className={homemadeApple.className}
+          // className={homemadeApple.className}
         >
           Carrito de Compras
         </Typography>
@@ -137,7 +137,7 @@ const Carrito = () => {
           p-top={16}
           mb={2}
           textAlign="center"
-          className={homemadeApple.className}
+          // className={homemadeApple.className}
         >
           Carrito de Compras
         </Typography>
