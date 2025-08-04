@@ -14,11 +14,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <head>
-
         <Script src="https://sdk.mercadopago.com/js/v2" />
       </head>
       <body className={`${roboto.className} antialiased`}>
