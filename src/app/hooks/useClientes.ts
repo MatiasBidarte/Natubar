@@ -1,7 +1,7 @@
 import OneSignal from "react-onesignal";
 import { Pedido } from "../types/pedido";
 import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
-import  suscribir  from "./useNotificaciones";
+import useNotificaciones from "./useNotificaciones";
 export interface Cliente {
   id?: string;
   nombre?: string;
@@ -37,6 +37,7 @@ export interface ClientLogin {
 }
 
 export const useClientes = () => {
+  const { suscribir } = useNotificaciones();
   const registerClient = async (
     newClient: Cliente
   ): Promise<{ access_token: string }> => {
@@ -159,19 +160,8 @@ export const useClientes = () => {
         };
       }
       const loginCliente = await response.json();
-      if (!OneSignal.User?.onesignalId) {
-        await OneSignal.init({
-          appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
-          allowLocalhostAsSecureOrigin: true,
-        });
-      }
-      if (OneSignal.User) {
-        OneSignal.User.externalId = loginCliente.id;
-        const yaSuscripto = OneSignal.User?.PushSubscription?.optedIn;
-        if (!yaSuscripto) {
-          await suscribir();
-        }
-      }
+      suscribir();
+      console.log("Usuario logueado:", loginCliente);
       return loginCliente;
     } catch (err) {
       throw err;
