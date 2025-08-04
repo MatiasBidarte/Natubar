@@ -13,7 +13,7 @@ import {
   Pagination,
 } from "@mui/material";
 import { AccessTime, CalendarMonth, LocalShipping } from "@mui/icons-material";
-import PedidoItem from "@/app/listaPedidos/componentes/PedidoItem";
+import PedidoItem from "./components/PedidoItem";
 
 const ListaPedidosPage = () => {
   const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadosPedido>(

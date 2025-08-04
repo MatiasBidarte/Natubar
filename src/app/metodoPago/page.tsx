@@ -31,6 +31,7 @@ export default function MetodoPago() {
 
   const handlePagarAhora = async () => {
     setMetodo(metodoSeleccionado);
+    console.log(pedido);
     const pedidoResponse = await fetch(
       `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
       {

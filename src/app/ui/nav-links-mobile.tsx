@@ -5,35 +5,30 @@ import { Typography } from "@mui/material";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 const links = [
-  {
-    href: "/",
-    name: "Inicio",
-    icon: Home,
-  },
-  {
-    href: "/perfil/compras/",
-    name: "Mis Compras",
-    icon: ShoppingBag,
-  },
-  {
-    href: "/perfil/",
-    name: "Mi Perfil",
-    icon: AccountCircle,
-  },
+  { href: "/", name: "Inicio", icon: Home, requireLogin: false, mostrarAlAdmin: true, mostrarAlUsuario: true},
+  { href: "/perfil/compras/", name: "Mis Compras", icon: ShoppingBag, requireLogin: true, mostrarAlAdmin: false, mostrarAlUsuario: true},
+  { href: "/admin/", name: "Admin", icon: AccountCircle, requireLogin: true, mostrarAlAdmin: true, mostrarAlUsuario: false},
+  { href: "/perfil/", name: "Mi Perfil", icon: AccountCircle, requireLogin: true, mostrarAlAdmin: false, mostrarAlUsuario: true},
 ];
-
 export default function NavLinksMobile() {
-  const { estaLogueado } = useUsuarioStore();
+  const { estaLogueado, usuario } = useUsuarioStore();
   const pathname = usePathname();
+
+  const getHref = (link: typeof links[number]) =>
+    link.requireLogin && !estaLogueado ? "/login" : link.href;
+
+  const getMostrar = (link: typeof links[number]) =>
+    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "ADMINISTRADOR" || link.mostrarAlAdmin && usuario.tipo == "ADMINISTRADOR")
+
 
   return (
     <div className="fixed bottom-0 left-0 w-screen md:hidden flex items-center justify-around p-3 bg-[#FFF9ED]">
-      {links.map((link, index) => {
+      {links.map((link) => {
         const IconComponent = link.icon;
         const isActive = pathname === link.href;
-        const hrefToUse = estaLogueado || index === 0 ? link.href : "/login";
-
-        return (
+        const hrefToUse = getHref(link);
+        if(getMostrar(link)){
+          return (
           <Link href={hrefToUse} key={link.href} className="w-1/3 text-center">
             <div className="flex flex-col items-center justify-center">
               <div
@@ -49,6 +44,8 @@ export default function NavLinksMobile() {
             </div>
           </Link>
         );
+        }
+        
       })}
     </div>
   );
