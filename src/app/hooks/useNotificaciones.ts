@@ -14,7 +14,6 @@ const useNotificaciones = create<StoreNotificacionesState>((set) => ({
   error: null,
   suscribir: async () => {
     set({ loading: true, error: null });
-
     try {
       const yaSuscripto = OneSignal.User?.PushSubscription?.optedIn;
       if (!yaSuscripto) {
