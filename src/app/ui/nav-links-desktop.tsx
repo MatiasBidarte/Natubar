@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -7,40 +7,98 @@ import { AccountCircle, ShoppingCart } from "@mui/icons-material";
 import Image from "next/image";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 import { usePedidos } from "../hooks/usePedidos";
-import { useEffect } from "react";
 
 const links = [
-  { href: "/", name: "Inicio", type: "text", requireLogin: false, mostrarAlAdmin: true, mostrarAlUsuario: true, columnaIzq: true },
-  { href: "/perfil/compras/", name: "Mis Compras", type: "text", requireLogin: true, mostrarAlAdmin: false, mostrarAlUsuario: true, columnaIzq: false },
-  { href: "/admin/", name: "Admin", type: "text", requireLogin: true, mostrarAlAdmin: true, mostrarAlUsuario: false, columnaIzq: false },
+  {
+    href: "/",
+    name: "Inicio",
+    type: "text",
+    requireLogin: false,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: true,
+    columnaIzq: true,
+  },
+  {
+    href: "/perfil/compras/",
+    name: "Mis Compras",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: false,
+    mostrarAlUsuario: true,
+    columnaIzq: false,
+  },
+  {
+    href: "/admin/",
+    name: "Admin",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
+  {
+    href: "/admin/clientes",
+    name: "Clientes",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
+  {
+    href: "/admin/listaPedidos",
+    name: "Lista de Pedidos",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
+  {
+    href: "/admin/estadisticas",
+    name: "Estadísticas",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
 ];
 
 export default function NavLinksDesktop() {
   const { estaLogueado, usuario } = useUsuarioStore();
   const { items } = usePedidos();
   const pathname = usePathname();
-  
-  //const [reload, setReload] = useState(0);
 
-  useEffect(() => {
-    //setReload((prev) => prev + 1);
-  }, [usuario]);
-  
-  const getHref = (link: typeof links[number]) =>
+  const getHref = (link: (typeof links)[number]) =>
     link.requireLogin && !estaLogueado ? "/login" : link.href;
 
   const isActive = (href: string) => pathname === href;
 
-  const getMostrar = (link: typeof links[number]) =>
-    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "ADMINISTRADOR" || link.mostrarAlAdmin && usuario.tipo == "ADMINISTRADOR")
+  const getMostrar = (link: (typeof links)[number]) =>
+    !estaLogueado || !usuario
+      ? link.mostrarAlUsuario
+      : (link.mostrarAlUsuario && usuario.tipo != "Administrador") ||
+        (link.mostrarAlAdmin && usuario.tipo == "Administrador");
 
   return (
-    <div className={`z-[1000] fixed hidden md:flex ${!usuario || usuario.tipo != "ADMINISTRADOR" ? "mt-11" : ""} items-center justify-between bg-[#201B21] text-[#B99342] w-screen`}>
-      <div className={`w-32${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`} />
+    <div
+      className={`z-[1000] fixed hidden md:flex ${
+        !usuario || usuario.tipo != "Administrador" ? "mt-11" : ""
+      } items-center justify-between bg-[#201B21] text-[#B99342] w-screen`}
+    >
+      <div
+        className={`w-32${
+          !(!usuario || usuario.tipo != "Administrador") ? "hidden" : ""
+        }`}
+      />
 
       <div className="flex-grow flex items-center justify-center gap-16">
         {links
-          .filter((link) => link.type === "text" && getMostrar(link) && link.columnaIzq)
+          .filter(
+            (link) =>
+              link.type === "text" && getMostrar(link) && link.columnaIzq
+          )
           .map((link) => (
             <Link key={link.name} href={getHref(link)} className="inline-block">
               <Typography
@@ -67,9 +125,11 @@ export default function NavLinksDesktop() {
           />
         </div>
 
-
         {links
-          .filter((link) => link.type === "text" && getMostrar(link) && !link.columnaIzq)
+          .filter(
+            (link) =>
+              link.type === "text" && getMostrar(link) && !link.columnaIzq
+          )
           .map((link) => (
             <Link key={link.name} href={getHref(link)} className="inline-block">
               <Typography
@@ -88,16 +148,24 @@ export default function NavLinksDesktop() {
           ))}
       </div>
 
-      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`}>
+      <div
+        className={`flex items-center mr-8 ${
+          !(!usuario || usuario.tipo != "Administrador") ? "hidden" : ""
+        }`}
+      >
         <Link href={!estaLogueado ? "/login" : "/perfil/"}>
           <AccountCircle
             className={`transition-colors duration-200 ${
-                pathname === "/perfil" ? "text-amber-300" : "hover:text-amber-200"
-              }`}
+              pathname === "/perfil" ? "text-amber-300" : "hover:text-amber-200"
+            }`}
           />
         </Link>
       </div>
-      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`}>
+      <div
+        className={`flex items-center mr-8 ${
+          !(!usuario || usuario.tipo != "Administrador") ? "hidden" : ""
+        }`}
+      >
         <Link href="/carrito">
           <Badge
             badgeContent={items.length}
@@ -113,7 +181,9 @@ export default function NavLinksDesktop() {
           >
             <ShoppingCart
               className={`transition-colors duration-200 ${
-                pathname === "/carrito" ? "text-amber-300" : "hover:text-amber-200"
+                pathname === "/carrito"
+                  ? "text-amber-300"
+                  : "hover:text-amber-200"
               }`}
             />
           </Badge>

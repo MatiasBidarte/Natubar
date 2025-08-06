@@ -15,4 +15,5 @@ export interface Producto {
 export interface Sabor {
   id: number;
   nombre: string;
+  cantidad: number;
 }

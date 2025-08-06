@@ -1,10 +1,10 @@
-'use client';
+"use client";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 export default function AdminHomePage() {
   const { usuario } = useUsuarioStore();
-  if (!usuario || usuario.tipo !== 'ADMINISTRADOR') {
-    return null; 
+  if (!usuario || usuario.tipo !== "Administrador") {
+    return null;
   }
   return (
     <main className="p-6">
