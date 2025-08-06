@@ -1,7 +1,7 @@
 import OneSignal from "react-onesignal";
 import { Pedido } from "../types/pedido";
 import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
-import  suscribir  from "./useNotificaciones";
+import suscribir from "./useNotificaciones";
 export interface Cliente {
   id?: string;
   nombre?: string;
@@ -137,6 +137,33 @@ export const useClientes = () => {
     }
   };
 
+  const obtenerClientePorId = async (clientId: string) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/${clientId}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+        },
+        redirect: "follow",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw {
+          message: errorData.message || "Error al obtener el cliente",
+          statusCode: errorData.statusCode,
+        };
+      }
+
+      const cliente = await response.json();
+      return cliente as Cliente;
+    } catch (err) {
+      throw err;
+    }
+  };
   const loginClient = async (cliente: ClientLogin) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/login`;
@@ -159,7 +186,7 @@ export const useClientes = () => {
         };
       }
       const loginCliente = await response.json();
-      if (!OneSignal.User?.onesignalId) {
+      /* if (!OneSignal.User?.onesignalId) {
         await OneSignal.init({
           appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
           allowLocalhostAsSecureOrigin: true,
@@ -171,7 +198,7 @@ export const useClientes = () => {
         if (!yaSuscripto) {
           await suscribir();
         }
-      }
+      } */
       return loginCliente;
     } catch (err) {
       throw err;
@@ -182,5 +209,6 @@ export const useClientes = () => {
     updateClient,
     obtenerPedidosDeClienteLogueado,
     loginClient,
+    obtenerClientePorId,
   };
 };

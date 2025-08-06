@@ -21,7 +21,7 @@ export default function ClientLayout({
     inicializarUsuario();
   }, [inicializarUsuario]);
 
-    useEffect(() => {
+  useEffect(() => {
     initOneSignal();
   }, []);
 
@@ -43,8 +43,8 @@ export default function ClientLayout({
 
   return (
     <ThemeProvider theme={theme}>
-      {!usuario || usuario.tipo != "ADMINISTRADOR" ? <EnvioBanner />: ""}
-      
+      {!usuario || usuario.tipo != "Administrador" ? <EnvioBanner /> : ""}
+
       <NavLinksDesktop />
       <div className="flex justify-center min-h-screen pb-24 md:pb-4 pt-11 md:pt-28">
         {children}
