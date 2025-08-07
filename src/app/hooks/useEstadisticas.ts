@@ -147,10 +147,10 @@ export const useEstadisticas = create(
         pedido.productos?.forEach((item) => {
           const precioVenta =
             pedido.cliente?.tipo === "Empresa"
-              ? item.producto.precioEmpresas
-              : item.producto.precioPersonas;
+              ? item.precioEmpresas
+              : item.precioPersonas;
 
-          const costoProduccion = item.producto.costoProduccion || 0;
+          const costoProduccion = item.costoProduccion || 0;
           const gananciaUnitaria = precioVenta - costoProduccion;
 
           gananciaPedido += gananciaUnitaria * item.cantidad;
@@ -194,7 +194,7 @@ export const useEstadisticas = create(
       const productosMap = new Map<number, ProductoStats>();
       pedidosFiltrados.forEach((pedido) => {
         pedido.productos?.forEach((item) => {
-          const { id = 1, nombre, costoProduccion = 0 } = item.producto;
+          const { id = 1, nombre, costoProduccion = 0 } = item;
 
           if (!productosMap.has(id)) {
             productosMap.set(id, {
@@ -212,8 +212,8 @@ export const useEstadisticas = create(
 
           const precioUnitario =
             pedido.cliente?.tipo === "Empresa"
-              ? item.producto.precioEmpresas
-              : item.producto.precioPersonas;
+              ? item.precioEmpresas
+              : item.precioPersonas;
           productoStats.total += item.cantidad * precioUnitario;
           productoStats.costoTotal += item.cantidad * costoProduccion;
           productoStats.ganancia +=
@@ -271,17 +271,16 @@ function calcularEstadisticasBase(pedidos: Pedido[]): EstadisticasResumen {
   const totalPedidos = pedidos.length;
   const totalVentas = pedidos.reduce((sum, p) => sum + p.montoTotal, 0);
 
-  // Calcular ganancia basada en costos de producción
   let ganancia = 0;
 
   pedidos.forEach((pedido) => {
     pedido.productos?.forEach((item) => {
       const precioVenta =
         pedido.cliente?.tipo === "Empresa"
-          ? item.producto.precioEmpresas
-          : item.producto.precioPersonas;
+          ? item.precioEmpresas
+          : item.precioPersonas;
 
-      const costoProduccion = item.producto.costoProduccion || 0;
+      const costoProduccion = item.costoProduccion || 0;
       ganancia += (precioVenta - costoProduccion) * item.cantidad;
     });
   });

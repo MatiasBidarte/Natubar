@@ -1,5 +1,5 @@
 import { Cliente } from "../hooks/useClientes";
-import { Producto } from "./producto";
+import { Sabor } from "./producto";
 
 export interface Pedido {
   id: number;
@@ -12,31 +12,23 @@ export interface Pedido {
   estadoPago: EstadosPagoPedido;
   observaciones?: string;
   productos?: DetallePedido[];
-  preferenceId?: string;
   cliente?: Cliente;
 }
 
 export interface DetallePedido {
-  id: number;
   cantidad: number;
-  producto: Producto;
-  productoSabores?: {
-    id: number;
-    cantidad: number;
-    sabor: Sabor;
-  }[];
-}
-
-export interface ProductoSabor {
-  id: number;
-  sabor: Sabor;
-  cantidad: number;
-}
-
-interface Sabor {
-  id: number;
+  id?: number;
   nombre: string;
-  cantidad: number;
+  descripcion?: string;
+  precioPersonas: number;
+  precioEmpresas: number;
+  peso?: number;
+  stock?: boolean;
+  urlImagen?: string;
+  esCajaDeBarras: boolean;
+  costoProduccion: number;
+  cantidadDeBarras?: number;
+  sabores: Sabor[];
 }
 
 export enum EstadosPedido {

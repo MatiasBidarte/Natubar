@@ -99,7 +99,6 @@ export default function Home() {
     console.error("Error al suscribirse a las notificaciones", error);
   }
 }
- console.log( OneSignal.User.PushSubscription.optedIn)
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);

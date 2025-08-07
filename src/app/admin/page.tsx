@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 export default function AdminHomePage() {

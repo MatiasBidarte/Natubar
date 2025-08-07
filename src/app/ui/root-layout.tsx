@@ -8,7 +8,6 @@ import NavLinksDesktop from "./nav-links-desktop";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 import dynamic from "next/dynamic";
 import { initOneSignal } from "../utils/OneSingal";
-import useNotificaciones from "../hooks/useNotificaciones";
 const EnvioBanner = dynamic(() => import("./EnvioBanner"), { ssr: false });
 
 export default function ClientLayout({
@@ -16,15 +15,14 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { inicializarUsuario, usuario, verificarIntegridad } = useUsuarioStore();
-  const { suscribir} = useNotificaciones();
+    const { inicializarUsuario, usuario, verificarIntegridad } = useUsuarioStore();
 
   useEffect(() => {
     inicializarUsuario();
   }, [inicializarUsuario]);
 
   useEffect(() => {
-    initOneSignal(usuario,suscribir);
+    initOneSignal(usuario);
   }, [usuario]);
 
   useEffect(() => {
@@ -43,8 +41,8 @@ export default function ClientLayout({
 
   return (
     <ThemeProvider theme={theme}>
-      {!usuario || usuario.tipo != "ADMINISTRADOR" ? <EnvioBanner />: ""}
-      
+      {!usuario || usuario.tipo != "Administrador" ? <EnvioBanner /> : ""}
+
       <NavLinksDesktop />
       <div className="flex justify-center min-h-screen pb-24 md:pb-4 pt-11 md:pt-28">
         {children}

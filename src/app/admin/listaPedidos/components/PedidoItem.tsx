@@ -5,7 +5,6 @@ import {
   EstadosPagoPedido,
   EstadosPedido,
   Pedido,
-  ProductoSabor,
 } from "@/app/types/pedido";
 import {
   Box,
@@ -26,6 +25,7 @@ import {
 import Image from "next/image";
 import { formatDateToLocalDate, formatDateToString } from "@/app/utils/date";
 import usePedidos from "@/app/hooks/usePedidos";
+import { Sabor } from "@/app/types/producto";
 
 interface PedidoItemProps {
   pedido: Pedido;
@@ -33,10 +33,6 @@ interface PedidoItemProps {
   togglePedidoExpand: (id: number) => void;
   getStatusColor: (estado: EstadosPedido) => string;
   getStatusIcon: (estado: EstadosPedido) => JSX.Element | null;
-  actualizarEstadoPedido: (
-    pedidoId: number,
-    nuevoEstado: EstadosPedido
-  ) => Promise<void>;
 }
 
 const PedidoItem = memo(
@@ -49,11 +45,8 @@ const PedidoItem = memo(
   }: PedidoItemProps) => {
     const primerProducto = pedido.productos?.[0] ?? null;
     const [loading, setLoading] = useState(false);
-    const {
-      cambiarEstado,
-      cambiarEstadoPago,
-    } = usePedidos();
-    // Determinar el siguiente estado en la secuencia
+    const { cambiarEstadoPago, cambiarEstado } = usePedidos();
+
     const getNextState = (
       currentState: EstadosPedido
     ): EstadosPedido | null => {
@@ -69,14 +62,13 @@ const PedidoItem = memo(
       }
     };
 
-    // Manejar el cambio de estado
     const handleChangeState = async () => {
       const nextState = getNextState(pedido.estado);
-      if (!nextState) return; // No hay siguiente estado
+      if (!nextState) return;
 
       setLoading(true);
       try {
-        await cambiarEstado( nextState,pedido.id);
+        await cambiarEstado(nextState, pedido.id);
       } catch (error) {
         console.error("Error al actualizar el estado del pedido:", error);
       } finally {
@@ -84,7 +76,6 @@ const PedidoItem = memo(
       }
     };
 
-    // Obtener texto para el botón según el estado actual
     const getButtonText = (): string => {
       switch (pedido.estado) {
         case EstadosPedido.pendientePago:
@@ -127,11 +118,11 @@ const PedidoItem = memo(
     };
 
     const finalizarPedido = (pedidoId: number) => {
-      cambiarEstado(EstadosPedido.entregado, pedidoId)
-    }
+      cambiarEstado(EstadosPedido.entregado, pedidoId);
+    };
     const pagarPedido = (pedidoId: number) => {
-      cambiarEstadoPago(EstadosPagoPedido.pagado, pedidoId)
-    }
+      cambiarEstadoPago(EstadosPagoPedido.pagado, pedidoId);
+    };
     return (
       <Paper
         key={pedido.id}
@@ -141,7 +132,10 @@ const PedidoItem = memo(
         <Box className="flex justify-between items-center p-4 bg-[#FFF9ED]">
           <Box>
             <Typography variant="subtitle1" className="font-bold">
-              Cliente: {pedido.cliente?.nombre} {pedido.cliente?.apellido}
+              Cliente:{" "}
+              {pedido.cliente?.tipo === "Empresa"
+                ? pedido.cliente.nombreEmpresa
+                : `${pedido.cliente?.nombre} ${pedido.cliente?.apellido}`}
             </Typography>
             <Typography variant="subtitle1" className="font-bold">
               Pedido del {formatDateToString(pedido.fechaCreacion)}
@@ -150,8 +144,8 @@ const PedidoItem = memo(
               {pedido.fechaEntrega
                 ? `Entregado el: ${formatDateToLocalDate(pedido.fechaEntrega)}`
                 : `Entrega estimada: ${formatDateToLocalDate(
-                  pedido.fechaEntregaEstimada
-                )}`}
+                    pedido.fechaEntregaEstimada
+                  )}`}
             </Typography>
           </Box>
           <Box className="flex flex-col gap-2">
@@ -180,22 +174,21 @@ const PedidoItem = memo(
           onClick={() => togglePedidoExpand(pedido.id)}
         >
           <Box className="flex items-center">
-            {primerProducto?.producto.urlImagen &&
-              primerProducto?.producto.nombre && (
-                <Box className="w-16 h-16 mr-4 rounded-lg overflow-hidden relative">
-                  <Image
-                    src={primerProducto.producto.urlImagen}
-                    alt={primerProducto.producto.nombre}
-                    fill
-                    className="object-cover"
-                    loading="lazy"
-                    sizes="(max-width: 768px) 100px, 100px"
-                  />
-                </Box>
-              )}
+            {primerProducto?.urlImagen && primerProducto?.nombre && (
+              <Box className="w-16 h-16 mr-4 rounded-lg overflow-hidden relative">
+                <Image
+                  src={primerProducto.urlImagen}
+                  alt={primerProducto.nombre}
+                  fill
+                  className="object-cover"
+                  loading="lazy"
+                  sizes="(max-width: 768px) 100px, 100px"
+                />
+              </Box>
+            )}
             <Box>
               <Typography variant="body1" className="font-medium">
-                {primerProducto?.producto.nombre ?? "Pedido"}
+                {primerProducto?.nombre ?? "Pedido"}
               </Typography>
               {pedido.productos && pedido.productos?.length > 1 && (
                 <Typography variant="body2" className="text-gray-500">
@@ -225,36 +218,30 @@ const PedidoItem = memo(
               >
                 <Box className="flex justify-between">
                   <Typography className="font-medium">
-                    {item.cantidad}x {item.producto.nombre}
+                    {item.cantidad}x {item.nombre}
                   </Typography>
                   <Typography>
                     $
                     {pedido.cliente?.tipo === "Persona"
-                      ? (item.cantidad * item.producto.precioPersonas).toFixed(
-                        2
-                      )
-                      : (item.cantidad * item.producto.precioEmpresas).toFixed(
-                        2
-                      )}
+                      ? (item.cantidad * item.precioPersonas).toFixed(2)
+                      : (item.cantidad * item.precioEmpresas).toFixed(2)}
                   </Typography>
                 </Box>
-                {item.productoSabores && item.productoSabores?.length > 0 && (
+                {item.sabores && item.sabores?.length > 0 && (
                   <Box className="ml-4 mt-1">
                     <Typography variant="caption" className="text-gray-600">
                       Sabores:
                     </Typography>
                     <Box className="flex flex-wrap gap-1">
-                      {item.productoSabores.map(
-                        (sabor: ProductoSabor, idx: number) => (
-                          <Typography
-                            key={idx}
-                            variant="caption"
-                            className="bg-gray-100 px-2 py-1 rounded-full text-gray-700"
-                          >
-                            {sabor.sabor.nombre} x{sabor.cantidad}
-                          </Typography>
-                        )
-                      )}
+                      {item.sabores.map((sabor: Sabor, idx: number) => (
+                        <Typography
+                          key={idx}
+                          variant="caption"
+                          className="bg-gray-100 px-2 py-1 rounded-full text-gray-700"
+                        >
+                          {sabor.nombre} x{sabor.cantidad}
+                        </Typography>
+                      ))}
                     </Box>
                   </Box>
                 )}
@@ -272,21 +259,31 @@ const PedidoItem = memo(
             </Box>
 
             <Box className="mt-4 flex flex-wrap gap-2">
-              {pedido.estado == EstadosPedido.pendientePago && (
+              {pedido.estadoPago == EstadosPagoPedido.pendiente && (
                 <>
                   <Button variant="outlined" size="small" sx={{ margin: 1 }}>
                     Recordar pago
                   </Button>
                   <Box>
-                    <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => pagarPedido(pedido.id)}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{ margin: 1 }}
+                      onClick={() => pagarPedido(pedido.id)}
+                    >
                       Marcar como pago
                     </Button>
-                  </Box>                  <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => finalizarPedido(pedido.id)}>
+                  </Box>{" "}
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ margin: 1 }}
+                    onClick={() => finalizarPedido(pedido.id)}
+                  >
                     Finalizar pedido
                   </Button>
                 </>
               )}
-              {/* Nuevo botón para cambiar estado - solo visible si hay un siguiente estado */}
               {getNextState(pedido.estado) && (
                 <Button
                   variant="contained"
