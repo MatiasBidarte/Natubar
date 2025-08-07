@@ -8,6 +8,7 @@ import NavLinksDesktop from "./nav-links-desktop";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 import dynamic from "next/dynamic";
 import { initOneSignal } from "../utils/OneSingal";
+import useNotificaciones from "../hooks/useNotificaciones";
 const EnvioBanner = dynamic(() => import("./EnvioBanner"), { ssr: false });
 
 export default function ClientLayout({
@@ -15,15 +16,16 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { inicializarUsuario } = useUsuarioStore();
+  const { inicializarUsuario, usuario, verificarIntegridad } = useUsuarioStore();
+  const { suscribir} = useNotificaciones();
 
   useEffect(() => {
     inicializarUsuario();
   }, [inicializarUsuario]);
 
-    useEffect(() => {
-    initOneSignal();
-  }, []);
+  useEffect(() => {
+    initOneSignal(usuario,suscribir);
+  }, [usuario]);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -34,8 +36,6 @@ export default function ClientLayout({
       window.removeEventListener("auth-change", handleAuthChange);
     };
   }, [inicializarUsuario]);
-
-  const { verificarIntegridad, usuario } = useUsuarioStore();
 
   useEffect(() => {
     verificarIntegridad();

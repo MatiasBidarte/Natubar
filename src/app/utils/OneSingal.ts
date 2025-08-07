@@ -1,9 +1,9 @@
 import OneSignal from "react-onesignal";
-import  suscribir  from "@/app/hooks/useNotificaciones";
 
-export async function initOneSignal() {
-  if (typeof window === "undefined") return;
-
+export async function initOneSignal(
+  usuario: { email?: string } | null,
+) {
+  if (typeof window === "undefined" || !usuario?.email) return;
   await OneSignal.init({
     appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
     notifyButton: {
@@ -30,5 +30,5 @@ export async function initOneSignal() {
     allowLocalhostAsSecureOrigin: true,
   });
 
-  suscribir();
+  await OneSignal.login(usuario.email);
 }

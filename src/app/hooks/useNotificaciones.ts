@@ -9,10 +9,16 @@ interface StoreNotificacionesState {
   desuscribir: () => Promise<void>;
 }
 
+export interface SuscripcionNotificacion {
+  playerId: string;
+  clienteId: number;
+}
+
 const useNotificaciones = create<StoreNotificacionesState>((set) => ({
   loading: false,
   error: null,
   suscribir: async () => {
+    const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
     set({ loading: true, error: null });
     try {
       const yaSuscripto = OneSignal.User?.PushSubscription?.optedIn;
@@ -22,16 +28,17 @@ const useNotificaciones = create<StoreNotificacionesState>((set) => ({
 
       const playerId = OneSignal.User?.onesignalId;
       if (!playerId) throw new Error("No se pudo obtener el ID de OneSignal");
-
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/suscribir`,
+        `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/suscribirDispositivo`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
           },
-          body: JSON.stringify({ playerId }),
+          body: JSON.stringify(
+            { playerId, clienteId: usuario.id, externalId: usuario.email },
+          ),
         }
       );
 
