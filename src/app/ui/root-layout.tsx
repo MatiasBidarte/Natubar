@@ -15,15 +15,15 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { inicializarUsuario } = useUsuarioStore();
+    const { inicializarUsuario, usuario, verificarIntegridad } = useUsuarioStore();
 
   useEffect(() => {
     inicializarUsuario();
   }, [inicializarUsuario]);
 
   useEffect(() => {
-    initOneSignal();
-  }, []);
+    initOneSignal(usuario);
+  }, [usuario]);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -34,8 +34,6 @@ export default function ClientLayout({
       window.removeEventListener("auth-change", handleAuthChange);
     };
   }, [inicializarUsuario]);
-
-  const { verificarIntegridad, usuario } = useUsuarioStore();
 
   useEffect(() => {
     verificarIntegridad();

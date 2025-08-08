@@ -3,6 +3,7 @@ import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 export default function AdminHomePage() {
   const { usuario } = useUsuarioStore();
+
   if (!usuario || usuario.tipo !== "Administrador") {
     return null;
   }
