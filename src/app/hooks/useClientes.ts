@@ -158,10 +158,47 @@ export const useClientes = () => {
       throw err;
     }
   };
+
+  const getClientes = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/`;
+      const usu = localStorage.getItem("usuario");
+      if (usu) {
+        const usuario = JSON.parse(usu);
+        if (!usuario) {
+        } else {
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+              Authorization: `Bearer ${usuario.token}`,
+            },
+            redirect: "follow",
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw {
+              message:
+                errorData.message || "Error al obtener los clientes",
+              statusCode: errorData.statusCode,
+            };
+          }
+
+          const clientes = await response.json();
+          return clientes as Cliente[];
+        }
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
   return {
     registerClient,
     updateClient,
     obtenerPedidosDeClienteLogueado,
     loginClient,
+    getClientes,
   };
 };
