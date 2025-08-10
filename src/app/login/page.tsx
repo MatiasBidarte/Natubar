@@ -40,17 +40,13 @@ export default function LoginPage() {
     try {
       const token = await loginClient(form);
       setApiError(null);
-      localStorage.setItem(
-        "usuario",
+      const usuarioParsed = JSON.parse(
         JSON.stringify({
           ...decodeToken(token.access_token),
           token: token.access_token,
         })
       );
-      console.log(JSON.stringify({
-          ...decodeToken(token.access_token),
-          token: token.access_token,
-        }))
+      localStorage.setItem("usuario", JSON.stringify(usuarioParsed));
       window.dispatchEvent(new Event("auth-change"));
 
       const usuarioParsed = JSON.parse(JSON.stringify({
@@ -62,7 +58,6 @@ export default function LoginPage() {
       }else{
         router.push("/");
       }
-      
     } catch (error) {
       const errorData = error as { statusCode?: number; message?: string };
       if (errorData.statusCode === 500)

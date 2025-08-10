@@ -8,10 +8,12 @@ export interface Producto {
   stock?: boolean;
   urlImagen?: string;
   esCajaDeBarras: boolean;
+  costoProduccion: number;
   cantidadDeBarras?: number;
 }
 
 export interface Sabor {
   id: number;
   nombre: string;
+  cantidad: number;
 }

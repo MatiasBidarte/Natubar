@@ -34,11 +34,8 @@ const ListaPedidosPage = () => {
     loadingPedidos,
     errorPedidos,
     fetchPedidos,
-    actualizarPedidoEnStore,
-    actualizarEstadoPedido,
   } = usePedidos();
 
-  // Actualizar la función para considerar también el estadoPago
   const hayPedidosParaEstado = useCallback(
     (estado: EstadosPedido) => {
       return [...pedidosEnCurso, ...pedidosFinalizados].some(
@@ -131,57 +128,6 @@ const ListaPedidosPage = () => {
     }
   }, []);
 
-  const actualizarEstadoPedidoFunc = useCallback(
-    async (pedidoId: number, nuevoEstado: EstadosPedido) => {
-      try {
-        await actualizarEstadoPedido(pedidoId, nuevoEstado);
-
-        if (
-          nuevoEstado === EstadosPedido.enCamino ||
-          nuevoEstado === EstadosPedido.pendientePago
-        ) {
-          const pedidosEnCursoActualizados = pedidosEnCurso.map((p) =>
-            p.id === pedidoId ? { ...p, estado: nuevoEstado } : p
-          );
-          actualizarPedidoEnStore({
-            pedidosEnCurso: pedidosEnCursoActualizados,
-            pedidosFinalizados,
-          });
-        } else if (nuevoEstado === EstadosPedido.entregado) {
-          const pedidoAMover = pedidosEnCurso.find((p) => p.id === pedidoId);
-          if (pedidoAMover) {
-            const nuevoPedidoFinalizado = {
-              ...pedidoAMover,
-              estado: nuevoEstado,
-            };
-            actualizarPedidoEnStore({
-              pedidosEnCurso: pedidosEnCurso.filter((p) => p.id !== pedidoId),
-              pedidosFinalizados: [
-                ...pedidosFinalizados,
-                nuevoPedidoFinalizado,
-              ],
-            });
-          }
-          actualizarPedidoEnStore({
-            pedidosEnCurso,
-            pedidosFinalizados: pedidosFinalizados.map((p) =>
-              p.id === pedidoId ? { ...p, estado: nuevoEstado } : p
-            ),
-          });
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        throw error;
-      }
-    },
-    [
-      pedidosEnCurso,
-      pedidosFinalizados,
-      actualizarPedidoEnStore,
-      actualizarEstadoPedido,
-    ]
-  );
-
   if (errorPedidos) {
     return (
       <Alert severity="error" className="my-6 rounded-lg">
@@ -256,7 +202,6 @@ const ListaPedidosPage = () => {
               togglePedidoExpand={togglePedidoExpand}
               getStatusColor={getStatusColor}
               getStatusIcon={getStatusIcon}
-              actualizarEstadoPedido={actualizarEstadoPedidoFunc}
             />
           ))}
 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CrearPedidoDto, LineaCarrito } from "../types/lineaCarrito";
-import { EstadosPedido, Pedido } from "../types/pedido";
+import { EstadosPagoPedido, EstadosPedido, Pedido } from "../types/pedido";
 
 interface PedidoState {
   calcularCostoEnvio: () => number;
@@ -30,6 +30,8 @@ interface PedidoState {
     clienteId: string,
     observaciones: string
   ) => Promise<Pedido | undefined>;
+  cambiarEstado(estado: EstadosPedido, pedido: number): Promise<void>;
+  cambiarEstadoPago(estado: EstadosPagoPedido, pedido: number): Promise<void>;
   actualizarPedidoEnStore: ({
     pedidosEnCurso,
     pedidosFinalizados,
@@ -37,10 +39,6 @@ interface PedidoState {
     pedidosEnCurso: Pedido[];
     pedidosFinalizados: Pedido[];
   }) => void;
-  actualizarEstadoPedido: (
-    pedidoId: number,
-    nuevoEstado: EstadosPedido
-  ) => Promise<void>;
 }
 
 let ultimoNumeral = 1;
@@ -230,21 +228,8 @@ export const usePedidos = create(
     fetchPedidos: async (estado: EstadosPedido) => {
       set({ loadingPedidos: true, errorPedidos: null });
       try {
-        const pedidosExistentes = [
-          ...get().pedidosEnCurso,
-          ...get().pedidosFinalizados,
-        ];
-        const yaTenemosEstado = pedidosExistentes.some(
-          (p) => p.estado === estado
-        );
-
-        if (yaTenemosEstado) {
-          set({ loadingPedidos: false });
-          return;
-        }
-
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/PedidosPorEstado/${estado}`,
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/pedidosPorEstado/${estado}`,
           {
             method: "GET",
             headers: {
@@ -262,29 +247,42 @@ export const usePedidos = create(
 
         const pedidosNuevos = (await response.json()) as Pedido[];
 
-        if (
-          estado === EstadosPedido.enPreparacion ||
-          estado === EstadosPedido.enCamino
-        ) {
-          set((state) => ({
-            pedidosEnCurso: [
-              ...state.pedidosEnCurso.filter((p) => p.estado !== estado),
-              ...pedidosNuevos,
-            ],
-          }));
-        } else if (
-          estado === EstadosPedido.entregado ||
-          estado === EstadosPedido.pendientePago
-        ) {
-          set((state) => ({
-            pedidosFinalizados: [
-              ...state.pedidosFinalizados.filter((p) => p.estado !== estado),
-              ...pedidosNuevos,
-            ],
-          }));
-        }
+        set((state) => {
+          const pedidosActualizados = [
+            ...state.pedidos.filter((p) => p.estado !== estado),
+            ...pedidosNuevos,
+          ];
 
-        set({ loadingPedidos: false });
+          let pedidosEnCursoActualizados = [...state.pedidosEnCurso];
+          let pedidosFinalizadosActualizados = [...state.pedidosFinalizados];
+
+          if (
+            estado === EstadosPedido.enPreparacion ||
+            estado === EstadosPedido.enCamino
+          ) {
+            pedidosEnCursoActualizados = [
+              ...pedidosEnCursoActualizados.filter((p) => p.estado !== estado),
+              ...pedidosNuevos,
+            ];
+          } else if (
+            estado === EstadosPedido.entregado ||
+            estado === EstadosPedido.pendientePago
+          ) {
+            pedidosFinalizadosActualizados = [
+              ...pedidosFinalizadosActualizados.filter(
+                (p) => p.estado !== estado
+              ),
+              ...pedidosNuevos,
+            ];
+          }
+
+          return {
+            pedidos: pedidosActualizados,
+            pedidosEnCurso: pedidosEnCursoActualizados,
+            pedidosFinalizados: pedidosFinalizadosActualizados,
+            loadingPedidos: false,
+          };
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Error desconocido";
@@ -294,38 +292,138 @@ export const usePedidos = create(
         });
       }
     },
-    actualizarEstadoPedido: async (
-      pedidoId: number,
-      nuevoEstado: EstadosPedido
-    ) => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/${pedidoId}/estado`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
-            },
-            body: JSON.stringify({ estado: nuevoEstado }),
-          }
-        );
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(
-            errorData.message || "Error al actualizar estado del pedido"
-          );
-        }
-      } catch (error) {
-        console.error("Error al actualizar estado del pedido:", error);
-        throw error;
-      }
-    },
+
     actualizarPedidoEnStore: ({ pedidosEnCurso, pedidosFinalizados }) => {
       set({
         pedidosEnCurso,
         pedidosFinalizados,
       });
+    },
+
+    cambiarEstado: async (estado: EstadosPedido, pedidoId: number) => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/cambiarEstado/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            body: JSON.stringify({ estado: estado, pedido: pedidoId }),
+            redirect: "follow",
+          }
+        );
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al cambiar estado");
+        }
+        const pedidoActualizado = (await response.json()) as Pedido;
+
+        set((state) => {
+          const pedidosActualizados = state.pedidos.map((p) =>
+            p.id === pedidoId ? pedidoActualizado : p
+          );
+
+          const esEnCurso =
+            estado === EstadosPedido.enPreparacion ||
+            estado === EstadosPedido.enCamino;
+
+          let pedidosEnCursoActualizados;
+          let pedidosFinalizadosActualizados;
+
+          if (esEnCurso) {
+            pedidosEnCursoActualizados = [
+              ...state.pedidosEnCurso.map((p) =>
+                p.id === pedidoId ? pedidoActualizado : p
+              ),
+              ...(!state.pedidosEnCurso.some((p) => p.id === pedidoId)
+                ? [pedidoActualizado]
+                : []),
+            ];
+            pedidosFinalizadosActualizados = state.pedidosFinalizados.filter(
+              (p) => p.id !== pedidoId
+            );
+          } else {
+            pedidosFinalizadosActualizados = [
+              ...state.pedidosFinalizados.map((p) =>
+                p.id === pedidoId ? pedidoActualizado : p
+              ),
+              ...(!state.pedidosFinalizados.some((p) => p.id === pedidoId)
+                ? [pedidoActualizado]
+                : []),
+            ];
+            pedidosEnCursoActualizados = state.pedidosEnCurso.filter(
+              (p) => p.id !== pedidoId
+            );
+          }
+
+          return {
+            pedidos: pedidosActualizados,
+            pedidosEnCurso: pedidosEnCursoActualizados,
+            pedidosFinalizados: pedidosFinalizadosActualizados,
+            loadingPedidos: false,
+          };
+        });
+      } catch (err) {
+        set({
+          errorPedidos:
+            err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
+      }
+    },
+    cambiarEstadoPago: async (estado: EstadosPagoPedido, pedidoId: number) => {
+      set({ loadingPedidos: true, errorPedidos: null });
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/cambiarEstadoPago/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+            body: JSON.stringify({ estado: estado, pedido: pedidoId }),
+            redirect: "follow",
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al cambiar estado");
+        }
+
+        const pedidoActualizado = (await response.json()) as Pedido;
+
+        set((state) => {
+          const pedidosActualizados = state.pedidos.map((p) =>
+            p.id === pedidoId ? pedidoActualizado : p
+          );
+
+          const pedidosEnCursoActualizados = state.pedidosEnCurso.map((p) =>
+            p.id === pedidoId ? pedidoActualizado : p
+          );
+
+          const pedidosFinalizadosActualizados = state.pedidosFinalizados.map(
+            (p) => (p.id === pedidoId ? pedidoActualizado : p)
+          );
+
+          return {
+            pedidos: pedidosActualizados,
+            pedidosEnCurso: pedidosEnCursoActualizados,
+            pedidosFinalizados: pedidosFinalizadosActualizados,
+            loadingPedidos: false,
+          };
+        });
+      } catch (err) {
+        set({
+          errorPedidos:
+            err instanceof Error ? err.message : "Error desconocido",
+          loadingPedidos: false,
+        });
+      }
     },
   }))
 );

@@ -139,7 +139,6 @@ const ComprasCliente = () => {
     }
 
     return pedidosActuales.map((pedido) => {
-      // Obtener el primer producto para mostrar en el resumen
       const primerProducto =
         pedido.productos && pedido.productos.length > 0
           ? pedido.productos[0]
@@ -153,7 +152,6 @@ const ComprasCliente = () => {
           elevation={1}
           className="mb-5 rounded-xl overflow-hidden"
         >
-          {/* Encabezado del pedido con estado */}
           <Box className="flex justify-between items-center p-4 bg-[#FFF9ED]">
             <Box>
               <Typography
@@ -188,17 +186,16 @@ const ComprasCliente = () => {
             </Box>
           </Box>
 
-          {/* Resumen del pedido (siempre visible) */}
           <Box
             className="p-4 bg-white flex items-center justify-between cursor-pointer"
             onClick={() => togglePedidoExpand(pedido.id)}
           >
             <Box className="flex items-center">
-              {primerProducto?.producto.urlImagen && primerProducto?.producto.nombre && (
+              {primerProducto?.urlImagen && primerProducto?.nombre && (
                 <Box className="w-16 h-16 mr-4 rounded-lg overflow-hidden relative">
                   <Image
-                    src={primerProducto.producto.urlImagen}
-                    alt={primerProducto.producto.nombre}
+                    src={primerProducto.urlImagen}
+                    alt={primerProducto.nombre}
                     fill
                     className="object-cover"
                   />
@@ -206,7 +203,7 @@ const ComprasCliente = () => {
               )}
               <Box>
                 <Typography variant="body1" className="font-medium">
-                  {primerProducto ? primerProducto.producto.nombre : "Pedido"}
+                  {primerProducto ? primerProducto.nombre : "Pedido"}
                 </Typography>
                 {primerProducto &&
                   pedido.productos &&
@@ -249,17 +246,17 @@ const ComprasCliente = () => {
                           variant="body2"
                           className="font-medium text-gray-800"
                         >
-                          {item.cantidad}x {item.producto.nombre}
+                          {item.cantidad}x {item.nombre}
                         </Typography>
                         <Typography variant="body2" className="font-medium">
                           $
                           {usuario?.tipo === "Persona"
-                            ? (item.cantidad * item.producto.precioPersonas).toFixed(2)
-                            : (item.cantidad * item.producto.precioEmpresas).toFixed(2)}
+                            ? (item.cantidad * item.precioPersonas).toFixed(2)
+                            : (item.cantidad * item.precioEmpresas).toFixed(2)}
                         </Typography>
                       </Box>
 
-                      {item.productoSabores && item.productoSabores.length > 0 && (
+                      {item.sabores && item.sabores.length > 0 && (
                         <Box className="ml-4 mt-1">
                           <Typography
                             variant="caption"
@@ -268,13 +265,13 @@ const ComprasCliente = () => {
                             Sabores:
                           </Typography>
                           <Box className="flex flex-wrap gap-1">
-                            {item.productoSabores.map((sabor, idx) => (
+                            {item.sabores.map((sabor, idx) => (
                               <Typography
                                 key={idx}
                                 variant="caption"
                                 className="bg-gray-100 px-2 py-1 rounded-full text-gray-700"
                               >
-                                {sabor.sabor.nombre} x{sabor.cantidad}
+                                {sabor.nombre} x{sabor.cantidad}
                               </Typography>
                             ))}
                           </Box>
@@ -284,7 +281,6 @@ const ComprasCliente = () => {
                   ))}
               </Box>
 
-              {/* Información adicional */}
               {pedido.fechaEntrega && (
                 <Box className="mb-3 flex items-center text-gray-600">
                   <CalendarMonth fontSize="small" className="mr-2" />
@@ -294,7 +290,6 @@ const ComprasCliente = () => {
                 </Box>
               )}
 
-              {/* Total */}
               <Divider className="my-3" />
               <Box className="flex justify-between items-center">
                 <Typography variant="subtitle1" className="font-bold">

@@ -8,6 +8,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@mui/material";
 import ProductCard from "./components/card";
 import { Producto } from "./types/producto";
@@ -19,6 +20,8 @@ import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
 import BotonCarrito from "./components/IconCarrito";
 import { usePedidos } from "./hooks/usePedidos";
+import OneSignal from "react-onesignal";
+import useNotificaciones from "./hooks/useNotificaciones";
 
 interface ModalCard {
   open: boolean;
@@ -56,7 +59,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     [theme.breakpoints.up("sm")]: {
@@ -68,8 +70,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
-
 export default function Home() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -79,7 +79,26 @@ export default function Home() {
     error: string | null;
     fetchProducts: () => void;
   };
+  const { suscribir } = useNotificaciones();
+  async function handleSubscribe() {
+  try {
+    await OneSignal.User.PushSubscription.optIn();
+    let retries = 10;
+    while (retries-- > 0) {
+      const onesignalId = OneSignal.User?.onesignalId;
+      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
 
+      if (onesignalId && typeof onesignalId === "string" && isSubscribed) {
+        await suscribir();
+        break;
+      }
+
+      await new Promise((res) => setTimeout(res, 500));
+    }
+  } catch (error) {
+    console.error("Error al suscribirse a las notificaciones", error);
+  }
+}
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -199,6 +218,8 @@ export default function Home() {
         )}
       </Stack>
       <BotonCarrito cantidad={items.length} />
+      <Button onClick={handleSubscribe}>Activar notificaciones</Button>
     </div>
+    
   );
 }

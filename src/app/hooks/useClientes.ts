@@ -1,6 +1,5 @@
 import { Pedido } from "../types/pedido";
 import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
-
 export interface Cliente {
   id?: string;
   nombre?: string;
@@ -36,6 +35,7 @@ export interface ClientLogin {
 }
 
 export const useClientes = () => {
+
   const registerClient = async (
     newClient: Cliente
   ): Promise<{ access_token: string }> => {
@@ -59,8 +59,8 @@ export const useClientes = () => {
           statusCode: errorData.statusCode,
         };
       }
-
       const token = await response.json();
+  
       return token;
     } catch (err) {
       throw err;
@@ -131,6 +131,33 @@ export const useClientes = () => {
     }
   };
 
+  const obtenerClientePorId = async (clientId: string) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/${clientId}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+        },
+        redirect: "follow",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw {
+          message: errorData.message || "Error al obtener el cliente",
+          statusCode: errorData.statusCode,
+        };
+      }
+
+      const cliente = await response.json();
+      return cliente as Cliente;
+    } catch (err) {
+      throw err;
+    }
+  };
   const loginClient = async (cliente: ClientLogin) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/login`;
@@ -153,6 +180,7 @@ export const useClientes = () => {
         };
       }
       const loginCliente = await response.json();
+      console.log("Usuario logueado:", loginCliente);
       return loginCliente;
     } catch (err) {
       throw err;
@@ -200,5 +228,6 @@ export const useClientes = () => {
     obtenerPedidosDeClienteLogueado,
     loginClient,
     getClientes,
+    obtenerClientePorId,
   };
 };
