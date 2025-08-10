@@ -7,12 +7,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { usuario, inicializado } = useUsuarioStore();
   const router = useRouter();
   useEffect(() => {
-    if (inicializado && (!usuario || usuario.tipo !== 'ADMINISTRADOR')) {
+    if (inicializado && (!usuario || usuario.tipo !== 'Administrador')) {
       router.push('/');
     }
   }, [usuario, inicializado, router]);
 
-  if (!usuario || usuario.tipo !== 'ADMINISTRADOR') {
+  if (!usuario || usuario.tipo !== 'Administrador') {
     return null;
   }
 

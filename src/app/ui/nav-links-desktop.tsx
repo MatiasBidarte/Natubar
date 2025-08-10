@@ -32,11 +32,11 @@ export default function NavLinksDesktop() {
   const isActive = (href: string) => pathname === href;
 
   const getMostrar = (link: typeof links[number]) =>
-    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "ADMINISTRADOR" || link.mostrarAlAdmin && usuario.tipo == "ADMINISTRADOR")
+    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "Administrador" || link.mostrarAlAdmin && usuario.tipo == "Administrador")
 
   return (
-    <div className={`z-[1000] fixed hidden md:flex ${!usuario || usuario.tipo != "ADMINISTRADOR" ? "mt-11" : ""} items-center justify-between bg-[#201B21] text-[#B99342] w-screen`}>
-      <div className={`w-32${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`} />
+    <div className={`z-[1000] fixed hidden md:flex ${!usuario || usuario.tipo != "Administrador" ? "mt-11" : ""} items-center justify-between bg-[#201B21] text-[#B99342] w-screen`}>
+      <div className={`w-32${!(!usuario || usuario.tipo != "Administrador") ? "hidden" : ""}`} />
 
       <div className="flex-grow flex items-center justify-center gap-16">
         {links
@@ -88,7 +88,7 @@ export default function NavLinksDesktop() {
           ))}
       </div>
 
-      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`}>
+      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "Administrador") ? "hidden" : ""}`}>
         <Link href={!estaLogueado ? "/login" : "/perfil/"}>
           <AccountCircle
             className={`transition-colors duration-200 ${
@@ -97,7 +97,7 @@ export default function NavLinksDesktop() {
           />
         </Link>
       </div>
-      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "ADMINISTRADOR") ? "hidden" : ""}`}>
+      <div className={`flex items-center mr-8 ${!(!usuario || usuario.tipo != "Administrador") ? "hidden" : ""}`}>
         <Link href="/carrito">
           <Badge
             badgeContent={items.length}

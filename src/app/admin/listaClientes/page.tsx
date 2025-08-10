@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Tabs, Tab, Typography, Grid, Paper } from "@mui/material";
+import { Box, Tabs, Tab, Typography, Grid, Paper, Accordion,
+  AccordionSummary,
+  AccordionDetails, Button } from "@mui/material";
 import { Cliente } from "../../hooks/useClientes";
 import { useClientes } from "../../hooks/useClientes"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 
 export default function MenuClientes() {
@@ -31,15 +34,18 @@ export default function MenuClientes() {
     fetchClientes();
   }, []);
 
+  const detalles = (id) => {
+    
+  }
+
   if (loading) {
   return <Typography textAlign="center">Cargando clientes...</Typography>;
     }
-  console.log(clientes);
   
   const clientesFiltrados = clientes.filter((cliente: Cliente) =>
-    tab === 0 ? cliente.tipo === "PERSONA" : cliente.tipo === "EMPRESA"
+    tab === 0 ? cliente.tipo === "Persona" : cliente.tipo === "Empresa"
   );
-
+  /*
   return (
     <Box p={3}>
       <Typography
@@ -71,7 +77,7 @@ export default function MenuClientes() {
               <Paper elevation={3} sx={{ p: 2 }}>
                 <Typography variant="h6">{cliente.nombre}</Typography>
                 <Typography variant="body2">Correo: {cliente.email}</Typography>
-                {cliente.tipo === "EMPRESA" && (
+                {cliente.tipo === "Empresa" && (
                   <>
                     <Typography variant="body2">
                       Empresa: {cliente.nombreEmpresa}
@@ -81,7 +87,7 @@ export default function MenuClientes() {
                     </Typography>
                   </>
                 )}
-                {cliente.tipo === "PERSONA" && (
+                {cliente.tipo === "Persona" && (
                   <Typography variant="body2">
                     NOMBRE: {cliente.nombre || "No disponible"}
                   </Typography>
@@ -93,4 +99,68 @@ export default function MenuClientes() {
       </Grid>
     </Box>
   );
+  */
+  return (
+    <Box p={3}>
+      <Typography variant="h4" gutterBottom textAlign="center">
+        Clientes Registrados
+      </Typography>
+
+      <Tabs
+        value={tab}
+        onChange={handleChange}
+        centered
+        sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
+      >
+        <Tab label="Clientes Persona" />
+        <Tab label="Clientes Empresa" />
+      </Tabs>
+
+      {clientesFiltrados.length === 0 ? (
+        <Typography variant="body1" textAlign="center" width="100%">
+          No se encontraron clientes
+        </Typography>
+      ) : (
+        clientesFiltrados.map((cliente) => (
+          <Accordion key={cliente.id}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography sx={{ flex: 1 }}>
+                {cliente.tipo === "Persona"
+                  ? `${cliente.nombre} ${cliente.apellido}`
+                  : cliente.nombreEmpresa}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {cliente.email}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {cliente.tipo === "Persona" && (
+                <>
+                  <Typography>Nombre: {cliente.nombre}</Typography>
+                  <Typography>Apellido: {cliente.apellido}</Typography>
+                  <Typography>Departamento: {cliente.departamento}</Typography>
+                  <Typography>Ciudad: {cliente.ciudad}</Typography>
+                  <Typography>Dirección: {cliente.direccion}</Typography>
+                  <Typography>Teléfono: {cliente.telefono}</Typography>
+                </>
+              )}
+              {cliente.tipo === "Empresa" && (
+                <>
+                  <Typography>Nombre empresa: {cliente.nombreEmpresa}</Typography>
+                  <Typography>RUT: {cliente.rut || "No disponible"}</Typography>
+                  <Typography>Departamento: {cliente.departamento}</Typography>
+                  <Typography>Ciudad: {cliente.ciudad}</Typography>
+                  <Typography>Dirección: {cliente.direccion}</Typography>
+                  <Typography>Teléfono: {cliente.telefono}</Typography>
+                </>
+              )}
+            <Button onClick={detalles(cliente.id)}>Ver Más Detalles</Button>
+            </AccordionDetails>
+          </Accordion>
+        ))
+      )}
+    </Box>
+  );
 }
+
+

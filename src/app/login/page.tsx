@@ -57,7 +57,7 @@ export default function LoginPage() {
           ...decodeToken(token.access_token),
           token: token.access_token,
         }))
-      if(usuarioParsed.tipo == "ADMINISTRADOR"){
+      if(usuarioParsed.tipo == "Administrador"){
         router.push("/admin/")
       }else{
         router.push("/");

@@ -18,7 +18,7 @@ export default function NavLinksMobile() {
     link.requireLogin && !estaLogueado ? "/login" : link.href;
 
   const getMostrar = (link: typeof links[number]) =>
-    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "ADMINISTRADOR" || link.mostrarAlAdmin && usuario.tipo == "ADMINISTRADOR")
+    (!estaLogueado || !usuario) ? link.mostrarAlUsuario : (link.mostrarAlUsuario && usuario.tipo != "Administrador" || link.mostrarAlAdmin && usuario.tipo == "Administrador")
 
 
   return (
