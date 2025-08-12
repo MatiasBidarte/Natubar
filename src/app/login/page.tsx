@@ -51,9 +51,14 @@ export default function LoginPage() {
       );
       localStorage.setItem("usuario", JSON.stringify(usuarioParsed));
       window.dispatchEvent(new Event("auth-change"));
-      if (usuarioParsed.tipo == "Administrador") {
-        router.push("/admin/");
-      } else {
+
+      const usuarioParsed = JSON.parse(JSON.stringify({
+          ...decodeToken(token.access_token),
+          token: token.access_token,
+        }))
+      if(usuarioParsed.tipo == "Administrador"){
+        router.push("/admin/")
+      }else{
         router.push("/");
       }
     } catch (error) {
