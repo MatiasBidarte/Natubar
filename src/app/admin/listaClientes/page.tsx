@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Tabs, Tab, Typography, Grid, Paper, Accordion,
+import { Box, Tabs, Tab, Typography, Accordion,
   AccordionSummary,
   AccordionDetails, Button } from "@mui/material";
 import { Cliente } from "../../hooks/useClientes";
@@ -32,11 +32,8 @@ export default function MenuClientes() {
     };
 
     fetchClientes();
-  }, []);
+  }, [getClientes]);
 
-  const detalles = (id) => {
-    
-  }
 
   if (loading) {
   return <Typography textAlign="center">Cargando clientes...</Typography>;
@@ -154,7 +151,7 @@ export default function MenuClientes() {
                   <Typography>Teléfono: {cliente.telefono}</Typography>
                 </>
               )}
-            <Button onClick={detalles(cliente.id)}>Ver Más Detalles</Button>
+            <Button>Ver Más Detalles</Button>
             </AccordionDetails>
           </Accordion>
         ))

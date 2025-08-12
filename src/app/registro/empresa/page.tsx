@@ -5,10 +5,12 @@ import ArrowBack from "@/app/ui/arrowBack";
 import { useRouter } from "next/navigation";
 import { useClientes } from "@/app/hooks/useClientes";
 import { decodeToken } from "@/app/utils/decodeJwt";
+import useNotificaciones from "@/app/hooks/useNotificaciones";
 
 export default function RegistroEmpresa() {
   const router = useRouter();
   const { registerClient } = useClientes();
+  const { suscribir } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombreEmpresa: "",
@@ -72,6 +74,7 @@ export default function RegistroEmpresa() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
+        suscribir();
         setApiError(null);
         localStorage.setItem(
           "usuario",
