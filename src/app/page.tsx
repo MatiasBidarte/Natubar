@@ -222,12 +222,9 @@ export default function Home() {
       <Button onClick={handleSubscribe}>Activar notificaciones</Button>
       <Button
         onClick={() =>{
-           const usuarioStr = localStorage.getItem("usuario");
-           const usuario: Cliente | null = usuarioStr ? JSON.parse(usuarioStr) : null;
-           if (!usuario) {
-             console.error("No se encontró el usuario en localStorage");
-             return;
-           }
+          const usuario = JSON.parse(
+                  localStorage.getItem("usuario") || "{}"
+                ) as Cliente;
           fetch(`${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/mandarNotificacion`, {
             method: 'POST',
             headers: {
@@ -240,9 +237,9 @@ export default function Home() {
               mensaje: 'Esta es una notificación de prueba 🚀',
             }),
           }).then((res) => res.json()).then((data) => console.log(data))
+          }
         }
-      }
-        >
+      >
         Probar notificaciones
       </Button>
 
