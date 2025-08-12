@@ -7,6 +7,7 @@ interface StoreNotificacionesState {
   error: string | null;
   suscribir: () => Promise<void>;
   desuscribir: () => Promise<void>;
+  recordarPago: (id: number) => Promise<void>;
 }
 
 export interface SuscripcionNotificacion {
@@ -72,6 +73,35 @@ const useNotificaciones = create<StoreNotificacionesState>((set) => ({
             "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
           },
           body: JSON.stringify({ playerId }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al desuscribirse");
+      }
+
+      set({ loading: false });
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : "Error desconocido",
+        loading: false,
+      });
+    }
+  },
+  recordarPago: async (pedido: number) => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/recordarPago`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+          },
+          body: JSON.stringify({ pedido }),
         }
       );
 
