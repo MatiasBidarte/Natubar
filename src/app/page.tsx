@@ -8,7 +8,6 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Button,
 } from "@mui/material";
 import ProductCard from "./components/card";
 import { Producto } from "./types/producto";
@@ -20,9 +19,6 @@ import { styled } from "@mui/material/styles";
 import useProductos from "./hooks/useProductos";
 import BotonCarrito from "./components/IconCarrito";
 import { usePedidos } from "./hooks/usePedidos";
-import OneSignal from "react-onesignal";
-import useNotificaciones from "./hooks/useNotificaciones";
-import { Cliente } from "./hooks/useClientes";
 
 interface ModalCard {
   open: boolean;
@@ -80,26 +76,6 @@ export default function Home() {
     error: string | null;
     fetchProducts: () => void;
   };
-  const { suscribir } = useNotificaciones();
-  async function handleSubscribe() {
-    try {
-      await OneSignal.User.PushSubscription.optIn();
-      let retries = 10;
-      while (retries-- > 0) {
-        const onesignalId = OneSignal.User?.onesignalId;
-        const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-
-        if (onesignalId && typeof onesignalId === "string" && isSubscribed) {
-          await suscribir();
-          break;
-        }
-
-        await new Promise((res) => setTimeout(res, 500));
-      }
-    } catch (error) {
-      console.error("Error al suscribirse a las notificaciones", error);
-    }
-  }
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -219,29 +195,6 @@ export default function Home() {
         )}
       </Stack>
       <BotonCarrito cantidad={items.length} />
-      <Button onClick={handleSubscribe}>Activar notificaciones</Button>
-      <Button
-        onClick={() =>{
-          const usuario = JSON.parse(
-                  localStorage.getItem("usuario") || "{}"
-                ) as Cliente;
-          fetch(`${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/mandarNotificacion`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': process.env.NEXT_PUBLIC_NATUBAR_API_KEY || '',
-            },
-            body: JSON.stringify({
-              clienteId: usuario.id,
-              cabezal: '¡Hola!',
-              mensaje: 'Esta es una notificación de prueba 🚀',
-            }),
-          }).then((res) => res.json()).then((data) => console.log(data))
-          }
-        }
-      >
-        Probar notificaciones
-      </Button>
 
     </div>
 

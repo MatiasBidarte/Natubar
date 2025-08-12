@@ -20,10 +20,12 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { decodeToken } from "@/app/utils/decodeJwt";
+import useNotificaciones from "../hooks/useNotificaciones";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { loginClient } = useClientes();
+  const { suscribir } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
   const [form, setForm] = useState({
@@ -39,6 +41,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const token = await loginClient(form);
+      suscribir();
       setApiError(null);
       const usuarioParsed = JSON.parse(
         JSON.stringify({

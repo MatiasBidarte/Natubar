@@ -12,10 +12,12 @@ import { useRouter } from "next/navigation";
 import ArrowBack from "@/app/ui/arrowBack";
 import { useClientes } from "@/app/hooks/useClientes";
 import { decodeToken } from "@/app/utils/decodeJwt";
+import useNotificaciones from "@/app/hooks/useNotificaciones";
 
 export default function RegistroCliente() {
   const router = useRouter();
   const { registerClient } = useClientes();
+  const { suscribir } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombre: "",
@@ -72,6 +74,7 @@ export default function RegistroCliente() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
+        suscribir();
         setApiError(null);
         localStorage.setItem(
           "usuario",
@@ -89,7 +92,7 @@ export default function RegistroCliente() {
         else if (errorData.statusCode === 409)
           setApiError(
             errorData.message ||
-              "Datos inválidos. Por favor, revise los campos."
+            "Datos inválidos. Por favor, revise los campos."
           );
         else if (errorData.statusCode === 400)
           setApiError("Datos inválidos. Por favor, revise los campos.");
