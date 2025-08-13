@@ -39,7 +39,7 @@ const PerfilPage = () => {
   const { suscribir } = useNotificaciones();
   async function handleSubscribe() {
     try {
-      suscribir();
+      await suscribir();
     } catch (error) {
       console.error("Error al suscribirse a las notificaciones", error);
     }
