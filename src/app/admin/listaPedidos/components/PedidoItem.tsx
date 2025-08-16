@@ -26,6 +26,7 @@ import Image from "next/image";
 import { formatDateToLocalDate, formatDateToString } from "@/app/utils/date";
 import usePedidos from "@/app/hooks/usePedidos";
 import { Sabor } from "@/app/types/producto";
+import useNotificaciones from "@/app/hooks/useNotificaciones";
 
 interface PedidoItemProps {
   pedido: Pedido;
@@ -46,6 +47,7 @@ const PedidoItem = memo(
     const primerProducto = pedido.productos?.[0] ?? null;
     const [loading, setLoading] = useState(false);
     const { cambiarEstadoPago, cambiarEstado } = usePedidos();
+    const { recordarPago } = useNotificaciones();
 
     const getNextState = (
       currentState: EstadosPedido
@@ -261,7 +263,7 @@ const PedidoItem = memo(
             <Box className="mt-4 flex flex-wrap gap-2">
               {pedido.estadoPago == EstadosPagoPedido.pendiente && (
                 <>
-                  <Button variant="outlined" size="small" sx={{ margin: 1 }}>
+                  <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => recordarPago(pedido.id)}>
                     Recordar pago
                   </Button>
                   <Box>

@@ -24,6 +24,7 @@ import {
 } from "@mui/icons-material";
 import { Cliente, useClientes } from "../hooks/useClientes";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
+import useNotificaciones from "../hooks/useNotificaciones";
 
 const PerfilPage = () => {
   const { cerrarSesion } = useUsuarioStore();
@@ -35,7 +36,14 @@ const PerfilPage = () => {
   const [respuesta, setRespuesta] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { esEmpresa } = useUsuarioStore();
-
+  const { suscribir } = useNotificaciones();
+  async function handleSubscribe() {
+    try {
+      await suscribir();
+    } catch (error) {
+      console.error("Error al suscribirse a las notificaciones", error);
+    }
+  }
   useEffect(() => {
     if (typeof window !== "undefined") {
       const usuario = localStorage.getItem("usuario") || "";
@@ -255,7 +263,31 @@ const PerfilPage = () => {
                     {usuario.telefono}
                   </Typography>
                 </Box>
+                <Button onClick={handleSubscribe}>Activar notificaciones</Button>
+                <Button
+                  onClick={() => {
+                    const usuario = JSON.parse(
+                      localStorage.getItem("usuario") || "{}"
+                    ) as Cliente;
+                    fetch(`${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/mandarNotificacion`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': process.env.NEXT_PUBLIC_NATUBAR_API_KEY || '',
+                      },
+                      body: JSON.stringify({
+                        clienteId: usuario.id,
+                        cabezal: '¡Hola!',
+                        mensaje: 'Esta es una notificación de prueba 🚀',
+                      }),
+                    }).then((res) => res.json()).then((data) => console.log(data))
+                  }
+                  }
+                >
+                  Probar notificaciones
+                </Button>
               </Box>
+
             )}
           </Box>
         </Paper>

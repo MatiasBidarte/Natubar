@@ -76,7 +76,6 @@ export default function Home() {
     error: string | null;
     fetchProducts: () => void;
   };
-
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -196,6 +195,8 @@ export default function Home() {
         )}
       </Stack>
       <BotonCarrito cantidad={items.length} />
+
     </div>
+
   );
 }

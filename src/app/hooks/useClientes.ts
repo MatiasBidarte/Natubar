@@ -1,7 +1,5 @@
-import OneSignal from "react-onesignal";
 import { Pedido } from "../types/pedido";
 import { ActualizarCLienteResponse } from "./interfaces/ClientesInterface";
-import useNotificaciones from "./useNotificaciones";
 export interface Cliente {
   id?: string;
   nombre?: string;
@@ -37,7 +35,7 @@ export interface ClientLogin {
 }
 
 export const useClientes = () => {
-  const { suscribir } = useNotificaciones();
+
   const registerClient = async (
     newClient: Cliente
   ): Promise<{ access_token: string }> => {
@@ -62,12 +60,7 @@ export const useClientes = () => {
         };
       }
       const token = await response.json();
-      if (!OneSignal.User?.onesignalId) {
-        await OneSignal.init({
-          appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID!,
-        });
-      }
-      OneSignal.User.addAlias(token.email, token.id);
+  
       return token;
     } catch (err) {
       throw err;
@@ -187,9 +180,44 @@ export const useClientes = () => {
         };
       }
       const loginCliente = await response.json();
-      suscribir();
       console.log("Usuario logueado:", loginCliente);
       return loginCliente;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const getClientes = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/clientes/`;
+      const usu = localStorage.getItem("usuario");
+      if (usu) {
+        const usuario = JSON.parse(usu);
+        if (!usuario) {
+        } else {
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+              Authorization: `Bearer ${usuario.token}`,
+            },
+            redirect: "follow",
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw {
+              message:
+                errorData.message || "Error al obtener los clientes",
+              statusCode: errorData.statusCode,
+            };
+          }
+
+          const clientes = await response.json();
+          return clientes as Cliente[];
+        }
+      }
     } catch (err) {
       throw err;
     }
@@ -199,6 +227,7 @@ export const useClientes = () => {
     updateClient,
     obtenerPedidosDeClienteLogueado,
     loginClient,
+    getClientes,
     obtenerClientePorId,
   };
 };
