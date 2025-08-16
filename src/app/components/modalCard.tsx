@@ -17,7 +17,6 @@ import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
-
 interface CustomModalProps {
   open: boolean;
   handleClose: () => void;
@@ -25,25 +24,22 @@ interface CustomModalProps {
 }
 
 function ModalCard({ open, handleClose, producto }: CustomModalProps) {
-  
   const { sabores = [], getSabores } = useProductos() ?? {
     sabores: [],
     getSabores: () => {},
   };
 
   useEffect(() => {
-    
     getSabores();
   }, [getSabores]);
 
-
   useEffect(() => {
-  if (!open) {
-    setError("");
-    setCantidades({});
-    setCantidadTotal(1);
-  }
-}, [open]);
+    if (!open) {
+      setError("");
+      setCantidades({});
+      setCantidadTotal(1);
+    }
+  }, [open]);
 
   const [error, setError] = useState("");
   const addToCart = usePedidos((state) => state.addToCart);
@@ -119,6 +115,8 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             transform: "translate(-50%, -50%)",
             minWidth: { xs: "95%", sm: 600, md: 800 },
             maxWidth: "95vw",
+            maxHeight: "95vh",
+            overflowY: "auto",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
@@ -147,7 +145,7 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
             sx={{
               width: "100%",
               position: "relative",
-              paddingTop: "60%", // Relación de aspecto 5:3
+              paddingTop: "60%",
               overflow: "hidden",
             }}
           >

@@ -37,6 +37,15 @@ const links = [
     columnaIzq: false,
   },
   {
+    href: "/admin/productos",
+    name: "Productos",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
+  {
     href: "/admin/clientes",
     name: "Clientes",
     type: "text",
