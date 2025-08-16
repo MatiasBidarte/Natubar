@@ -239,14 +239,12 @@ export const usePedidos = create(
             redirect: "follow",
           }
         );
-
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || "Error al obtener productos");
         }
 
         const pedidosNuevos = (await response.json()) as Pedido[];
-
         set((state) => {
           const pedidosActualizados = [
             ...state.pedidos.filter((p) => p.estado !== estado),
@@ -275,7 +273,6 @@ export const usePedidos = create(
               ...pedidosNuevos,
             ];
           }
-
           return {
             pedidos: pedidosActualizados,
             pedidosEnCurso: pedidosEnCursoActualizados,

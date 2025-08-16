@@ -16,8 +16,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { es } from 'date-fns/locale';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import useNotificaciones from "@/app/hooks/useNotificaciones";
 import { NotificacionIndividual } from "@/app/types/suscripcionNotificacion";
@@ -64,7 +63,6 @@ export default function MandarNotificacionPage() {
 
         };
         setErrors(newErrors);
-        console.log(errors)
         if (!programarFecha) form.fecha = null;
         const hasErrors = Object.values(newErrors).some((e) => e);
         if (!hasErrors) {
@@ -169,8 +167,8 @@ export default function MandarNotificacionPage() {
                                 />
 
                                 <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-                                    <DatePicker
-                                        label="Fecha"
+                                    <DateTimePicker
+                                        label="Fecha y hora"
                                         value={form.fecha}
                                         onChange={handleFechaChange}
                                         disabled={!programarFecha}
@@ -179,13 +177,10 @@ export default function MandarNotificacionPage() {
                                                 fullWidth: true,
                                                 error: programarFecha && !!errors.fecha,
                                                 helperText: programarFecha ? errors.fecha : "",
-
                                             },
                                         }}
-
                                     />
                                 </LocalizationProvider>
-
                                 <Grid width="100%">
                                     <Button
                                         fullWidth
