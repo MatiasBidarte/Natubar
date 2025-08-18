@@ -46,7 +46,7 @@ const links = [
     columnaIzq: false,
   },
   {
-    href: "/admin/clientes",
+    href: "/admin/listaClientes",
     name: "Clientes",
     type: "text",
     requireLogin: true,
@@ -66,6 +66,15 @@ const links = [
   {
     href: "/admin/estadisticas",
     name: "Estadísticas",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
+    {
+    href: "/admin/mandarNotificacion",
+    name: "Crear Notificación",
     type: "text",
     requireLogin: true,
     mostrarAlAdmin: true,
