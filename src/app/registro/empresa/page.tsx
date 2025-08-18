@@ -74,7 +74,7 @@ export default function RegistroEmpresa() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
-        suscribir();
+        await suscribir();
         setApiError(null);
         localStorage.setItem(
           "usuario",
