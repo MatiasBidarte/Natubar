@@ -90,7 +90,7 @@ export default function MandarNotificacionPage() {
 
             <Paper
                 sx={{ p: 4, width: "100%", maxWidth: 500, borderRadius: 4 }}
-                elevation={0}
+                elevation={3}
             >
                 {apiError && (
                     <Snackbar

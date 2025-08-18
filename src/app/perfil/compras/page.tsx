@@ -1,6 +1,6 @@
 "use client";
 import { usePedidos } from "@/app/hooks/usePedidos";
-import { EstadosPedido } from "@/app/types/pedido";
+import { DetallePedido, EstadosPedido } from "@/app/types/pedido";
 import {
   Box,
   Tab,
@@ -13,6 +13,7 @@ import {
   IconButton,
   Collapse,
   useTheme,
+  Button,
 } from "@mui/material";
 import {
   AccessTime,
@@ -25,12 +26,16 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { formatDateToLocalDate, formatDateToString } from "@/app/utils/date";
 import { Cliente } from "@/app/hooks/useClientes";
+import { mapDetallePedidoToLineaCarrito } from "@/app/types/lineaCarrito";
 
+import { useRouter } from "next/navigation";
 const ComprasCliente = () => {
+  const router = useRouter();
   const {
     pedidosEnCurso,
     pedidosFinalizados,
     fetchPedidosCliente,
+    repetirPedido,
     loadingPedidos,
     errorPedidos,
   } = usePedidos();
@@ -102,6 +107,10 @@ const ComprasCliente = () => {
     }));
   };
 
+  const handleRepetirPedido = (productos: DetallePedido[]) => {
+    repetirPedido(mapDetallePedidoToLineaCarrito(productos ?? []))
+    router.push("/carrito");
+  }
   const renderPedidos = () => {
     const pedidosActuales =
       tabValue === 0 ? pedidosEnCurso : pedidosFinalizados;
@@ -163,13 +172,13 @@ const ComprasCliente = () => {
               <Typography variant="body2" className="text-gray-500">
                 {tabValue === 0
                   ? `Entrega estimada: ${formatDateToLocalDate(
-                      pedido.fechaEntregaEstimada
-                    )}`
+                    pedido.fechaEntregaEstimada
+                  )}`
                   : pedido.fechaEntrega
-                  ? `Entregado el: ${formatDateToLocalDate(
+                    ? `Entregado el: ${formatDateToLocalDate(
                       pedido.fechaEntrega
                     )}`
-                  : `Entrega estimada: ${formatDateToLocalDate(
+                    : `Entrega estimada: ${formatDateToLocalDate(
                       pedido.fechaEntregaEstimada
                     )}`}
               </Typography>
@@ -280,15 +289,33 @@ const ComprasCliente = () => {
                     </Box>
                   ))}
               </Box>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={1}
+              >
+                <Button
+                  onClick={() => handleRepetirPedido(pedido.productos || [])}
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    bgcolor: "#B99342",
+                    "&:hover": { bgcolor: "#8E6C1F" },
+                  }}>
+                  Repetir pedido
+                </Button>
+                {pedido.fechaEntrega && (
+                  <Box className="mb-3 flex items-center text-gray-600">
+                    <CalendarMonth fontSize="small" className="mr-2" />
+                    <Typography variant="body2">
+                      Entregado el: {formatDateToLocalDate(pedido.fechaEntrega)}
+                    </Typography>
 
-              {pedido.fechaEntrega && (
-                <Box className="mb-3 flex items-center text-gray-600">
-                  <CalendarMonth fontSize="small" className="mr-2" />
-                  <Typography variant="body2">
-                    Entregado el: {formatDateToLocalDate(pedido.fechaEntrega)}
-                  </Typography>
-                </Box>
-              )}
+                  </Box>
+                )}
+              </Box>
+
 
               <Divider className="my-3" />
               <Box className="flex justify-between items-center">

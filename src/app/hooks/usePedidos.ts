@@ -14,6 +14,7 @@ interface PedidoState {
   removeFromCart: (index: number) => void;
   updateCartItem: (index: number, item: LineaCarrito) => void;
   updateCantidad: (numeral: number, sumar: number) => void;
+  repetirPedido:(items: LineaCarrito[]) => void;
   clearCart: () => void;
 
   items: LineaCarrito[];
@@ -97,6 +98,16 @@ export const usePedidos = create(
         ),
       })),
     clearCart: () => set({ items: [], pedido: undefined }),
+   repetirPedido: (items: LineaCarrito[]) =>
+  set((state) => {
+    state.clearCart();
+    items.forEach((item) => {
+      state.addToCart(item);
+    });
+
+    return {};
+  }),
+
 
     pedidos: [],
     pedidosEnCurso: [],
