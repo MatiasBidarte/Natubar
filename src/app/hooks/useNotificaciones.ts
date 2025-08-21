@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { NotificacionIndividual } from "../types/suscripcionNotificacion";
 
 interface StoreNotificacionesState {
-  loading: boolean;
+  loadingNotificaciones: boolean;
   error: string | null;
   suscribir: () => Promise<void>;
   desuscribir: () => Promise<void>;
@@ -18,11 +18,11 @@ export interface SuscripcionNotificacion {
 }
 
 const useNotificaciones = create<StoreNotificacionesState>((set) => ({
-  loading: false,
+  loadingNotificaciones: false,
   error: null,
 suscribir: async () => {
   const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
-  set({ loading: true, error: null });
+  set({ loadingNotificaciones: true, error: null });
   try {
     await OneSignal.User.PushSubscription.optIn();
 
@@ -66,18 +66,18 @@ suscribir: async () => {
       throw new Error(errorData.message || "Error al suscribirse");
     }
 
-    set({ loading: false });
+    set({ loadingNotificaciones: false });
   } catch (err) {
     set({
       error: err instanceof Error ? err.message : "Error desconocido",
-      loading: false,
+      loadingNotificaciones: false,
     });
     console.error("Error al suscribirse a las notificaciones:", err);
   }
 },
 
   desuscribir: async () => {
-    set({ loading: true, error: null });
+    set({ loadingNotificaciones: true, error: null });
 
     try {
       await OneSignal.User.PushSubscription.optOut();
@@ -101,16 +101,16 @@ suscribir: async () => {
         throw new Error(errorData.message || "Error al desuscribirse");
       }
 
-      set({ loading: false });
+      set({ loadingNotificaciones: false });
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : "Error desconocido",
-        loading: false,
+        loadingNotificaciones: false,
       });
     }
   },
   recordarPago: async (pedido: number) => {
-    set({ loading: true, error: null });
+    set({ loadingNotificaciones: true, error: null });
 
     try {
       const response = await fetch(
@@ -130,16 +130,16 @@ suscribir: async () => {
         throw new Error(errorData.message || "Error al desuscribirse");
       }
 
-      set({ loading: false });
+      set({ loadingNotificaciones: false });
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : "Error desconocido",
-        loading: false,
+        loadingNotificaciones: false,
       });
     }
   },
     mandarNotificacion: async (notificacion: NotificacionIndividual) => {
-    set({ loading: true, error: null });
+    set({ loadingNotificaciones: true, error: null });
     try {
   
       const response = await fetch(
@@ -158,11 +158,11 @@ suscribir: async () => {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Error al desuscribirse");
       }
-      set({ loading: false });
+      set({ loadingNotificaciones: false });
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : "Error desconocido",
-        loading: false,
+        loadingNotificaciones: false,
       });
     }
   },
