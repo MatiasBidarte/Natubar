@@ -25,6 +25,8 @@ interface PedidoState {
   loadingPedidos: boolean;
   errorPedidos: string | null;
 
+  descargandoPDF: boolean;
+
   fetchPedidosCliente: (clienteId: string) => Promise<void>;
   fetchPedidos: (estado: EstadosPedido) => Promise<void>;
   crearPedido: (
@@ -40,6 +42,8 @@ interface PedidoState {
     pedidosEnCurso: Pedido[];
     pedidosFinalizados: Pedido[];
   }) => void;
+
+  descargarPDFPedidosEnCamino: () => Promise<void>;
 }
 
 let ultimoNumeral = 1;
@@ -47,6 +51,9 @@ let ultimoNumeral = 1;
 export const usePedidos = create(
   devtools<PedidoState>((set, get) => ({
     items: [],
+
+    descargandoPDF: false,
+
     addToCart: (item: LineaCarrito) => {
       const state = get();
 
@@ -132,6 +139,7 @@ export const usePedidos = create(
       };
       set({ pedido: pedidoData });
     },
+
     calcularCostoEnvio: () => {
       const { items } = get();
       const subtotal = items.reduce(
@@ -143,6 +151,51 @@ export const usePedidos = create(
         process.env.NEXT_PUBLIC_VALOR_MINIMO_PARA_ENVIO || 0
       );
       return subtotal >= costoParaEnvio ? 0 : envio;
+    },
+
+    descargarPDFPedidosEnCamino: async () => {
+      set({ descargandoPDF: true, errorPedidos: null });
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/reportes/entregas`,
+          {
+            method: "GET",
+            headers: {
+              "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Error al descargar el PDF");
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `detalle-entrega-pedidos-${
+          new Date().toISOString().split("T")[0]
+        }.pdf`;
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        set({ descargandoPDF: false });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Error al descargar PDF";
+        set({
+          errorPedidos: errorMessage,
+          descargandoPDF: false,
+        });
+        throw error;
+      }
     },
 
     fetchPedidosCliente: async (clienteId: string) => {
@@ -236,6 +289,7 @@ export const usePedidos = create(
         throw error;
       }
     },
+
     fetchPedidos: async (estado: EstadosPedido) => {
       set({ loadingPedidos: true, errorPedidos: null });
       try {
@@ -382,6 +436,7 @@ export const usePedidos = create(
         });
       }
     },
+
     cambiarEstadoPago: async (estado: EstadosPagoPedido, pedidoId: number) => {
       set({ loadingPedidos: true, errorPedidos: null });
       try {

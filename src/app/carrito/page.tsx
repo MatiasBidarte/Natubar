@@ -159,9 +159,7 @@ const Carrito = () => {
               />
               <Box flex={1}>
                 <Typography fontWeight="bold">
-                  {item.producto.nombre}{" "}
-                  {item.producto.esCajaDeBarras &&
-                    `x${item.producto.cantidadDeBarras}`}{" "}
+                  {item.producto.nombre}
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
