@@ -13,6 +13,7 @@ export interface Pedido {
   observaciones?: string;
   productos?: DetallePedido[];
   cliente?: Cliente;
+  ultimoRecordatorioPago: Date;
 }
 
 export interface DetallePedido {

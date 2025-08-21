@@ -1,6 +1,7 @@
 "use client";
 import OneSignal from "react-onesignal";
 import { create } from "zustand";
+import { NotificacionIndividual } from "../types/suscripcionNotificacion";
 
 interface StoreNotificacionesState {
   loading: boolean;
@@ -8,6 +9,7 @@ interface StoreNotificacionesState {
   suscribir: () => Promise<void>;
   desuscribir: () => Promise<void>;
   recordarPago: (id: number) => Promise<void>;
+  mandarNotificacion: (notificacion : NotificacionIndividual) => Promise<void>;
 }
 
 export interface SuscripcionNotificacion {
@@ -30,6 +32,7 @@ suscribir: async () => {
 
     while (retries-- > 0) {
       playerId = OneSignal.User?.onesignalId ?? null;
+      await OneSignal.User.addTag("tipoCliente",usuario.tipo)
       isSubscribed = (await OneSignal.User.PushSubscription.optedIn) ?? false;
 
       if (playerId && typeof playerId === "string" && isSubscribed) {
@@ -58,7 +61,6 @@ suscribir: async () => {
         }),
       }
     );
-
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || "Error al suscribirse");
@@ -128,6 +130,34 @@ suscribir: async () => {
         throw new Error(errorData.message || "Error al desuscribirse");
       }
 
+      set({ loading: false });
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : "Error desconocido",
+        loading: false,
+      });
+    }
+  },
+    mandarNotificacion: async (notificacion: NotificacionIndividual) => {
+    set({ loading: true, error: null });
+    try {
+  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/mandarNotificacion`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+          },
+          body: JSON.stringify(notificacion),
+        }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al desuscribirse");
+      }
       set({ loading: false });
     } catch (err) {
       set({

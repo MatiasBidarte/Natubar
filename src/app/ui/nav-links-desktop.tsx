@@ -72,6 +72,15 @@ const links = [
     mostrarAlUsuario: false,
     columnaIzq: false,
   },
+    {
+    href: "/admin/mandarNotificacion",
+    name: "Crear Notificación",
+    type: "text",
+    requireLogin: true,
+    mostrarAlAdmin: true,
+    mostrarAlUsuario: false,
+    columnaIzq: false,
+  },
 ];
 
 export default function NavLinksDesktop() {

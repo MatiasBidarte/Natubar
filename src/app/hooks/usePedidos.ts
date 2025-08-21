@@ -14,6 +14,7 @@ interface PedidoState {
   removeFromCart: (index: number) => void;
   updateCartItem: (index: number, item: LineaCarrito) => void;
   updateCantidad: (numeral: number, sumar: number) => void;
+  repetirPedido:(items: LineaCarrito[]) => void;
   clearCart: () => void;
 
   items: LineaCarrito[];
@@ -104,6 +105,16 @@ export const usePedidos = create(
         ),
       })),
     clearCart: () => set({ items: [], pedido: undefined }),
+   repetirPedido: (items: LineaCarrito[]) =>
+  set((state) => {
+    state.clearCart();
+    items.forEach((item) => {
+      state.addToCart(item);
+    });
+
+    return {};
+  }),
+
 
     pedidos: [],
     pedidosEnCurso: [],
@@ -293,14 +304,12 @@ export const usePedidos = create(
             redirect: "follow",
           }
         );
-
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || "Error al obtener productos");
         }
 
         const pedidosNuevos = (await response.json()) as Pedido[];
-
         set((state) => {
           const pedidosActualizados = [
             ...state.pedidos.filter((p) => p.estado !== estado),
@@ -329,7 +338,6 @@ export const usePedidos = create(
               ...pedidosNuevos,
             ];
           }
-
           return {
             pedidos: pedidosActualizados,
             pedidosEnCurso: pedidosEnCursoActualizados,

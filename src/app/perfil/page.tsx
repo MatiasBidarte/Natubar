@@ -264,28 +264,6 @@ const PerfilPage = () => {
                   </Typography>
                 </Box>
                 <Button onClick={handleSubscribe}>Activar notificaciones</Button>
-                <Button
-                  onClick={() => {
-                    const usuario = JSON.parse(
-                      localStorage.getItem("usuario") || "{}"
-                    ) as Cliente;
-                    fetch(`${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/notificacion/mandarNotificacion`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': process.env.NEXT_PUBLIC_NATUBAR_API_KEY || '',
-                      },
-                      body: JSON.stringify({
-                        clienteId: usuario.id,
-                        cabezal: '¡Hola!',
-                        mensaje: 'Esta es una notificación de prueba 🚀',
-                      }),
-                    }).then((res) => res.json()).then((data) => console.log(data))
-                  }
-                  }
-                >
-                  Probar notificaciones
-                </Button>
               </Box>
 
             )}

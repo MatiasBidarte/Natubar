@@ -74,7 +74,7 @@ export default function RegistroCliente() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
-        suscribir();
+        await suscribir();
         setApiError(null);
         localStorage.setItem(
           "usuario",

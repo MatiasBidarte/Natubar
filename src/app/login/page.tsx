@@ -41,7 +41,6 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const token = await loginClient(form);
-      suscribir();
       setApiError(null);
       const usuarioParsed = JSON.parse(
         JSON.stringify({
@@ -51,6 +50,7 @@ export default function LoginPage() {
       );
       localStorage.setItem("usuario", JSON.stringify(usuarioParsed));
       window.dispatchEvent(new Event("auth-change"));
+      await suscribir();
       if(usuarioParsed.tipo == "Administrador"){
         router.push("/admin/")
       }else{
