@@ -31,7 +31,6 @@ export default function MetodoPago() {
 
   const handlePagarAhora = async () => {
     setMetodo(metodoSeleccionado);
-    console.log(pedido);
     const pedidoResponse = await fetch(
       `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
       {
@@ -52,6 +51,7 @@ export default function MetodoPago() {
     if (metodoSeleccionado === "mp") {
       router.push(`/metodoPago/mercadoPago?pedidoId=${pedidoBody.id}`);
     }
+    clearCart();
   };
 
   const handleCancelar = () => {

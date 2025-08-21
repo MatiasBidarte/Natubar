@@ -1,17 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Tabs, Tab, Typography, Accordion,
+import {
+  Box,
+  Tabs,
+  Tab,
+  Typography,
+  Accordion,
   AccordionSummary,
-  AccordionDetails, Button } from "@mui/material";
+  AccordionDetails,
+  Button,
+} from "@mui/material";
 import { Cliente } from "../../hooks/useClientes";
-import { useClientes } from "../../hooks/useClientes"
+import { useClientes } from "../../hooks/useClientes";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
+import { useRouter } from "next/navigation";
 
 export default function MenuClientes() {
+  const router = useRouter();
   const [tab, setTab] = useState(0);
-  const {getClientes} = useClientes();
+  const { getClientes } = useClientes();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -32,71 +40,20 @@ export default function MenuClientes() {
     };
 
     fetchClientes();
-  }, [getClientes]);
+  }, []);
 
+  const handleOnClick = (cliente: Cliente) => {
+    router.push(`/admin/clientes/${cliente.id}`);
+  };
 
   if (loading) {
-  return <Typography textAlign="center">Cargando clientes...</Typography>;
-    }
-  
+    return <Typography textAlign="center">Cargando clientes...</Typography>;
+  }
+
   const clientesFiltrados = clientes.filter((cliente: Cliente) =>
     tab === 0 ? cliente.tipo === "Persona" : cliente.tipo === "Empresa"
   );
-  /*
-  return (
-    <Box p={3}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        textAlign="center"
-      >
-        Clientes Registrados
-      </Typography>
 
-      <Tabs
-        value={tab}
-        onChange={handleChange}
-        centered
-        sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
-      >
-        <Tab label="Clientes Persona" />
-        <Tab label="Clientes Empresa" />
-      </Tabs>
-
-      <Grid container spacing={2}>
-        {clientesFiltrados.length === 0 ? (
-          <Typography variant="body1" textAlign="center" width="100%">
-            No se encontraron clientes
-          </Typography>
-        ) : (
-          clientesFiltrados.map((cliente: Cliente) => (
-            <Grid item xs={12} sm={6} md={4} key={cliente.id}>
-              <Paper elevation={3} sx={{ p: 2 }}>
-                <Typography variant="h6">{cliente.nombre}</Typography>
-                <Typography variant="body2">Correo: {cliente.email}</Typography>
-                {cliente.tipo === "Empresa" && (
-                  <>
-                    <Typography variant="body2">
-                      Empresa: {cliente.nombreEmpresa}
-                    </Typography>
-                    <Typography variant="body2">
-                      RUT: {cliente.rut || "No disponible"}
-                    </Typography>
-                  </>
-                )}
-                {cliente.tipo === "Persona" && (
-                  <Typography variant="body2">
-                    NOMBRE: {cliente.nombre || "No disponible"}
-                  </Typography>
-                )}
-              </Paper>
-            </Grid>
-          ))
-        )}
-      </Grid>
-    </Box>
-  );
-  */
   return (
     <Box p={3}>
       <Typography variant="h4" gutterBottom textAlign="center">
@@ -135,23 +92,38 @@ export default function MenuClientes() {
                 <>
                   <Typography>Nombre: {cliente.nombre}</Typography>
                   <Typography>Apellido: {cliente.apellido}</Typography>
+                  <Typography>Mail: {cliente.email}</Typography>
                   <Typography>Departamento: {cliente.departamento}</Typography>
                   <Typography>Ciudad: {cliente.ciudad}</Typography>
                   <Typography>Dirección: {cliente.direccion}</Typography>
                   <Typography>Teléfono: {cliente.telefono}</Typography>
+                  <Typography>
+                    Observaciones: {cliente.observaciones}
+                  </Typography>
                 </>
               )}
               {cliente.tipo === "Empresa" && (
                 <>
-                  <Typography>Nombre empresa: {cliente.nombreEmpresa}</Typography>
+                  <Typography>
+                    Nombre empresa: {cliente.nombreEmpresa}
+                  </Typography>
+                  <Typography>
+                    Nombre de contacto: {cliente.nombreContacto}
+                  </Typography>
                   <Typography>RUT: {cliente.rut || "No disponible"}</Typography>
+                  <Typography>Mail: {cliente.email}</Typography>
                   <Typography>Departamento: {cliente.departamento}</Typography>
                   <Typography>Ciudad: {cliente.ciudad}</Typography>
                   <Typography>Dirección: {cliente.direccion}</Typography>
                   <Typography>Teléfono: {cliente.telefono}</Typography>
+                  <Typography>
+                    Observaciones: {cliente.observaciones}
+                  </Typography>
                 </>
               )}
-            <Button>Ver Más Detalles</Button>
+              <Button onClick={() => handleOnClick(cliente)}>
+                Ver Más Detalles
+              </Button>
             </AccordionDetails>
           </Accordion>
         ))
@@ -159,5 +131,3 @@ export default function MenuClientes() {
     </Box>
   );
 }
-
-

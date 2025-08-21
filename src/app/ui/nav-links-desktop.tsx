@@ -46,7 +46,7 @@ const links = [
     columnaIzq: false,
   },
   {
-    href: "/admin/clientes",
+    href: "/admin/listaClientes",
     name: "Clientes",
     type: "text",
     requireLogin: true,

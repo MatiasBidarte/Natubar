@@ -12,7 +12,12 @@ import {
   Typography,
   Pagination,
 } from "@mui/material";
-import { AccessTime, CalendarMonth, LocalShipping } from "@mui/icons-material";
+import {
+  AccessTime,
+  CalendarMonth,
+  LocalShipping,
+  Download,
+} from "@mui/icons-material";
 import PedidoItem from "./components/PedidoItem";
 
 const ListaPedidosPage = () => {
@@ -34,6 +39,8 @@ const ListaPedidosPage = () => {
     loadingPedidos,
     errorPedidos,
     fetchPedidos,
+    descargandoPDF,
+    descargarPDFPedidosEnCamino,
   } = usePedidos();
 
   const hayPedidosParaEstado = useCallback(
@@ -98,6 +105,14 @@ const ListaPedidosPage = () => {
     const startIndex = (paginaActual - 1) * pedidosPorPagina;
     return pedidosFiltrados.slice(startIndex, startIndex + pedidosPorPagina);
   }, [pedidosFiltrados, paginaActual, pedidosPorPagina]);
+
+  const handleDescargarPDF = async () => {
+    try {
+      await descargarPDFPedidosEnCamino();
+    } catch (error) {
+      console.error("Error al descargar PDF:", error);
+    }
+  };
 
   const getStatusColor = useCallback((estado: EstadosPedido) => {
     switch (estado) {
@@ -185,6 +200,40 @@ const ListaPedidosPage = () => {
           </Button>
         ))}
       </Stack>
+
+      {estadoSeleccionado === EstadosPedido.enCamino &&
+        pedidosFiltrados.length > 0 && (
+          <Box display="flex" justifyContent="center" mb={3}>
+            <Button
+              variant="contained"
+              startIcon={
+                descargandoPDF ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <Download />
+                )
+              }
+              onClick={handleDescargarPDF}
+              disabled={descargandoPDF}
+              sx={{
+                backgroundColor: "#4CAF50",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#45A049",
+                },
+                "&:disabled": {
+                  backgroundColor: "#ccc",
+                  color: "#999",
+                },
+                fontWeight: "bold",
+                px: 4,
+                py: 1.5,
+              }}
+            >
+              {descargandoPDF ? "Descargando..." : "Descargar PDF de Entregas"}
+            </Button>
+          </Box>
+        )}
 
       {loadingPedidos && !estadosCargados.has(estadoSeleccionado) ? (
         <Box className="flex justify-center my-12">
