@@ -29,8 +29,8 @@ export const useUsuarioStore = create<AuthState>((set) => ({
         set({
           usuario,
           estaLogueado: true,
-          esEmpresa: usuario.tipo === "Empresa",
-          esAdmin: (usuario.tipo === "ADMINISTRADOR") || (usuario.tipo === "Administrador"),
+          esEmpresa: usuario.tipo == "Empresa",
+          esAdmin: usuario.tipo == "Administrador",
           inicializado: true,
         });
       }
