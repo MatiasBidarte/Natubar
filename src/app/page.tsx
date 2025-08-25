@@ -195,8 +195,6 @@ export default function Home() {
         )}
       </Stack>
       <BotonCarrito cantidad={items.length} />
-
     </div>
-
   );
 }
