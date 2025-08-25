@@ -92,7 +92,7 @@ export default function RegistroCliente() {
         else if (errorData.statusCode === 409)
           setApiError(
             errorData.message ||
-            "Datos inválidos. Por favor, revise los campos."
+              "Datos inválidos. Por favor, revise los campos."
           );
         else if (errorData.statusCode === 400)
           setApiError("Datos inválidos. Por favor, revise los campos.");
@@ -208,6 +208,7 @@ export default function RegistroCliente() {
             onChange={handleChange}
             fullWidth
             multiline
+            placeholder="Observaciones relacionadas al momento de la entrega, por ejemplo: Solo puedo recibir en la mañana"
             rows={3}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
