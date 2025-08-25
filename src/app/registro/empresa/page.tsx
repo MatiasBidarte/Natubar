@@ -211,6 +211,7 @@ export default function RegistroEmpresa() {
             onChange={handleChange}
             fullWidth
             multiline
+            placeholder="Observaciones relacionadas al momento de la entrega, por ejemplo: Solo puedo recibir en la mañana"
             rows={3}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
