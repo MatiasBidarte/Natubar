@@ -13,10 +13,12 @@ import ArrowBack from "@/app/ui/arrowBack";
 import { useClientes } from "@/app/hooks/useClientes";
 import { decodeToken } from "@/app/utils/decodeJwt";
 import useNotificaciones from "@/app/hooks/useNotificaciones";
+import usePedidos from "@/app/hooks/usePedidos";
 
 export default function RegistroCliente() {
   const router = useRouter();
   const { registerClient } = useClientes();
+  const { items } = usePedidos();
   const { suscribir } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -74,8 +76,6 @@ export default function RegistroCliente() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
-        await suscribir();
-        setApiError(null);
         localStorage.setItem(
           "usuario",
           JSON.stringify({
@@ -83,8 +83,14 @@ export default function RegistroCliente() {
             token: token.access_token,
           })
         );
+        await suscribir();
+        setApiError(null);
         window.dispatchEvent(new Event("auth-change"));
-        router.push("/");
+        if (items.length > 0) {
+          router.push("/carrito");
+        } else {
+          router.push("/");
+        }
       } catch (error) {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
