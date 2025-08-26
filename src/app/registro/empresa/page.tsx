@@ -83,9 +83,9 @@ export default function RegistroEmpresa() {
             token: token.access_token,
           })
         );
-        await suscribir();
         setApiError(null);
         window.dispatchEvent(new Event("auth-change"));
+        await suscribir();
         if (items.length > 0) {
           router.push("/carrito");
         } else {
