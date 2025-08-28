@@ -10,7 +10,7 @@ import useNotificaciones from "@/app/hooks/useNotificaciones";
 export default function RegistroEmpresa() {
   const router = useRouter();
   const { registerClient, loadingClientes } = useClientes();
-  const { suscribir, loadingNotificaciones } = useNotificaciones();
+  const { suscribir, canSubscribe, loadingNotificaciones } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombreEmpresa: "",
@@ -84,7 +84,11 @@ export default function RegistroEmpresa() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
+        if (!canSubscribe) {
+        setApiError("Notificaciones bloqueadas");
+      } else {
         await suscribir();
+      }
         setApiError(null);
         localStorage.setItem(
           "usuario",

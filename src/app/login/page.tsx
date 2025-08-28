@@ -28,7 +28,7 @@ import useNotificaciones from "../hooks/useNotificaciones";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { loginClient, loadingClientes, errorClientes } = useClientes();
-  const { suscribir, loadingNotificaciones } = useNotificaciones();
+  const { suscribir, loadingNotificaciones, canSubscribe } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
   const [form, setForm] = useState({
@@ -72,7 +72,12 @@ export default function LoginPage() {
       );
       localStorage.setItem("usuario", JSON.stringify(usuarioParsed));
       window.dispatchEvent(new Event("auth-change"));
-      await suscribir();
+      if (!canSubscribe) {
+        setApiError("Notificaciones bloqueadas");
+      } else {
+        await suscribir();
+      }
+
       if (usuarioParsed.tipo == "Administrador") {
         router.push("/admin/")
       } else {
@@ -103,7 +108,7 @@ export default function LoginPage() {
         elevation={0}
       >
         <Container>
-            {renderContent()}
+          {renderContent()}
           <Grid container spacing={3} justifyContent="center">
             <Grid textAlign="center">
               <Typography variant="h6" fontWeight={500} gutterBottom>

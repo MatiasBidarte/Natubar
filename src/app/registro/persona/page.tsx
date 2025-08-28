@@ -19,7 +19,7 @@ import useNotificaciones from "@/app/hooks/useNotificaciones";
 export default function RegistroCliente() {
   const router = useRouter();
   const { registerClient, loadingClientes } = useClientes();
-  const { suscribir, loadingNotificaciones } = useNotificaciones();
+  const { suscribir, loadingNotificaciones, canSubscribe } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombre: "",
@@ -95,7 +95,11 @@ export default function RegistroCliente() {
         );
         window.dispatchEvent(new Event("auth-change"));
         router.push("/");
+           if (!canSubscribe) {
+        setApiError("Notificaciones bloqueadas");
+      } else {
         await suscribir();
+      }
       } catch (error) {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
