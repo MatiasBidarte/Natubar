@@ -36,10 +36,12 @@ const PerfilPage = () => {
   const [respuesta, setRespuesta] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { esEmpresa } = useUsuarioStore();
-  const { suscribir } = useNotificaciones();
+  const { suscribir, canSubscribe } = useNotificaciones();
   async function handleSubscribe() {
     try {
-      await suscribir();
+      if (canSubscribe) {
+        await suscribir();
+      }
     } catch (error) {
       console.error("Error al suscribirse a las notificaciones", error);
     }
@@ -263,7 +265,14 @@ const PerfilPage = () => {
                     {usuario.telefono}
                   </Typography>
                 </Box>
-                <Button onClick={handleSubscribe}>Activar notificaciones</Button>
+                <Box className="flex items-center gap-2">
+                  <Button onClick={handleSubscribe} disabled={!canSubscribe}>Activar notificaciones</Button>
+                  {!canSubscribe && (
+                    <Typography>
+                      Las notificaciones están bloqueadas por el navegador. Puedes habilitarlas en la configuración.
+                    </Typography>
+                  )}
+                </Box>
               </Box>
 
             )}

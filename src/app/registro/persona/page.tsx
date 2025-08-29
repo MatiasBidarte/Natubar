@@ -7,6 +7,8 @@ import {
   Paper,
   Stack,
   Snackbar,
+  Box,
+  CircularProgress,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ArrowBack from "@/app/ui/arrowBack";
@@ -17,9 +19,9 @@ import usePedidos from "@/app/hooks/usePedidos";
 
 export default function RegistroCliente() {
   const router = useRouter();
-  const { registerClient } = useClientes();
   const { items } = usePedidos();
-  const { suscribir } = useNotificaciones();
+  const { registerClient, loadingClientes } = useClientes();
+  const { suscribir, loadingNotificaciones, canSubscribe } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombre: "",
@@ -45,6 +47,15 @@ export default function RegistroCliente() {
     telefono: "",
   });
 
+  const renderContent = () => {
+    if (loadingClientes || loadingNotificaciones) {
+      return (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+          <CircularProgress sx={{ color: "#B99342" }} />
+        </Box>
+      );
+    }
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
@@ -76,6 +87,7 @@ export default function RegistroCliente() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
+        setApiError(null);
         localStorage.setItem(
           "usuario",
           JSON.stringify({
@@ -85,7 +97,11 @@ export default function RegistroCliente() {
         );
         setApiError(null);
         window.dispatchEvent(new Event("auth-change"));
-        await suscribir();
+        if (!canSubscribe) {
+          setApiError("Notificaciones bloqueadas");
+        } else {
+          await suscribir();
+        }
         if (items.length > 0) {
           router.push("/carrito");
         } else {
@@ -122,6 +138,7 @@ export default function RegistroCliente() {
         <Typography variant="h5" className="mb-6 text-center">
           Crear cuenta
         </Typography>
+        {renderContent()}
         <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-4">
           <TextField
             label="Email"
