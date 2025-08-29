@@ -15,9 +15,11 @@ import ArrowBack from "@/app/ui/arrowBack";
 import { useClientes } from "@/app/hooks/useClientes";
 import { decodeToken } from "@/app/utils/decodeJwt";
 import useNotificaciones from "@/app/hooks/useNotificaciones";
+import usePedidos from "@/app/hooks/usePedidos";
 
 export default function RegistroCliente() {
   const router = useRouter();
+  const { items } = usePedidos();
   const { registerClient, loadingClientes } = useClientes();
   const { suscribir, loadingNotificaciones, canSubscribe } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
@@ -93,13 +95,18 @@ export default function RegistroCliente() {
             token: token.access_token,
           })
         );
+        setApiError(null);
         window.dispatchEvent(new Event("auth-change"));
-        router.push("/");
-           if (!canSubscribe) {
-        setApiError("Notificaciones bloqueadas");
-      } else {
-        await suscribir();
-      }
+        if (!canSubscribe) {
+          setApiError("Notificaciones bloqueadas");
+        } else {
+          await suscribir();
+        }
+        if (items.length > 0) {
+          router.push("/carrito");
+        } else {
+          router.push("/");
+        }
       } catch (error) {
         const errorData = error as { statusCode?: number; message?: string };
         if (errorData.statusCode === 500)
@@ -107,7 +114,7 @@ export default function RegistroCliente() {
         else if (errorData.statusCode === 409)
           setApiError(
             errorData.message ||
-            "Datos inválidos. Por favor, revise los campos."
+              "Datos inválidos. Por favor, revise los campos."
           );
         else if (errorData.statusCode === 400)
           setApiError("Datos inválidos. Por favor, revise los campos.");
@@ -224,6 +231,7 @@ export default function RegistroCliente() {
             onChange={handleChange}
             fullWidth
             multiline
+            placeholder="Observaciones relacionadas al momento de la entrega, por ejemplo: Solo puedo recibir en la mañana"
             rows={3}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>

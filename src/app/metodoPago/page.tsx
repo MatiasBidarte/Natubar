@@ -11,6 +11,7 @@ import {
   RadioGroup,
   Radio,
   useMediaQuery,
+  Alert,
 } from "@mui/material";
 import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
 import TransferenciaForm from "./transeferencia/page";
@@ -19,19 +20,22 @@ import CheckoutStepper from "../ui/CheckoutStepper";
 import usePedidos from "../hooks/usePedidos";
 import { useRouter } from "next/navigation";
 import MercadoPagoPage from "./mercadoPago/page";
+import { useUsuarioStore } from "../hooks/useUsuarioStore";
 
 export default function MetodoPago() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { pedido, clearCart } = usePedidos();
+  const { esEmpresa } = useUsuarioStore();
   const router = useRouter();
-  const [metodo, setMetodo] = useState<"mp" | "transferencia" | null>(null);
+  const [metodo, setMetodo] = useState<
+    "mp" | "transferencia" | "diferido" | null
+  >(null);
   const [metodoSeleccionado, setMetodoSeleccionado] = useState<
-    "mp" | "transferencia" | null
+    "mp" | "transferencia" | "diferido" | null
   >(null);
 
   const handlePagarAhora = async () => {
     setMetodo(metodoSeleccionado);
-    console.log(pedido);
     const pedidoResponse = await fetch(
       `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos`,
       {
@@ -52,6 +56,17 @@ export default function MetodoPago() {
     if (metodoSeleccionado === "mp") {
       router.push(`/metodoPago/mercadoPago?pedidoId=${pedidoBody.id}`);
     }
+
+    if (metodoSeleccionado === "diferido") {
+      router.push("/perfil/compras");
+    }
+
+    if (
+      metodoSeleccionado === "diferido" ||
+      metodoSeleccionado === "transferencia"
+    ) {
+      clearCart();
+    }
   };
 
   const handleCancelar = () => {
@@ -62,9 +77,17 @@ export default function MetodoPago() {
   return (
     <Box sx={{ width: "100%", mx: "auto", mt: 10 }}>
       <CheckoutStepper stepActivo={1} />
+      {esEmpresa && (
+        <Alert severity="info" sx={{ width: "100%" }}>
+          {
+            'Si quieres diferir el pago, selecciona "Pago en Diferido" y completa el pedido. Podrás abonar dentro de las 48 horas siguientes a la entrega del pedido. Un vendedor se pondrá en contacto contigo para coordinar los detalles.'
+          }
+        </Alert>
+      )}
       {!metodo && (
         <Box
           mb={3}
+          mt={4}
           display={"flex"}
           flexDirection={isMobile ? "column" : "row"}
           gap={2}
@@ -113,6 +136,23 @@ export default function MetodoPago() {
                       },
                     }}
                   />
+                  {esEmpresa && (
+                    <FormControlLabel
+                      value="diferido"
+                      control={<Radio />}
+                      label="Pago en Diferido"
+                      sx={{
+                        p: 1.2,
+                        border: "1px solid rgba(0, 0, 0, 0.1)",
+                        borderRadius: 3,
+                        margin: 1,
+                        "&.Mui-checked": {
+                          border: "2px solid black",
+                          backgroundColor: "#f5f5f5",
+                        },
+                      }}
+                    />
+                  )}
                 </RadioGroup>
                 <Box
                   sx={{
@@ -137,7 +177,7 @@ export default function MetodoPago() {
               </FormControl>
             </Stack>
           </Box>
-          <Box width={isMobile ? "100%" : "40%"} alignSelf={"flex-end"}>
+          <Box width={isMobile ? "100%" : "40%"} alignSelf={"center"}>
             <Button
               className="btn-portada"
               onClick={handlePagarAhora}

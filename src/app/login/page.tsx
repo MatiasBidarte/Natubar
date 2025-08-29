@@ -77,7 +77,6 @@ export default function LoginPage() {
       } else {
         await suscribir();
       }
-
       if (usuarioParsed.tipo == "Administrador") {
         router.push("/admin/")
       } else {

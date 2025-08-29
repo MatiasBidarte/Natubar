@@ -119,9 +119,6 @@ const PedidoItem = memo(
       }
     };
 
-    const finalizarPedido = (pedidoId: number) => {
-      cambiarEstado(EstadosPedido.entregado, pedidoId);
-    };
     const pagarPedido = (pedidoId: number) => {
       cambiarEstadoPago(EstadosPagoPedido.pagado, pedidoId);
     };
@@ -146,18 +143,22 @@ const PedidoItem = memo(
               {pedido.fechaEntrega
                 ? `Entregado el: ${formatDateToLocalDate(pedido.fechaEntrega)}`
                 : `Entrega estimada: ${formatDateToLocalDate(
-                  pedido.fechaEntregaEstimada
-                )}`}
+                    pedido.fechaEntregaEstimada
+                  )}`}
             </Typography>
-            {pedido.estadoPago == EstadosPagoPedido.pendiente  && pedido.ultimoRecordatorioPago &&(
-                   <Typography variant="body2" className="text-gray-500">
-                      Último recordatorio de pago: {new Date(pedido.ultimoRecordatorioPago).toLocaleString('es-UY', {
-                        dateStyle: 'short',
-                        timeStyle: 'short',
-                      })
-                      }
-                    </Typography>
+            {pedido.estadoPago == EstadosPagoPedido.pendiente &&
+              pedido.ultimoRecordatorioPago && (
+                <Typography variant="body2" className="text-gray-500">
+                  Último recordatorio de pago:{" "}
+                  {new Date(pedido.ultimoRecordatorioPago).toLocaleString(
+                    "es-UY",
+                    {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    }
                   )}
+                </Typography>
+              )}
           </Box>
           <Box className="flex flex-col gap-2">
             <span
@@ -272,7 +273,12 @@ const PedidoItem = memo(
             <Box className="mt-4 flex flex-wrap gap-2">
               {pedido.estadoPago == EstadosPagoPedido.pendiente && (
                 <>
-                  <Button variant="outlined" size="small" sx={{ margin: 1 }} onClick={() => recordarPago(pedido.id)}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ margin: 1 }}
+                    onClick={() => recordarPago(pedido.id)}
+                  >
                     Recordar pago
                   </Button>
 
@@ -285,15 +291,7 @@ const PedidoItem = memo(
                     >
                       Marcar como pago
                     </Button>
-                  </Box>{" "}
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    sx={{ margin: 1 }}
-                    onClick={() => finalizarPedido(pedido.id)}
-                  >
-                    Finalizar pedido
-                  </Button>
+                  </Box>
                 </>
               )}
               {getNextState(pedido.estado) && (

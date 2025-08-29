@@ -14,7 +14,7 @@ const links = [
     name: "Inicio",
     type: "text",
     requireLogin: false,
-    mostrarAlAdmin: true,
+    mostrarAlAdmin: false,
     mostrarAlUsuario: true,
     columnaIzq: true,
   },
@@ -72,7 +72,7 @@ const links = [
     mostrarAlUsuario: false,
     columnaIzq: false,
   },
-    {
+  {
     href: "/admin/mandarNotificacion",
     name: "Crear Notificación",
     type: "text",
