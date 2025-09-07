@@ -23,7 +23,10 @@ const useNotificacionesStore = create<StoreNotificacionesState>((set) => ({
     const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
     set({ loadingNotificaciones: true, error: null });
     try {
-      const permiso = OneSignal.Notifications.permission as unknown as "default" | "granted" | "denied";
+      const permiso = OneSignal.Notifications.permission as unknown as
+        | "default"
+        | "granted"
+        | "denied";
       if (typeof permiso !== "string") {
         throw new Error("Tipo de permiso inesperado");
       }
@@ -171,6 +174,5 @@ export function useNotificaciones() {
     canSubscribe: isSupported && !isBlocked,
   };
 }
-
 
 export default useNotificaciones;

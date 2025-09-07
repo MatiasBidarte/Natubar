@@ -153,7 +153,6 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
               src={producto.urlImagen!}
               alt={producto.nombre ?? "Imagen del producto"}
               fill
-              sizes="(max-width: 600px) 95vw, (max-width: 1200px) 600px"
               style={{
                 objectFit: "cover",
               }}
@@ -180,13 +179,18 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
           />
 
           <Stack sx={{ px: 2, margin: "10px" }}>
-            {producto.esCajaDeBarras && (
-              <Typography>
-                ¡Elige los sabores que más te gustan y agrega las barras a tu
-                pedido!
-              </Typography>
-            )}
+            <Typography>{producto.descripcion}</Typography>
+          </Stack>
 
+          <Divider
+            sx={{
+              width: "100%",
+              borderBottomWidth: 1,
+              borderColor: theme.palette.secondary.main,
+            }}
+          />
+
+          <Stack sx={{ px: 2, margin: "10px" }}>
             {producto.esCajaDeBarras &&
               (sabores.length === 0 ? (
                 <Typography>Cargando sabores...</Typography>
