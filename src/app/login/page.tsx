@@ -11,6 +11,9 @@ import {
   Link,
   InputAdornment,
   IconButton,
+  Box,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,14 +27,33 @@ import useNotificaciones from "../hooks/useNotificaciones";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { loginClient } = useClientes();
-  const { suscribir } = useNotificaciones();
+  const { loginClient, loadingClientes, errorClientes } = useClientes();
+  const { suscribir, loadingNotificaciones, canSubscribe } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
     contrasena: "",
   });
+
+  const renderContent = () => {
+    if (loadingClientes || loadingNotificaciones) {
+      return (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+          <CircularProgress sx={{ color: "#B99342" }} />
+        </Box>
+      );
+    }
+
+    if (errorClientes) {
+      return (
+        <Alert severity="error" sx={{ mt: 4 }}>
+          {errorClientes}
+        </Alert>
+      );
+    }
+  };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -50,9 +72,13 @@ export default function LoginPage() {
       );
       localStorage.setItem("usuario", JSON.stringify(usuarioParsed));
       window.dispatchEvent(new Event("auth-change"));
-      await suscribir();
+      if (!canSubscribe) {
+        setApiError("Notificaciones bloqueadas");
+      } else {
+        await suscribir();
+      }
       if (usuarioParsed.tipo == "Administrador") {
-        router.push("/admin/");
+        router.push("/admin/")
       } else {
         router.push("/");
       }
@@ -64,6 +90,7 @@ export default function LoginPage() {
         setApiError(`${errorData.message}`);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
       {apiError && (
@@ -75,12 +102,12 @@ export default function LoginPage() {
           onClose={() => setApiError(null)}
         />
       )}
-
       <Paper
         sx={{ p: 4, width: "100%", maxWidth: 500, borderRadius: 4 }}
         elevation={0}
       >
         <Container>
+          {renderContent()}
           <Grid container spacing={3} justifyContent="center">
             <Grid textAlign="center">
               <Typography variant="h6" fontWeight={500} gutterBottom>
@@ -94,7 +121,6 @@ export default function LoginPage() {
                 de Montevideo!
               </Typography>
             </Grid>
-
             <Grid>
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
@@ -200,7 +226,7 @@ export default function LoginPage() {
             </Grid>
           </Grid>
         </Container>
-      </Paper>
-    </div>
+      </Paper >
+    </div >
   );
 }

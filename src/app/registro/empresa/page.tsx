@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { TextField, Button, Typography, Paper, Snackbar } from "@mui/material";
+import { TextField, Button, Typography, Paper, Snackbar, Box, CircularProgress } from "@mui/material";
 import ArrowBack from "@/app/ui/arrowBack";
 import { useRouter } from "next/navigation";
 import { useClientes } from "@/app/hooks/useClientes";
@@ -10,9 +10,9 @@ import usePedidos from "@/app/hooks/usePedidos";
 
 export default function RegistroEmpresa() {
   const router = useRouter();
-  const { registerClient } = useClientes();
   const { items } = usePedidos();
-  const { suscribir } = useNotificaciones();
+  const { registerClient, loadingClientes } = useClientes();
+  const { suscribir, canSubscribe, loadingNotificaciones } = useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const [form, setForm] = useState({
     nombreEmpresa: "",
@@ -39,6 +39,16 @@ export default function RegistroEmpresa() {
     direccion: "",
     telefono: "",
   });
+
+    const renderContent = () => {
+    if (loadingClientes || loadingNotificaciones) {
+      return (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+          <CircularProgress sx={{ color: "#B99342" }} />
+        </Box>
+      );
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -76,6 +86,7 @@ export default function RegistroEmpresa() {
     if (!hasErrors) {
       try {
         const token = await registerClient(form);
+        setApiError(null);
         localStorage.setItem(
           "usuario",
           JSON.stringify({
@@ -85,7 +96,11 @@ export default function RegistroEmpresa() {
         );
         setApiError(null);
         window.dispatchEvent(new Event("auth-change"));
+        if (!canSubscribe) {
+        setApiError("Notificaciones bloqueadas");
+      } else {
         await suscribir();
+      }
         if (items.length > 0) {
           router.push("/carrito");
         } else {
@@ -117,6 +132,7 @@ export default function RegistroEmpresa() {
         <Typography variant="h5" className="mb-6 text-center">
           Crear cuenta
         </Typography>
+        {renderContent()}
         <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-4">
           <TextField
             label="Email"
