@@ -28,7 +28,8 @@ import useNotificaciones from "../hooks/useNotificaciones";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { loginClient, loadingClientes, errorClientes } = useClientes();
-  const { suscribir, loadingNotificaciones, canSubscribe } = useNotificaciones();
+  const { suscribir, loadingNotificaciones, canSubscribe } =
+    useNotificaciones();
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
   const [form, setForm] = useState({
@@ -54,7 +55,6 @@ export default function LoginPage() {
     }
   };
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -78,7 +78,7 @@ export default function LoginPage() {
         await suscribir();
       }
       if (usuarioParsed.tipo == "Administrador") {
-        router.push("/admin/")
+        router.push("/admin/");
       } else {
         router.push("/");
       }
@@ -184,12 +184,6 @@ export default function LoginPage() {
                     />
                   </Grid>
 
-                  <Grid textAlign="right">
-                    <Link href="/" variant="body2" sx={{ color: "#7B1FA2" }}>
-                      ¿Olvidaste tu contraseña?
-                    </Link>
-                  </Grid>
-
                   <Grid width="100%">
                     <Button
                       fullWidth
@@ -226,7 +220,7 @@ export default function LoginPage() {
             </Grid>
           </Grid>
         </Container>
-      </Paper >
-    </div >
+      </Paper>
+    </div>
   );
 }
