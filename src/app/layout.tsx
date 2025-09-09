@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "Natubar - Barras Naturales y Saludables",
     description:
       "Descubre las mejores barras naturales y saludables de Uruguay",
-    url: "https://natubar.vercel.app",
+    url: "https://www.natubar.com.uy",
     siteName: "Natubar",
     images: [
       {
-        url: "https://natubar.vercel.app/icon512_rounded.png",
+        url: "https://www.natubar.com.uy/icon512_rounded.png",
         width: 1200,
         height: 630,
       },
