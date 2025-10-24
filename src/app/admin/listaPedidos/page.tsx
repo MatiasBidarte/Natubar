@@ -175,6 +175,7 @@ const ListaPedidosPage = () => {
         justifyContent={"center"}
         direction="row"
         spacing={2}
+        gap="8px"
         className="mb-4 flex-wrap"
       >
         {Object.values(EstadosPedido).map((estado) => (
