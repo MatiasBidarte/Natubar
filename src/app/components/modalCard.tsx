@@ -179,7 +179,9 @@ function ModalCard({ open, handleClose, producto }: CustomModalProps) {
           />
 
           <Stack sx={{ px: 2, margin: "10px" }}>
-            <Typography>{producto.descripcion}</Typography>
+            <Typography whiteSpace={"pre-line"}>
+              {producto.descripcion}
+            </Typography>
           </Stack>
 
           <Divider
