@@ -85,7 +85,6 @@ const links = [
 export default function NavLinksMobile() {
   const { estaLogueado, usuario } = useUsuarioStore();
   const pathname = usePathname();
-  console.log(pathname);
 
   const getHref = (link: (typeof links)[number]) =>
     link.requireLogin && !estaLogueado ? "/login" : link.href;
