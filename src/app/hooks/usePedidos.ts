@@ -33,6 +33,7 @@ interface PedidoState {
     clienteId: string,
     observaciones: string
   ) => Promise<Pedido | undefined>;
+  eliminarPedido: (pedidoId: number) => Promise<void>;
   cambiarEstado(estado: EstadosPedido, pedido: number): Promise<void>;
   cambiarEstadoPago(estado: EstadosPagoPedido, pedido: number): Promise<void>;
   actualizarPedidoEnStore: ({
@@ -290,6 +291,53 @@ export const usePedidos = create(
         }
       },
 
+      eliminarPedido: async (pedidoId: number) => {
+        set({ loadingPedidos: true, errorPedidos: null });
+
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_NATUBAR_API_URL}/pedidos/${pedidoId}`,
+            {
+              method: "DELETE",
+              headers: {
+                "x-api-key": process.env.NEXT_PUBLIC_NATUBAR_API_KEY || "",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || "Error al eliminar el pedido");
+          }
+
+          set((state) => {
+            const pedidosActualizados = state.pedidos.filter(
+              (p) => p.id !== pedidoId
+            );
+            const pedidosEnCursoActualizados = state.pedidosEnCurso.filter(
+              (p) => p.id !== pedidoId
+            );
+            const pedidosFinalizadosActualizados =
+              state.pedidosFinalizados.filter((p) => p.id !== pedidoId);
+
+            return {
+              pedidos: pedidosActualizados,
+              pedidosEnCurso: pedidosEnCursoActualizados,
+              pedidosFinalizados: pedidosFinalizadosActualizados,
+              loadingPedidos: false,
+            };
+          });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Error desconocido";
+          set({
+            errorPedidos: errorMessage,
+            loadingPedidos: false,
+          });
+          throw error;
+        }
+      },
+
       fetchPedidos: async (estado: EstadosPedido) => {
         set({ loadingPedidos: true, errorPedidos: null });
         try {
@@ -495,10 +543,9 @@ export const usePedidos = create(
       },
     })),
     {
-      name: "natubar-cart-storage", // Nombre para identificar en localStorage
+      name: "natubar-cart-storage",
       partialize: (state) => ({
         items: state.items,
-        // Solo persistimos los items del carrito, no todo el estado
       }),
     }
   )

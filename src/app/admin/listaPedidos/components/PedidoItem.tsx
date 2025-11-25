@@ -27,6 +27,7 @@ import { formatDateToLocalDate, formatDateToString } from "@/app/utils/date";
 import usePedidos from "@/app/hooks/usePedidos";
 import { Sabor } from "@/app/types/producto";
 import useNotificaciones from "@/app/hooks/useNotificaciones";
+import EliminarPedidoModal from "./EliminarPedidoModal";
 
 interface PedidoItemProps {
   pedido: Pedido;
@@ -48,6 +49,7 @@ const PedidoItem = memo(
     const [loading, setLoading] = useState(false);
     const { cambiarEstadoPago, cambiarEstado } = usePedidos();
     const { recordarPago } = useNotificaciones();
+    const [modalOpen, setModalOpen] = useState(false);
 
     const getNextState = (
       currentState: EstadosPedido
@@ -102,6 +104,10 @@ const PedidoItem = memo(
         default:
           return "bg-gray-400 text-white";
       }
+    };
+
+    const handleEliminarPedido = () => {
+      setModalOpen(true);
     };
 
     const getPaymentStatusIcon = (
@@ -270,49 +276,66 @@ const PedidoItem = memo(
               </Typography>
             </Box>
 
-            <Box className="mt-4 flex flex-wrap gap-2">
-              {pedido.estadoPago == EstadosPagoPedido.pendiente && (
-                <>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    sx={{ margin: 1 }}
-                    onClick={() => recordarPago(pedido.id)}
-                  >
-                    Recordar pago
-                  </Button>
-
-                  <Box>
+            <Box className="mt-4 flex justify-between">
+              <Box className="flex gap-2">
+                {pedido.estadoPago == EstadosPagoPedido.pendiente && (
+                  <>
                     <Button
                       variant="outlined"
                       size="small"
                       sx={{ margin: 1 }}
-                      onClick={() => pagarPedido(pedido.id)}
+                      onClick={() => recordarPago(pedido.id)}
                     >
-                      Marcar como pago
+                      Recordar pago
                     </Button>
-                  </Box>
-                </>
-              )}
-              {getNextState(pedido.estado) && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  disabled={loading}
-                  onClick={handleChangeState}
-                  sx={{
-                    backgroundColor: "#B99342",
-                    "&:hover": { backgroundColor: "#9A7835" },
-                    margin: 1,
-                  }}
-                >
-                  {loading ? "Actualizando..." : getButtonText()}
-                </Button>
-              )}
+
+                    <Box>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        sx={{ margin: 1 }}
+                        onClick={() => pagarPedido(pedido.id)}
+                      >
+                        Marcar como pago
+                      </Button>
+                    </Box>
+                  </>
+                )}
+                {getNextState(pedido.estado) && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    disabled={loading}
+                    onClick={handleChangeState}
+                    sx={{
+                      backgroundColor: "#B99342",
+                      "&:hover": { backgroundColor: "#9A7835" },
+                      margin: 1,
+                    }}
+                  >
+                    {loading ? "Actualizando..." : getButtonText()}
+                  </Button>
+                )}
+              </Box>
+              <Button
+                variant="contained"
+                size="small"
+                color="error"
+                onClick={handleEliminarPedido}
+              >
+                Eliminar pedido
+              </Button>
             </Box>
           </Box>
         </Collapse>
+        {modalOpen && (
+          <EliminarPedidoModal
+            pedido={pedido}
+            open={modalOpen}
+            onClose={() => setModalOpen(!modalOpen)}
+          />
+        )}
       </Paper>
     );
   }
