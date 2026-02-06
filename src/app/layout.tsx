@@ -38,6 +38,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script src="https://sdk.mercadopago.com/js/v2" />
+        <meta
+          name="description"
+          content="Aplicacion dedicada a la empresa Natubar. Descubre las mejores barras naturales y saludables de Uruguay"
+        />
       </head>
       <body className={`${roboto.className} antialiased`}>
         <ClientLayout>{children}</ClientLayout>
